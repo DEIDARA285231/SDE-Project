@@ -40,3 +40,14 @@ export interface Entry {
   cases_tested: number;
 }
 
+export interface GameInfos {
+  ID: number;
+  name: String;
+  hours: number;
+  price: number;
+  PHratio: number;
+  mark: number;
+  reviews: [String];
+  genres: [String];
+}
+

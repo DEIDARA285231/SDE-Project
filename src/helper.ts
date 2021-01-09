@@ -32,6 +32,24 @@ export const getNumberFromRequest: (req: Request, param: string) => number | fal
   }
 };
 
+/**Function to get the name from the first page */
+export const getStringFromRequest: (req: Request, param: string) => string | false = (
+  req,
+  param
+) => {
+  let value = req.query[param]
+
+  if(typeof value !== "string"){
+    return false;
+  }
+
+  try{
+    return String(value);
+  }catch (e) {
+    console.error('Error extracting parameter ${param}:', e);
+    return false;
+  }
+}
 /**
  * Extract id from the request query-string
  * @param req The request (as given in the controller)
@@ -77,6 +95,22 @@ export const getDateFromRequest: (
     year: year,
   };
 };
+
+/**Function to get the Name from the first page, otherwise use Minecraft */
+export const getGameNameFromRequest : (
+  req: Request
+) => {
+  game_name: string;
+} = (req) => {
+  let game_name = getStringFromRequest(req, "gName");
+
+  /**Handling "Default" case, for now i'll just put a random game*/
+  if(game_name === false){
+    game_name = "Minecraft";
+  }
+
+  return game_name;
+}
 
 /**
  * Returns the current day

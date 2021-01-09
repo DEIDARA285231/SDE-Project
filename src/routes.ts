@@ -17,7 +17,16 @@ import {
   regions,
   barChart,
   casesByRegionId,
-  lineChart
+  lineChart,
+  gameIGDB,
+  genresIGDB,
+  coverIGDB,
+  artworkIGDB,
+  externalGameIGDB,
+  topRatedIGDB,
+  gameVideosIGDB,
+  releaseIGDB,
+  platformsIGDB
 } from './controller';
 
 const router = express.Router();
@@ -38,4 +47,13 @@ router.get('/ranking', ranking);
 router.get('/charts/bar', barChart);
 router.get('/charts/line', lineChart);
 
+router.get("/games", gameIGDB);
+router.get("/game/genres", genresIGDB);
+router.get("/game/artworks", artworkIGDB);
+router.get("/game/covers", coverIGDB);
+router.get("/game/externalGame", externalGameIGDB);
+router.get("/games/topRated", topRatedIGDB);
+router.get("/game/gameVideos", gameVideosIGDB);
+router.get("/game/releaseDates", releaseIGDB);
+router.get("/game/platforms", platformsIGDB);
 export default router;
