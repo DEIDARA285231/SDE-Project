@@ -26,7 +26,8 @@ import {
   topRatedIGDB,
   gameVideosIGDB,
   releaseIGDB,
-  platformsIGDB
+  platformsIGDB,
+  priceSteam
 } from './controller';
 
 const router = express.Router();
@@ -56,4 +57,5 @@ router.get("/games/topRated", topRatedIGDB);
 router.get("/game/gameVideos", gameVideosIGDB);
 router.get("/game/releaseDates", releaseIGDB);
 router.get("/game/platforms", platformsIGDB);
+router.get('/steam', priceSteam);
 export default router;

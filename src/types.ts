@@ -51,3 +51,13 @@ export interface GameInfos {
   genres: [String];
 }
 
+export interface Apps {
+  appid: number;
+  name: string;
+}
+
+export interface ResponseSteam{
+  applist: {
+    apps: Array<Apps>
+  };
+}

@@ -28,7 +28,8 @@ import {
   getTopRatedIGDB,
   getGameVideosIGDB,
   getGameReleasesIGDB,
-  getGamePlatformsIGDB
+  getGamePlatformsIGDB,
+  getPriceSteam
 } from './core';
 import {
   getDateFromRequest,
@@ -151,7 +152,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
 
 export const genresIGDB = async (req: Request, res: Response) => {
   const genre = getStringFromRequest(req, "gameGenre");
-  if(genre !== null){
+  if(genre !== false){
     const games = await getGamesFromGenreIGDB(genre);
     if(!isError(games)){
       res.contentType("json");
@@ -165,7 +166,7 @@ export const genresIGDB = async (req: Request, res: Response) => {
 
 export const artworkIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
-  if(gameID !== null){
+  if(gameID !== false){
     const gameArtwork = await getArtworkIGDB(gameID);
     if(!isError(gameArtwork)){
       res.contentType("image/png");
@@ -179,7 +180,7 @@ export const artworkIGDB = async (req: Request, res: Response) => {
 
 export const coverIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
-  if(gameID !== null){
+  if(gameID !== false){
     const gameCover = await getCoverIGDB(gameID);
     if(!isError(gameCover)){
       res.contentType("image/png");
@@ -193,7 +194,7 @@ export const coverIGDB = async (req: Request, res: Response) => {
 
 export const externalGameIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
-  if(gameID !== null){
+  if(gameID !== false){
     const externalSites = await getExternalsIGDB(gameID);
     if(!isError(externalSites)){
       res.contentType("json");
@@ -215,10 +216,10 @@ export const topRatedIGDB = async (req: Request, res: Response) => {
 
 export const gameVideosIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
-  if(gameID !== null){
+  if(gameID !== false){
     const gameVideos = await getGameVideosIGDB(gameID);
     if(!isError(gameVideos)){
-      res.contentType() //Need a way to use mp4
+      res.contentType('json') //Need a way to use mp4
     }
     res.send(gameVideos);
   }else{
@@ -229,7 +230,7 @@ export const gameVideosIGDB = async (req: Request, res: Response) => {
 
 export const releaseIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
-  if(gameID !== null){
+  if(gameID !== false){
     const gameReleases = await getGameReleasesIGDB(gameID);
     if(!isError(gameReleases)){
       res.contentType("json");
@@ -243,7 +244,7 @@ export const releaseIGDB = async (req: Request, res: Response) => {
 
 export const platformsIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
-  if(gameID !== null){
+  if(gameID !== false){
     const gamePlatforms = await getGamePlatformsIGDB(gameID);
     if(!isError(gamePlatforms)){
       res.contentType("json");
@@ -254,4 +255,19 @@ export const platformsIGDB = async (req: Request, res: Response) => {
     res.send({error: "Invalid ID"})
   }
 }
+
+export const priceSteam = async (req: Request, res: Response) => {
+  const name = req.query['name'];
+  if (name != null && typeof name === 'string') {
+    const steamPrice = await getPriceSteam(name);
+    if (!isError(steamPrice)) {
+      res.contentType('application/json');
+    }
+    res.send(steamPrice);
+    console.log(steamPrice);
+  } else {
+    res.sendStatus(400);
+    res.send({ error: 'Invalid name format!' });
+  }
+};
 //#endregion
