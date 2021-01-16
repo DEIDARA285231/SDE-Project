@@ -453,19 +453,9 @@ export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async
 
 
 export const getPriceSteam: (name: string) => Promise<any | Error> = async (name) => {
-  try {
-    const response = await axios.get<ResponseSteam>('https://api.steampowered.com/ISteamApps/GetAppList/v2/');
-    let listaAppSteam=response.data;
-    let searched=listaAppSteam.applist.apps.filter(function(item) {
-      if (item.name.startsWith(name)){
-        return true;
-      }else{
-        return false;
-      }
-    });
-    
-    let appID=searched[0].appid;
-    
+  //chiama il nostro servizio per avere l'id steam del gioco (con rest) e assegnalo ad appID
+  let appID=0;
+  try {  
     axios.get<any>(`https://store.steampowered.com/api/appdetails?appids=${appID}&currency=eur`).then((response2) =>{
       let infoApp=response2.data;
       
@@ -477,19 +467,7 @@ export const getPriceSteam: (name: string) => Promise<any | Error> = async (name
         error: e,
       };  
     });
-/*
-    try{
-      const response2 = await axios.get<any>(`https://store.steampowered.com/api/appdetails?appids=${appID}&currency=eur`);
-      let infoApp=response2.data;
-      console.log(infoApp);
-      let price=infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
-      return price/100;
-    }catch(e){
-      console.error(e);
-      return {
-        error: e,
-      };  
-    }*/    
+
   } catch (e) {
     console.error(e);
     return {
