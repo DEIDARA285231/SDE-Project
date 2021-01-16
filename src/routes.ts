@@ -27,7 +27,8 @@ import {
   gameVideosIGDB,
   releaseIGDB,
   platformsIGDB,
-  priceSteam
+  priceSteam,
+  activePlayersSteam
 } from './controller';
 
 const router = express.Router();
@@ -58,4 +59,5 @@ router.get("/game/gameVideos", gameVideosIGDB);
 router.get("/game/releaseDates", releaseIGDB);
 router.get("/game/platforms", platformsIGDB);
 router.get('/steam', priceSteam);
+router.get('/steam/activePlayers', activePlayersSteam)
 export default router;
