@@ -454,47 +454,51 @@ export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async
 
 export const getPriceSteam: (name: string) => Promise<any | Error> = async (name) => {
   //chiama il nostro servizio per avere l'id steam del gioco (con rest) e assegnalo ad appID
-  let appID=0;
-  try {  
-    axios.get<any>(`https://store.steampowered.com/api/appdetails?appids=${appID}&currency=eur`).then((response) =>{
-      let infoApp=response.data;
-      
-      let price=infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];      
-      return price/100;
-    }).catch((e) => {
-      console.error(e);
-      return {
-        error: e,
-      };  
-    });
-
-  } catch (e) {
+  let appID=0;  
+  axios.get<any>(`https://store.steampowered.com/api/appdetails?appids=${appID}&currency=eur`).then((response) =>{
+    let infoApp=response.data;
+    
+    let price=infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];      
+    return price/100;
+  }).catch((e) => {
     console.error(e);
     return {
       error: e,
-    };
-  }
-};
+    };  
+  });
+}
 
 export const getActivePlayersSteam: (name: string) => Promise<any | Error> = async (name) => {
   //chiama il nostro servizio per avere l'id steam del gioco (con rest) e assegnalo ad appID
   let appID=0;
-  try {  
-    axios.get<any>(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appID}`).then((response) =>{
-      let infoApp=response.data;
-      
-      return infoApp["player_count"];
-    }).catch((e) => {
-      console.error(e);
-      return {
-        error: e,
-      };  
-    });
-
-  } catch (e) {
+  
+  axios.get<any>(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appID}`).then((response) =>{
+    let infoApp=response.data;
+    
+    return infoApp["player_count"];
+  }).catch((e) => {
     console.error(e);
     return {
       error: e,
-    };
-  }
+    };  
+  });
+};
+
+export const itadGetPlain: (IDSteam: number) => Promise<any | Error> = async (IDSteam) => {
+  //parametro idSteam è l'id steam  
+  axios.get<any>('https://api.isthereanydeal.com/v01/game/plain/id/',{ params: {
+    key: secrets.ITAD_KEY,
+    shop: "steam",
+    ids: `app/${IDSteam}`
+    }
+  }).then((response) =>{
+    let infoApp=response.data;
+    
+    return infoApp[`app/${IDSteam}`];
+  }).catch((e) => {
+    console.error(e);
+    return {
+      error: e,
+    };  
+  });
 };
