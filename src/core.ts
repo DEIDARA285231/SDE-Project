@@ -502,3 +502,25 @@ export const itadGetPlain: (IDSteam: number) => Promise<any | Error> = async (ID
     };  
   });
 };
+
+export const itadHistoricalLow: (plain: string) => Promise<any | Error> = async (plain) => {
+  //parametro idSteam è l'id steam  
+  axios.get<any>('https://api.isthereanydeal.com/v01/game/lowest/',{ params: {
+    key: secrets.ITAD_KEY,
+    plains: plain,
+    region: "eu2",
+    country: "IT",
+    shops: "steam",
+    }
+  }).then((response) =>{
+    let infoApp=response.data;
+    
+    //qui dovrebbe esserci sia prezzo (.price) che data di aggiunta in long (.added)
+    return infoApp[plain];
+  }).catch((e) => {
+    console.error(e);
+    return {
+      error: e,
+    };  
+  });
+};
