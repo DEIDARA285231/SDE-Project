@@ -29,7 +29,8 @@ import {
   getGameVideosIGDB,
   getGameReleasesIGDB,
   getGamePlatformsIGDB,
-  getPriceSteam
+  getPriceSteam,
+  getActivePlayersSteam
 } from './core';
 import {
   getDateFromRequest,
@@ -265,6 +266,20 @@ export const priceSteam = async (req: Request, res: Response) => {
     }
     res.send(steamPrice);
     console.log(steamPrice);
+  } else {
+    res.sendStatus(400);
+    res.send({ error: 'Invalid name format!' });
+  }
+};
+
+export const activePlayersSteam = async (req: Request, res: Response) => {
+  const name = req.query['name'];
+  if (name != null && typeof name === 'string') {
+    const steamPlayers = await getActivePlayersSteam(name);
+    if (!isError(steamPlayers)) {
+      res.contentType('application/json');
+    }
+    res.send(steamPlayers);
   } else {
     res.sendStatus(400);
     res.send({ error: 'Invalid name format!' });
