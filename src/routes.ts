@@ -12,12 +12,6 @@
 import express from 'express';
 import {
   hello,
-  ranking,
-  regionById,
-  regions,
-  barChart,
-  casesByRegionId,
-  lineChart,
   gameIGDB,
   genresIGDB,
   coverIGDB,
@@ -28,7 +22,9 @@ import {
   releaseIGDB,
   platformsIGDB,
   priceSteam,
-  activePlayersSteam
+  activePlayersSteam,
+  gameTwitch,
+  topGamesTwitch
 } from './controller';
 
 const router = express.Router();
@@ -40,15 +36,6 @@ const router = express.Router();
 
 router.get('/', hello); // Example
 
-router.get('/regions', regions);
-router.get('/region', regionById);
-router.get('/cases', casesByRegionId);
-
-router.get('/ranking', ranking);
-
-router.get('/charts/bar', barChart);
-router.get('/charts/line', lineChart);
-
 router.get("/games", gameIGDB);
 router.get("/game/genres", genresIGDB);
 router.get("/game/artworks", artworkIGDB);
@@ -58,6 +45,12 @@ router.get("/games/topRated", topRatedIGDB);
 router.get("/game/gameVideos", gameVideosIGDB);
 router.get("/game/releaseDates", releaseIGDB);
 router.get("/game/platforms", platformsIGDB);
+
 router.get('/steam', priceSteam);
-router.get('/steam/activePlayers', activePlayersSteam)
+router.get('/steam/activePlayers', activePlayersSteam);
+
+//TWITCH
+router.get('/twitch', gameTwitch);
+router.get('/twitch/topGames', topGamesTwitch);
+
 export default router;

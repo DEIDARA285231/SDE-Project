@@ -11,6 +11,7 @@ export const isError = (arg: any): arg is Error => {
   return arg && arg.error;
 };
 
+/*
 export interface Region {
   id: number;
   name: string;
@@ -38,7 +39,7 @@ export interface Entry {
   total_cases: number;
   tampons: number;
   cases_tested: number;
-}
+}*/
 
 export interface GameInfos {
   ID: number;
@@ -60,4 +61,10 @@ export interface ResponseSteam{
   applist: {
     apps: Array<Apps>
   };
+}
+
+export interface TwitchGames {
+  id: number;
+  name: String;
+  box_art_url: String;
 }

@@ -14,14 +14,8 @@ import { Request, Response } from 'express';
 import { isError } from './types';
 import {
   getHello,
-  getBarChart,
-  getRanking,
-  getRegionById,
-  getRegions,
-  getCasesByRegionId, 
-  getLineChart, 
-  getGameIGDB, 
-  getGamesFromGenreIGDB, 
+  getGameIGDB,
+  getGamesFromGenreIGDB,
   getArtworkIGDB,
   getCoverIGDB,
   getExternalsIGDB,
@@ -30,7 +24,9 @@ import {
   getGameReleasesIGDB,
   getGamePlatformsIGDB,
   getPriceSteam,
-  getActivePlayersSteam
+  getActivePlayersSteam,
+  getTwitchGameById,
+  getTopGamesTwitch
 } from './core';
 import {
   getDateFromRequest,
@@ -60,10 +56,7 @@ export const hello = (req: Request, res: Response) => {
   }
 };
 
-//#endregion
-
-//#region --- REGIONS and CASES ---
-
+/*
 export const regions = async (req: Request, res: Response) => {
   res.send(await getRegions());
 };
@@ -89,10 +82,6 @@ export const casesByRegionId = async (req: Request, res: Response) => {
   }
 };
 
-//#endregion
-
-//#region --- LOCAL ELABORATIONS ---
-
 export const ranking = async (req: Request, res: Response) => {
   const date = getDateFromRequest(req);
   let n = getNumberFromRequest(req, 'n');
@@ -105,10 +94,6 @@ export const ranking = async (req: Request, res: Response) => {
   }
   res.send(await getRanking(n, ord, date.year, date.month, date.day));
 };
-
-//#endregion
-
-//#region --- CHARTS ---
 
 export const barChart = async (req: Request, res: Response) => {
   const date = getDateFromRequest(req);
@@ -134,7 +119,9 @@ export const lineChart = async (req: Request, res: Response) => {
     res.status(400);
     res.send({ error: 'Invalid ID format!' });
   }
-};
+};*/
+
+//IGDB
 
 export const gameIGDB = async (req: Request, res: Response) => {
   const nameGame = getGameNameFromRequest(req);
@@ -144,7 +131,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
       res.contentType('json');
     }
     //maybe here i need to initialize the new type
-    res.send(game)  
+    res.send(game)
   }else{
     res.status(400);
     res.send({error: "Invalid name format"})
@@ -285,4 +272,24 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
     res.send({ error: 'Invalid name format!' });
   }
 };
-//#endregion
+
+//Twitch
+
+export const gameTwitch = async (req: Request, res: Response) => {
+  const gameID = getIdFromRequest(req);
+  if(gameID !== false){
+    const gamePlatforms = await getTwitchGameById(gameID);
+    if(!isError(gamePlatforms)){
+      res.contentType("json");
+    }
+    res.send(gamePlatforms);
+  }else{
+    res.status(400);
+    res.send({error: "Invalid ID"})
+  }
+};
+
+export const topGamesTwitch = async (req: Request, res: Response) => {
+  const topGames = await getTopGamesTwitch();
+  res.send(topGames);
+};

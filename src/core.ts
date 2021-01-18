@@ -10,7 +10,7 @@
  *   It really depends on your project, style and personal preference :)
  */
 
-import { CasesPerRegion, Entry, Error, isError, Region, ResponseSteam } from './types';
+import { Error, isError, ResponseSteam } from './types';
 import config from '../config';
 import qs from 'qs';
 
@@ -21,18 +21,13 @@ axios.defaults.paramsSerializer = (params) => {
   return qs.stringify(params, { indices: false });
 };
 
-//#region --- EXAMPLE ---
-
 export const getHello: (name: string) => { text: string } = (name) => {
   return {
     text: `Hello ${name}`,
   };
 };
 
-//#endregion
-
-//#region --- REGIONS and CASES ---
-
+/*
 export const getRegions: () => Promise<Region[] | Error> = async () => {
   try {
     const regions = await axios.get<Region[]>(`${config.URL_API_DATA}/regions`);
@@ -74,10 +69,6 @@ export const getCasesByRegionId: (
   }
 };
 
-//#endregion
-
-//#region --- LOCAL ELABORATIONS ---
-
 export const getRanking: (
   n: number,
   ord: string,
@@ -106,10 +97,6 @@ export const getRanking: (
   }
   return ranks.slice(0, n);
 };
-
-//#endregion
-
-//#region --- CHARTS ---
 
 export const getBarChart: (
   year: number,
@@ -221,7 +208,7 @@ export const getLineChart: (
           chco: '118ab2',
           chl: `${labels}`,
           chxt: 'x,y',
-          chxr: `1,0,${maxCases}`, 
+          chxr: `1,0,${maxCases}`,
         },
       });
 
@@ -236,17 +223,17 @@ export const getLineChart: (
     return region; // It's an error! :( We return it as is.
   }
 };
+*/
 
-//#endregion
+//IGDB
 
-//Get game from IGDB
 export const getGameIGDB: (
   name: string
 ) => Promise<File | Error> = async (name) => {
   const gameName = name;
   try {
     const response = await axios.get<File>('https://api.igdb.com/v4/games', {
-      responseType: 'json', 
+      responseType: 'json',
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": "${CLIENT-ID}"
@@ -271,7 +258,7 @@ export const getArtworkIGDB: (
   const gameID = id;
   try {
     const response = await axios.get<File>('https://api.igdb.com/v4/artworks', {
-      responseType: 'arraybuffer', 
+      responseType: 'arraybuffer',
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": "${CLIENT-ID}"
@@ -295,7 +282,7 @@ export const getCoverIGDB: (
   const gameID = id;
   try {
     const response = await axios.get<File>('https://api.igdb.com/v4/covers', {
-      responseType: 'arraybuffer', 
+      responseType: 'arraybuffer',
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": "${CLIENT-ID}"
@@ -451,41 +438,44 @@ export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async
   }
 }
 
+//Steam
 
 export const getPriceSteam: (name: string) => Promise<any | Error> = async (name) => {
   //chiama il nostro servizio per avere l'id steam del gioco (con rest) e assegnalo ad appID
-  let appID=0;  
+  let appID=0;
   axios.get<any>(`https://store.steampowered.com/api/appdetails?appids=${appID}&currency=eur`).then((response) =>{
     let infoApp=response.data;
-    
-    let price=infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];      
+
+    let price=infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
     return price/100;
   }).catch((e) => {
     console.error(e);
     return {
       error: e,
-    };  
+    };
   });
 }
 
 export const getActivePlayersSteam: (name: string) => Promise<any | Error> = async (name) => {
   //chiama il nostro servizio per avere l'id steam del gioco (con rest) e assegnalo ad appID
   let appID=0;
-  
+
   axios.get<any>(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appID}`).then((response) =>{
     let infoApp=response.data;
-    
+
     return infoApp["player_count"];
   }).catch((e) => {
     console.error(e);
     return {
       error: e,
-    };  
+    };
   });
 };
 
+//Is there any deal
+
 export const itadGetPlain: (IDSteam: number) => Promise<any | Error> = async (IDSteam) => {
-  //parametro idSteam è l'id steam  
+  //parametro idSteam è l'id steam
   axios.get<any>('https://api.isthereanydeal.com/v01/game/plain/id/',{ params: {
     key: secrets.ITAD_KEY,
     shop: "steam",
@@ -493,18 +483,18 @@ export const itadGetPlain: (IDSteam: number) => Promise<any | Error> = async (ID
     }
   }).then((response) =>{
     let infoApp=response.data;
-    
+
     return infoApp[`app/${IDSteam}`];
   }).catch((e) => {
     console.error(e);
     return {
       error: e,
-    };  
+    };
   });
 };
 
 export const itadHistoricalLow: (plain: string) => Promise<any | Error> = async (plain) => {
-  //parametro idSteam è l'id steam  
+  //parametro idSteam è l'id steam
   axios.get<any>('https://api.isthereanydeal.com/v01/game/lowest/',{ params: {
     key: secrets.ITAD_KEY,
     plains: plain,
@@ -514,13 +504,58 @@ export const itadHistoricalLow: (plain: string) => Promise<any | Error> = async 
     }
   }).then((response) =>{
     let infoApp=response.data;
-    
+
     //qui dovrebbe esserci sia prezzo (.price) che data di aggiunta in long (.added)
     return infoApp[plain];
   }).catch((e) => {
     console.error(e);
     return {
       error: e,
-    };  
+    };
   });
 };
+
+//TWITCH
+
+export const getTwitchGameById: (id: number) => Promise<File | Error> = async (id) => {
+
+  const gameID = id;
+
+  try{
+    const response = await axios.get<File>("https://api.twitch.tv/helix/games",{
+      responseType: "json",
+      headers: {
+        "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj", //Still need to obtain it, we need to ideate a way to get it
+        "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+      },
+      params: {
+        id: gameID,
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log("e");
+    return {
+      error: e,
+    };
+  }
+}
+
+export const getTopGamesTwitch: () => Promise<File | Error> = async () => {
+
+  try{
+    const response = await axios.get<File>("https://api.twitch.tv/helix/games/top",{
+      responseType: "json",
+      headers: {
+        "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj", //Still need to obtain it, we need to ideate a way to get it
+        "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+      }
+    });
+    return response.data;
+  } catch (e) {
+    console.log("e");
+    return {
+      error: e,
+    };
+  }
+}
