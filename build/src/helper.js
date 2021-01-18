@@ -79,12 +79,7 @@ exports.getDateFromRequest = function (req) {
 };
 /**Function to get the Name from the first page, otherwise use Minecraft */
 exports.getGameNameFromRequest = function (req) {
-    var game_name = exports.getStringFromRequest(req, "gName");
-    /**Handling "Default" case, for now i'll just put a random game*/
-    if (game_name === false) {
-        game_name = "Minecraft";
-    }
-    return game_name;
+    return exports.getStringFromRequest(req, "name");
 };
 /**
  * Returns the current day

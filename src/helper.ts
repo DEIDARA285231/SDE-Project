@@ -97,17 +97,8 @@ export const getDateFromRequest: (
 };
 
 /**Function to get the Name from the first page, otherwise use Minecraft */
-export const getGameNameFromRequest : (
-  req: Request
-) => string = (req) => {
-  let game_name = getStringFromRequest(req, "gName");
-
-  /**Handling "Default" case, for now i'll just put a random game*/
-  if(game_name === false){
-    game_name = "Minecraft";
-  }
-
-  return game_name;
+export const getGameNameFromRequest : (req: Request) => string | false = (req) => {
+  return getStringFromRequest(req, "name");
 }
 
 /**

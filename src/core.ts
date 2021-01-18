@@ -541,6 +541,30 @@ export const getTwitchGameById: (id: number) => Promise<File | Error> = async (i
   }
 }
 
+export const getTwitchGameByName: (name: string) => Promise<File | Error> = async (name) => {
+
+  const gameName = name;
+
+  try{
+    const response = await axios.get<File>("https://api.twitch.tv/helix/games",{
+      responseType: "json",
+      headers: {
+        "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj", //Still need to obtain it, we need to ideate a way to get it
+        "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+      },
+      params: {
+        name: gameName,
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log("e");
+    return {
+      error: e,
+    };
+  }
+}
+
 export const getTopGamesTwitch: () => Promise<File | Error> = async () => {
 
   try{

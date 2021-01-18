@@ -36,7 +36,7 @@ const router = express.Router();
 
 router.get('/', hello); // Example
 
-router.get("/games", gameIGDB);
+router.get("/games", gameIGDB);   //param name
 router.get("/game/genres", genresIGDB);
 router.get("/game/artworks", artworkIGDB);
 router.get("/game/covers", coverIGDB);
@@ -50,7 +50,8 @@ router.get('/steam', priceSteam);
 router.get('/steam/activePlayers', activePlayersSteam);
 
 //TWITCH
-router.get('/twitch', gameTwitch);
+router.get('/twitch', gameTwitch);  //param id or name
 router.get('/twitch/topGames', topGamesTwitch);
+
 
 export default router;

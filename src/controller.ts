@@ -26,6 +26,7 @@ import {
   getPriceSteam,
   getActivePlayersSteam,
   getTwitchGameById,
+  getTwitchGameByName,
   getTopGamesTwitch
 } from './core';
 import {
@@ -125,7 +126,7 @@ export const lineChart = async (req: Request, res: Response) => {
 
 export const gameIGDB = async (req: Request, res: Response) => {
   const nameGame = getGameNameFromRequest(req);
-  if(nameGame !== null){
+  if(nameGame !== false){
     const game = await getGameIGDB(nameGame);
     if (!isError(game)) {
       res.contentType('json');
@@ -277,15 +278,29 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
 
 export const gameTwitch = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
-  if(gameID !== false){
-    const gamePlatforms = await getTwitchGameById(gameID);
-    if(!isError(gamePlatforms)){
-      res.contentType("json");
-    }
-    res.send(gamePlatforms);
-  }else{
+  const gameName = getGameNameFromRequest(req);
+  if(gameID !== false && gameName !== false) {
     res.status(400);
-    res.send({error: "Invalid ID"})
+    res.send({error: "Provide only game id OR game name"})
+  } else {
+    if(gameID !== false){
+      const game = await getTwitchGameById(gameID);
+      if(!isError(game)){
+        res.contentType("json");
+      }
+      res.send(game);
+    } else {
+      if(gameName !== false) {
+        const game = await getTwitchGameByName(gameName);
+        if(!isError(game)){
+          res.contentType("json");
+        }
+        res.send(game);
+      } else {
+        res.status(400);
+        res.send({error: "Invalid parameter"})
+      }
+    }
   }
 };
 

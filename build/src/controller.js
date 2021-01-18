@@ -137,7 +137,7 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
         switch (_a.label) {
             case 0:
                 nameGame = helper_1.getGameNameFromRequest(req);
-                if (!(nameGame !== null)) return [3 /*break*/, 2];
+                if (!(nameGame !== false)) return [3 /*break*/, 2];
                 return [4 /*yield*/, core_1.getGameIGDB(nameGame)];
             case 1:
                 game = _a.sent();
@@ -380,25 +380,41 @@ exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void
 }); };
 //Twitch
 exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, gamePlatforms;
+    var gameID, gameName, game, game;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getTwitchGameById(gameID)];
+                gameName = helper_1.getGameNameFromRequest(req);
+                if (!(gameID !== false && gameName !== false)) return [3 /*break*/, 1];
+                res.status(400);
+                res.send({ error: "Provide only game id OR game name" });
+                return [3 /*break*/, 6];
             case 1:
-                gamePlatforms = _a.sent();
-                if (!types_1.isError(gamePlatforms)) {
+                if (!(gameID !== false)) return [3 /*break*/, 3];
+                return [4 /*yield*/, core_1.getTwitchGameById(gameID)];
+            case 2:
+                game = _a.sent();
+                if (!types_1.isError(game)) {
                     res.contentType("json");
                 }
-                res.send(gamePlatforms);
-                return [3 /*break*/, 3];
-            case 2:
+                res.send(game);
+                return [3 /*break*/, 6];
+            case 3:
+                if (!(gameName !== false)) return [3 /*break*/, 5];
+                return [4 /*yield*/, core_1.getTwitchGameByName(gameName)];
+            case 4:
+                game = _a.sent();
+                if (!types_1.isError(game)) {
+                    res.contentType("json");
+                }
+                res.send(game);
+                return [3 /*break*/, 6];
+            case 5:
                 res.status(400);
-                res.send({ error: "Invalid ID" });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                res.send({ error: "Invalid parameter" });
+                _a.label = 6;
+            case 6: return [2 /*return*/];
         }
     });
 }); };

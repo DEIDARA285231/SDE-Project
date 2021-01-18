@@ -50,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTopGamesTwitch = exports.getTwitchGameById = exports.itadHistoricalLow = exports.itadGetPlain = exports.getActivePlayersSteam = exports.getPriceSteam = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDB = exports.getGamesFromGenreIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDB = exports.getHello = void 0;
+exports.getTopGamesTwitch = exports.getTwitchGameByName = exports.getTwitchGameById = exports.itadHistoricalLow = exports.itadGetPlain = exports.getActivePlayersSteam = exports.getPriceSteam = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDB = exports.getGamesFromGenreIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDB = exports.getHello = void 0;
 var qs_1 = __importDefault(require("qs"));
 var axios_1 = __importDefault(require("axios"));
 var secrets_1 = __importDefault(require("../secrets"));
@@ -659,8 +659,40 @@ exports.getTwitchGameById = function (id) { return __awaiter(void 0, void 0, voi
         }
     });
 }); };
+exports.getTwitchGameByName = function (name) { return __awaiter(void 0, void 0, void 0, function () {
+    var gameName, response, e_11;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                gameName = name;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/games", {
+                        responseType: "json",
+                        headers: {
+                            "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj",
+                            "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+                        },
+                        params: {
+                            name: gameName,
+                        },
+                    })];
+            case 2:
+                response = _a.sent();
+                return [2 /*return*/, response.data];
+            case 3:
+                e_11 = _a.sent();
+                console.log("e");
+                return [2 /*return*/, {
+                        error: e_11,
+                    }];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
 exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_11;
+    var response, e_12;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -676,10 +708,10 @@ exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 2:
-                e_11 = _a.sent();
+                e_12 = _a.sent();
                 console.log("e");
                 return [2 /*return*/, {
-                        error: e_11,
+                        error: e_12,
                     }];
             case 3: return [2 /*return*/];
         }

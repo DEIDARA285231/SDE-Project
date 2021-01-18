@@ -20,7 +20,7 @@ var router = express_1.default.Router();
 // To add URL parameters (Doable for any method! Not only for GET):
 // router.get('/:parameter1/:parameter2', f);
 router.get('/', controller_1.hello); // Example
-router.get("/games", controller_1.gameIGDB);
+router.get("/games", controller_1.gameIGDB); //param name
 router.get("/game/genres", controller_1.genresIGDB);
 router.get("/game/artworks", controller_1.artworkIGDB);
 router.get("/game/covers", controller_1.coverIGDB);
@@ -32,6 +32,6 @@ router.get("/game/platforms", controller_1.platformsIGDB);
 router.get('/steam', controller_1.priceSteam);
 router.get('/steam/activePlayers', controller_1.activePlayersSteam);
 //TWITCH
-router.get('/twitch', controller_1.gameTwitch);
+router.get('/twitch', controller_1.gameTwitch); //param id or name
 router.get('/twitch/topGames', controller_1.topGamesTwitch);
 exports.default = router;
