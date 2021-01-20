@@ -269,26 +269,22 @@ exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0,
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get('https://api.igdb.com/v4/games', {
-                        responseType: 'json',
+                return [4 /*yield*/, axios_1.default({
+                        url: "https://api.igdb.com/v4/games",
+                        method: 'POST',
                         headers: {
-                            "Authorization": "",
-                            "Client-ID": "${CLIENT-ID}"
+                            'Accept': 'application/json',
+                            'Client-ID': 'eizkab37usgvovmohkoug9x2toeg2x',
+                            'Authorization': 'Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj',
                         },
-                        data: {
-                            fields: "*",
-                            search: "" + gameName //We need to define if we want more parameters to be process, for example eliminating the  repetitions
-                        }
+                        data: "fields *; search \"" + gameName + "\"; limit 1;"
                     })];
             case 2:
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 3:
                 e_1 = _a.sent();
-                console.error(e_1);
-                return [2 /*return*/, {
-                        error: e_1,
-                    }];
+                return [2 /*return*/, e_1];
             case 4: return [2 /*return*/];
         }
     });
@@ -302,7 +298,7 @@ exports.getArtworkIGDB = function (id) { return __awaiter(void 0, void 0, void 0
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get('https://api.igdb.com/v4/artworks', {
+                return [4 /*yield*/, axios_1.default.post('https://api.igdb.com/v4/artworks', {
                         responseType: 'arraybuffer',
                         headers: {
                             "Authorization": "",
@@ -334,7 +330,7 @@ exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get('https://api.igdb.com/v4/covers', {
+                return [4 /*yield*/, axios_1.default.post('https://api.igdb.com/v4/covers', {
                         responseType: 'arraybuffer',
                         headers: {
                             "Authorization": "",
@@ -366,7 +362,7 @@ exports.getGamesFromGenreIGDB = function (genre) { return __awaiter(void 0, void
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get("https://api.igdb.com/v4/genres", {
+                return [4 /*yield*/, axios_1.default.post("https://api.igdb.com/v4/genres", {
                         responseType: "json",
                         headers: {
                             "Authorization": "",
@@ -399,7 +395,7 @@ exports.getExternalsIGDB = function (id) { return __awaiter(void 0, void 0, void
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get("https://api.igdb.com/v4/external_games", {
+                return [4 /*yield*/, axios_1.default.post("https://api.igdb.com/v4/external_games", {
                         responseType: "json",
                         headers: {
                             "Authorization": "",
@@ -429,7 +425,7 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.igdb.com/v4/games/", {
+                return [4 /*yield*/, axios_1.default.post("https://api.igdb.com/v4/games/", {
                         responseType: "json",
                         headers: {
                             "Authorization": "",
@@ -461,7 +457,7 @@ exports.getGameVideosIGDB = function (id) { return __awaiter(void 0, void 0, voi
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get("https://api.igdb.com/v4/game_videos", {
+                return [4 /*yield*/, axios_1.default.post("https://api.igdb.com/v4/game_videos", {
                         responseType: "stream",
                         headers: {
                             "Authorization": "",
@@ -493,7 +489,7 @@ exports.getGameReleasesIGDB = function (id) { return __awaiter(void 0, void 0, v
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get("https://api.igdb.com/v4/release_dates", {
+                return [4 /*yield*/, axios_1.default.post("https://api.igdb.com/v4/release_dates", {
                         responseType: "stream",
                         headers: {
                             "Authorization": "",
@@ -525,7 +521,7 @@ exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get("https://api.igdb.com/v4/platforms", {
+                return [4 /*yield*/, axios_1.default.post("https://api.igdb.com/v4/platforms", {
                         responseType: "stream",
                         headers: {
                             "Authorization": "",

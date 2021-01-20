@@ -145,6 +145,7 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                     res.contentType('json');
                 }
                 //maybe here i need to initialize the new type
+                console.log(game);
                 res.send(game);
                 return [3 /*break*/, 3];
             case 2:

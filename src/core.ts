@@ -229,26 +229,22 @@ export const getLineChart: (
 
 export const getGameIGDB: (
   name: string
-) => Promise<File | Error> = async (name) => {
+) => Promise<any> = async (name) => {
   const gameName = name;
   try {
-    const response = await axios.get<File>('https://api.igdb.com/v4/games', {
-      responseType: 'json',
+    const response = await axios({
+      url: "https://api.igdb.com/v4/games",
+      method: 'POST',
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+          'Accept': 'application/json',
+          'Client-ID': 'eizkab37usgvovmohkoug9x2toeg2x',
+          'Authorization': 'Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj',
       },
-      data: {
-        fields: "*",
-        search: `${gameName}`//We need to define if we want more parameters to be process, for example eliminating the  repetitions
-      }
+      data: `fields *; search "${gameName}"; limit 1;`
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return e;
   }
 }
 
@@ -257,7 +253,7 @@ export const getArtworkIGDB: (
 ) => Promise<File | Error> = async (id) => {
   const gameID = id;
   try {
-    const response = await axios.get<File>('https://api.igdb.com/v4/artworks', {
+    const response = await axios.post<File>('https://api.igdb.com/v4/artworks', {
       responseType: 'arraybuffer',
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
@@ -281,7 +277,7 @@ export const getCoverIGDB: (
 ) => Promise<File | Error> = async (id) => {
   const gameID = id;
   try {
-    const response = await axios.get<File>('https://api.igdb.com/v4/covers', {
+    const response = await axios.post<File>('https://api.igdb.com/v4/covers', {
       responseType: 'arraybuffer',
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
@@ -305,7 +301,7 @@ export const getGamesFromGenreIGDB: (
 ) => Promise<File | Error> = async (genre) => {
   const gameGenres = genre;
   try {
-    const response = await axios.get<File>("https://api.igdb.com/v4/genres", {
+    const response = await axios.post<File>("https://api.igdb.com/v4/genres", {
       responseType: "json",
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
@@ -330,7 +326,7 @@ export const getExternalsIGDB: (
 ) => Promise<File | Error> = async (id) => {
   const gameID = id;
   try{
-    const response = await axios.get<File>("https://api.igdb.com/v4/external_games", {
+    const response = await axios.post<File>("https://api.igdb.com/v4/external_games", {
       responseType: "json",
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
@@ -352,7 +348,7 @@ export const getExternalsIGDB: (
 
 export const getTopRatedIGDB: () => Promise<File | Error> = async () => {
   try{
-    const response = await axios.get<File>("https://api.igdb.com/v4/games/", {
+    const response = await axios.post<File>("https://api.igdb.com/v4/games/", {
       responseType: "json",
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
@@ -375,7 +371,7 @@ export const getTopRatedIGDB: () => Promise<File | Error> = async () => {
 export const getGameVideosIGDB: (id: number) => Promise<File | Error> = async (id) => {
   const gameID = id;
   try{
-    const response = await axios.get<File>("https://api.igdb.com/v4/game_videos", {
+    const response = await axios.post<File>("https://api.igdb.com/v4/game_videos", {
       responseType: "stream",
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
@@ -397,7 +393,7 @@ export const getGameVideosIGDB: (id: number) => Promise<File | Error> = async (i
 export const getGameReleasesIGDB: (id: number) => Promise<File | Error> = async (id) => {
   const gameID = id;
   try{
-    const response = await axios.get<File>("https://api.igdb.com/v4/release_dates",{
+    const response = await axios.post<File>("https://api.igdb.com/v4/release_dates",{
       responseType: "stream",
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
@@ -419,7 +415,7 @@ export const getGameReleasesIGDB: (id: number) => Promise<File | Error> = async 
 export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async (id) => {
   const gameID = id;
   try{
-    const response = await axios.get<File>("https://api.igdb.com/v4/platforms",{
+    const response = await axios.post<File>("https://api.igdb.com/v4/platforms",{
       responseType: "stream",
       headers: {
         "Authorization": "", //Still need to obtain it, we need to ideate a way to get it

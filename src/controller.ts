@@ -135,6 +135,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
       res.contentType('json');
     }
     //maybe here i need to initialize the new type
+    console.log(game);
     res.send(game)
   }else{
     res.status(400);
