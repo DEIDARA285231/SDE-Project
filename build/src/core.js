@@ -546,20 +546,29 @@ exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, 
 }); };
 //Steam
 exports.getPriceSteam = function (name) { return __awaiter(void 0, void 0, void 0, function () {
-    var appID;
+    var appID, response, e_10;
     return __generator(this, function (_a) {
-        appID = 0;
-        axios_1.default.get("https://store.steampowered.com/api/appdetails?appids=" + appID + "&currency=eur").then(function (response) {
-            var infoApp = response.data;
-            var price = infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
-            return price / 100;
-        }).catch(function (e) {
-            console.error(e);
-            return {
-                error: e,
-            };
-        });
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                appID = 0;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default.get("https://store.steampowered.com/api/appdetails?appids=1091500&currency=eur")];
+            case 2:
+                response = _a.sent();
+                //let infoApp=response.data;
+                //let price=infoApp["1091500"].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
+                //return price/100;
+                return [2 /*return*/, response.data];
+            case 3:
+                e_10 = _a.sent();
+                console.error(e_10);
+                return [2 /*return*/, e_10];
+            case 4:
+                ;
+                return [2 /*return*/];
+        }
     });
 }); };
 exports.getActivePlayersSteam = function (name) { return __awaiter(void 0, void 0, void 0, function () {
@@ -624,7 +633,7 @@ exports.itadHistoricalLow = function (plain) { return __awaiter(void 0, void 0, 
 }); };
 //TWITCH
 exports.getTwitchGameById = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_10;
+    var gameID, response, e_11;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -635,8 +644,8 @@ exports.getTwitchGameById = function (id) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/games", {
                         responseType: "json",
                         headers: {
-                            "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj",
-                            "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+                            "Authorization": secrets_1.default.AUTHORIZATION,
+                            "Client-Id": secrets_1.default.CLIENT_ID
                         },
                         params: {
                             id: gameID,
@@ -646,17 +655,17 @@ exports.getTwitchGameById = function (id) { return __awaiter(void 0, void 0, voi
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 3:
-                e_10 = _a.sent();
+                e_11 = _a.sent();
                 console.log("e");
                 return [2 /*return*/, {
-                        error: e_10,
+                        error: e_11,
                     }];
             case 4: return [2 /*return*/];
         }
     });
 }); };
 exports.getTwitchGameByName = function (name) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_11;
+    var response, e_12;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -664,38 +673,12 @@ exports.getTwitchGameByName = function (name) { return __awaiter(void 0, void 0,
                 return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/games", {
                         responseType: "json",
                         headers: {
-                            "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj",
-                            "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+                            "Authorization": secrets_1.default.AUTHORIZATION,
+                            "Client-Id": secrets_1.default.CLIENT_ID
                         },
                         params: {
                             name: name,
                         },
-                    })];
-            case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2:
-                e_11 = _a.sent();
-                console.log("e");
-                return [2 /*return*/, {
-                        error: e_11,
-                    }];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_12;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/games/top", {
-                        responseType: "json",
-                        headers: {
-                            "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj",
-                            "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
-                        }
                     })];
             case 1:
                 response = _a.sent();
@@ -710,21 +693,18 @@ exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.getSearchTwitch = function (query) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 0, function () {
     var response, e_13;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/search/categories", {
+                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/games/top", {
                         responseType: "json",
                         headers: {
-                            "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj",
-                            "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
-                        },
-                        params: {
-                            query: query,
-                        },
+                            "Authorization": secrets_1.default.AUTHORIZATION,
+                            "Client-Id": secrets_1.default.CLIENT_ID
+                        }
                     })];
             case 1:
                 response = _a.sent();
@@ -739,8 +719,37 @@ exports.getSearchTwitch = function (query) { return __awaiter(void 0, void 0, vo
         }
     });
 }); };
+exports.getSearchTwitch = function (query) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, e_14;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/search/categories", {
+                        responseType: "json",
+                        headers: {
+                            "Authorization": secrets_1.default.AUTHORIZATION,
+                            "Client-Id": secrets_1.default.CLIENT_ID
+                        },
+                        params: {
+                            query: query,
+                        },
+                    })];
+            case 1:
+                response = _a.sent();
+                return [2 /*return*/, response.data];
+            case 2:
+                e_14 = _a.sent();
+                console.log("e");
+                return [2 /*return*/, {
+                        error: e_14,
+                    }];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
 exports.getStreamsTwitch = function (param, gameID) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, response1, e_14;
+    var response, response1, e_15;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -749,8 +758,8 @@ exports.getStreamsTwitch = function (param, gameID) { return __awaiter(void 0, v
                 return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/streams", {
                         responseType: "json",
                         headers: {
-                            "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj",
-                            "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+                            "Authorization": secrets_1.default.AUTHORIZATION,
+                            "Client-Id": secrets_1.default.CLIENT_ID
                         },
                         params: {
                             game_id: gameID,
@@ -762,8 +771,8 @@ exports.getStreamsTwitch = function (param, gameID) { return __awaiter(void 0, v
             case 2: return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/streams", {
                     responseType: "json",
                     headers: {
-                        "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj",
-                        "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+                        "Authorization": secrets_1.default.AUTHORIZATION,
+                        "Client-Id": secrets_1.default.CLIENT_ID
                     },
                 })];
             case 3:
@@ -771,17 +780,17 @@ exports.getStreamsTwitch = function (param, gameID) { return __awaiter(void 0, v
                 return [2 /*return*/, response1.data];
             case 4: return [3 /*break*/, 6];
             case 5:
-                e_14 = _a.sent();
-                console.log(e_14);
+                e_15 = _a.sent();
+                console.log(e_15);
                 return [2 /*return*/, {
-                        error: e_14,
+                        error: e_15,
                     }];
             case 6: return [2 /*return*/];
         }
     });
 }); };
 exports.getVideosTwitch = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_15;
+    var response, e_16;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -789,8 +798,8 @@ exports.getVideosTwitch = function (gameID) { return __awaiter(void 0, void 0, v
                 return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/videos", {
                         responseType: "json",
                         headers: {
-                            "Authorization": "Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj",
-                            "Client-Id": "eizkab37usgvovmohkoug9x2toeg2x"
+                            "Authorization": secrets_1.default.AUTHORIZATION,
+                            "Client-Id": secrets_1.default.CLIENT_ID
                         },
                         params: {
                             game_id: gameID,
@@ -800,10 +809,10 @@ exports.getVideosTwitch = function (gameID) { return __awaiter(void 0, void 0, v
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 2:
-                e_15 = _a.sent();
-                console.log(e_15);
+                e_16 = _a.sent();
+                console.log(e_16);
                 return [2 /*return*/, {
-                        error: e_15,
+                        error: e_16,
                     }];
             case 3: return [2 /*return*/];
         }

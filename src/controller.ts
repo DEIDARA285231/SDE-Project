@@ -256,8 +256,10 @@ export const priceSteam = async (req: Request, res: Response) => {
     if (!isError(steamPrice)) {
       res.contentType('application/json');
     }
+    let infoApp=steamPrice;
+    let price=infoApp["1091500"].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
+    console.log(price/100);
     res.send(steamPrice);
-    console.log(steamPrice);
   } else {
     res.sendStatus(400);
     res.send({ error: 'Invalid name format!' });

@@ -333,7 +333,7 @@ exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var name, steamPrice;
+    var name, steamPrice, infoApp, price;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -345,8 +345,10 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
                 if (!types_1.isError(steamPrice)) {
                     res.contentType('application/json');
                 }
+                infoApp = steamPrice;
+                price = infoApp["1091500"].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
+                console.log(price / 100);
                 res.send(steamPrice);
-                console.log(steamPrice);
                 return [3 /*break*/, 3];
             case 2:
                 res.sendStatus(400);
