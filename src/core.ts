@@ -410,7 +410,7 @@ export const getGameReleasesIGDB: (id: number) => Promise<File | Error> = async 
       error: e,
     };
   }
-}
+} 
 
 export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async (id) => {
   const gameID = id;
