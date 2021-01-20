@@ -46,7 +46,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = exports.hello = void 0;
+exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = exports.hello = void 0;
 var types_1 = require("./types");
 var core_1 = require("./core");
 var helper_1 = require("./helper");
@@ -427,6 +427,70 @@ exports.topGamesTwitch = function (req, res) { return __awaiter(void 0, void 0, 
                 topGames = _a.sent();
                 res.send(topGames);
                 return [2 /*return*/];
+        }
+    });
+}); };
+exports.searchTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var query, searchedGames;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                query = helper_1.getStringFromRequest(req, "query");
+                if (!(query !== false)) return [3 /*break*/, 2];
+                return [4 /*yield*/, core_1.getSearchTwitch(query)];
+            case 1:
+                searchedGames = _a.sent();
+                if (!types_1.isError(searchedGames)) {
+                    res.contentType("json");
+                }
+                res.send(searchedGames);
+                return [3 /*break*/, 3];
+            case 2:
+                res.status(400);
+                res.send({ error: "Invalid parameter" });
+                _a.label = 3;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var gameID, streams, streams1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                gameID = helper_1.getStringFromRequest(req, "gameID");
+                if (!(gameID !== false)) return [3 /*break*/, 2];
+                return [4 /*yield*/, core_1.getStreamsTwitch(true, gameID)];
+            case 1:
+                streams = _a.sent();
+                res.send(streams);
+                return [3 /*break*/, 4];
+            case 2: return [4 /*yield*/, core_1.getStreamsTwitch(false, "")];
+            case 3:
+                streams1 = _a.sent();
+                res.send(streams1);
+                _a.label = 4;
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.videosTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var gameID, videos;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                gameID = helper_1.getStringFromRequest(req, "gameID");
+                if (!(gameID !== false)) return [3 /*break*/, 2];
+                return [4 /*yield*/, core_1.getVideosTwitch(gameID)];
+            case 1:
+                videos = _a.sent();
+                res.send(videos);
+                return [3 /*break*/, 3];
+            case 2:
+                res.status(400);
+                res.send({ error: "Invalid parameter" });
+                _a.label = 3;
+            case 3: return [2 /*return*/];
         }
     });
 }); };

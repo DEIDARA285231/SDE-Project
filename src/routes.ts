@@ -24,7 +24,10 @@ import {
   priceSteam,
   activePlayersSteam,
   gameTwitch,
-  topGamesTwitch
+  topGamesTwitch,
+  searchTwitch,
+  streamsTwitch,
+  videosTwitch
 } from './controller';
 
 const router = express.Router();
@@ -36,6 +39,7 @@ const router = express.Router();
 
 router.get('/', hello); // Example
 
+//IGDB
 router.get("/games", gameIGDB);   //param name
 router.get("/game/genres", genresIGDB);
 router.get("/game/artworks", artworkIGDB);
@@ -46,12 +50,15 @@ router.get("/game/gameVideos", gameVideosIGDB);
 router.get("/game/releaseDates", releaseIGDB);
 router.get("/game/platforms", platformsIGDB);
 
+//STEAM
 router.get('/steam', priceSteam);
 router.get('/steam/activePlayers', activePlayersSteam);
 
 //TWITCH
 router.get('/twitch', gameTwitch);  //param id or name
-router.get('/twitch/topGames', topGamesTwitch);
-
+router.get('/twitch/topGames', topGamesTwitch); //default only 20 results
+router.get('/twitch/search/', searchTwitch);
+router.get('/twitch/streams/', streamsTwitch);
+router.get('/twitch/videos/', videosTwitch);
 
 export default router;
