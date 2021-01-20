@@ -55,10 +55,10 @@ router.get('/steam', priceSteam);
 router.get('/steam/activePlayers', activePlayersSteam);
 
 //TWITCH
-router.get('/twitch', gameTwitch);  //param id or name
+router.get('/twitch', gameTwitch);              //search a game by param id or name
 router.get('/twitch/topGames', topGamesTwitch); //default only 20 results
-router.get('/twitch/search/', searchTwitch);
-router.get('/twitch/streams/', streamsTwitch);
+router.get('/twitch/search/', searchTwitch);    //search categories by param query
+router.get('/twitch/streams/', streamsTwitch);  //search streams, either top overall or by gameID param
 router.get('/twitch/videos/', videosTwitch);
 
 export default router;
