@@ -30,7 +30,9 @@ import {
   getTopGamesTwitch,
   getSearchTwitch,
   getStreamsTwitch,
-  getVideosTwitch
+  getVideosTwitch,
+  itadGetPlain,
+  itadStoreLow
 } from './core';
 import {
   getDateFromRequest,
@@ -235,6 +237,42 @@ export const releaseIGDB = async (req: Request, res: Response) => {
   }
 }
 
+export const plainITAD = async (req: Request, res: Response) => {
+  const gameID = getIdFromRequest(req);
+  if(gameID !== false){
+    const plain = await itadGetPlain(gameID);
+    if(!isError(plain)){
+      res.contentType("json");
+    }
+    res.send(JSON.stringify(plain["data"][`app/${gameID}`]));
+  }else{
+    res.status(400);
+    res.send({error: "Invalid ID"})
+  }
+}
+
+export const getStoreLow = async (req: Request, res: Response) => {
+  const plain = getStringFromRequest(req, "plain");
+  //amazonus, origin, epic, steam, gog -> struttura dati per contenerli?
+  const store = getStringFromRequest(req, "store");
+  if(plain !== false && store!=false){
+    const storeLow = await itadStoreLow(plain, store); 
+    if(!isError(plain) && !isError(store)){
+      res.contentType("json");
+    }
+    if (storeLow["data"].length >0){
+      res.send(JSON.stringify(storeLow["data"][plain][0].price));
+    }else{
+      res.status(404);
+      res.send({error: "Not Found"})
+    }
+    
+  }else{
+    res.status(400);
+    res.send({error: "Invalid ID"})
+  }
+}
+
 export const platformsIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
@@ -250,16 +288,21 @@ export const platformsIGDB = async (req: Request, res: Response) => {
 }
 
 export const priceSteam = async (req: Request, res: Response) => {
-  const name = req.query['name'];
-  if (name != null && typeof name === 'string') {
-    const steamPrice = await getPriceSteam(name);
-    if (!isError(steamPrice)) {
-      res.contentType('application/json');
+  const appID = getIdFromRequest(req);
+  if (appID!==false) {
+    try{
+      const steamPrice = await getPriceSteam(appID);
+      if (!isError(steamPrice)) {
+        res.contentType('application/json');
+      }
+      let infoApp=steamPrice;
+      let price=infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
+      res.send(JSON.stringify(price/100));
+    }catch(e){
+      res.sendStatus(400);
+      res.send({ error: 'Invalid!' });
     }
-    let infoApp=steamPrice;
-    let price=infoApp["1091500"].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
-    console.log(price/100);
-    res.send(steamPrice);
+    
   } else {
     res.sendStatus(400);
     res.send({ error: 'Invalid name format!' });
@@ -267,13 +310,13 @@ export const priceSteam = async (req: Request, res: Response) => {
 };
 
 export const activePlayersSteam = async (req: Request, res: Response) => {
-  const name = req.query['name'];
-  if (name != null && typeof name === 'string') {
-    const steamPlayers = await getActivePlayersSteam(name);
+  const appID = getIdFromRequest(req);
+  if (appID!==false) {
+    const steamPlayers = await getActivePlayersSteam(appID);
     if (!isError(steamPlayers)) {
       res.contentType('application/json');
     }
-    res.send(steamPlayers);
+    res.send(JSON.stringify(steamPlayers["response"]["player_count"]));
   } else {
     res.sendStatus(400);
     res.send({ error: 'Invalid name format!' });

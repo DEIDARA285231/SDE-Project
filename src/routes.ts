@@ -27,8 +27,11 @@ import {
   topGamesTwitch,
   searchTwitch,
   streamsTwitch,
-  videosTwitch
+  videosTwitch,
+  plainITAD,
+  getStoreLow
 } from './controller';
+import { itadGetPlain } from './core';
 
 const router = express.Router();
 
@@ -51,8 +54,12 @@ router.get("/game/releaseDates", releaseIGDB);
 router.get("/game/platforms", platformsIGDB);
 
 //STEAM
-router.get('/steam', priceSteam);
+router.get('/steam/price', priceSteam);
 router.get('/steam/activePlayers', activePlayersSteam);
+
+//ITAD
+router.get('/itad/getPlain', plainITAD);
+router.get('/itad/getStoreLow', getStoreLow);
 
 //TWITCH
 router.get('/twitch', gameTwitch);              //search a game by param id or name
