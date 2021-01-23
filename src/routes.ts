@@ -31,7 +31,6 @@ import {
   plainITAD,
   getStoreLow
 } from './controller';
-import { itadGetPlain } from './core';
 
 const router = express.Router();
 
