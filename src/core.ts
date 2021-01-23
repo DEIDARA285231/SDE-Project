@@ -237,8 +237,8 @@ export const getGameIGDB: (
       method: 'POST',
       headers: {
           'Accept': 'application/json',
-          'Client-ID': 'eizkab37usgvovmohkoug9x2toeg2x',
-          'Authorization': 'Bearer tja4hkdzhlifvxm8n6fgb8dp3c1tdj',
+          'Client-ID': `${secrets.CLIENT_ID}`,
+          'Authorization': `${secrets.AUTHORIZATION}`,
       },
       data: `fields *; search "${gameName}"; limit 1;`
     });
@@ -250,187 +250,156 @@ export const getGameIGDB: (
 
 export const getArtworkIGDB: (
   id: number
-) => Promise<File | Error> = async (id) => {
+) => Promise<any> = async (id) => {
   const gameID = id;
   try {
-    const response = await axios.post<File>('https://api.igdb.com/v4/artworks', {
+    const response = await axios({
+      url: "https://api.igdb.com/v4/artworks",
+      method: `POST`,
       responseType: 'arraybuffer',
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: {
-        game: "${gameID}" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
-      }
+      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions 
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return e;
   }
 }
 
 export const getCoverIGDB: (
   id: number
-) => Promise<File | Error> = async (id) => {
+) => Promise<any> = async (id) => {
   const gameID = id;
   try {
-    const response = await axios.post<File>('https://api.igdb.com/v4/covers', {
+    const response = await axios({
+      url: 'https://api.igdb.com/v4/covers',
       responseType: 'arraybuffer',
+      method: `POST`,
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: {
-        game: "${gameID}" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
-      }
+      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return e;
   }
 }
 
 export const getGamesFromGenreIGDB: (
   genre: string
-) => Promise<File | Error> = async (genre) => {
+) => Promise<any> = async (genre) => {
   const gameGenres = genre;
   try {
-    const response = await axios.post<File>("https://api.igdb.com/v4/genres", {
-      responseType: "json",
+    const response = await axios({
+      url: "https://api.igdb.com/v4/genres",
+      method: `POST`,
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+        "Accept": "application/json",
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: {
-        fields: "*",
-        name: "${gameGenres}"
-      }
+      data: `fields: "*"; where name = "${gameGenres}"`
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    console.log(e)
+    return e;
   }
 }
 
 export const getExternalsIGDB: (
   id: number
-) => Promise<File | Error> = async (id) => {
+) => Promise<any> = async (id) => {
   const gameID = id;
   try{
-    const response = await axios.post<File>("https://api.igdb.com/v4/external_games", {
-      responseType: "json",
+    const response = await axios({
+      url: "https://api.igdb.com/v4/external_games",
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+        "Accept": "application/json",
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: {
-        fields: "*",
-        game: "${gameID}"
-      }
+      data: `fields: "*"; game: "${gameID}"`
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return e;
   }
 }
 
-export const getTopRatedIGDB: () => Promise<File | Error> = async () => {
+export const getTopRatedIGDB: () => Promise<any> = async () => {
   try{
-    const response = await axios.post<File>("https://api.igdb.com/v4/games/", {
-      responseType: "json",
+    const response = await axios({
+      url: "https://api.igdb.com/v4/games/",
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+        "Accept": "application/json",
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: {
-        fields: "name, rating",
-        //Missing the sort
-      }
+      data: `fields: "name, rating"` //Missing the sort
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return e;
   }
 }
 
-export const getGameVideosIGDB: (id: number) => Promise<File | Error> = async (id) => {
+export const getGameVideosIGDB: (id: number) => Promise<any> = async (id) => {
   const gameID = id;
   try{
-    const response = await axios.post<File>("https://api.igdb.com/v4/game_videos", {
+    const response = await axios({
+      url: "https://api.igdb.com/v4/game_videos",
       responseType: "stream",
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`,
       },
-      data: {
-        game: "${gameID"
-      }
+      data: `game: "${gameID};"`
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return e;
   }
 }
 
-export const getGameReleasesIGDB: (id: number) => Promise<File | Error> = async (id) => {
+export const getGameReleasesIGDB: (id: number) => Promise<any> = async (id) => {
   const gameID = id;
   try{
-    const response = await axios.post<File>("https://api.igdb.com/v4/release_dates",{
+    const response = await axios({
+      url: "https://api.igdb.com/v4/release_dates",
       responseType: "stream",
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: {
-        game: "${gameID"
-      }
+      data: `game: "${gameID};"`
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return e;
   }
 } 
 
-export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async (id) => {
+export const getGamePlatformsIGDB: (id: number) => Promise<any> = async (id) => {
   const gameID = id;
   try{
-    const response = await axios.post<File>("https://api.igdb.com/v4/platforms",{
+    const response = await axios({
+      url: "https://api.igdb.com/v4/platforms",
       responseType: "stream",
       headers: {
-        "Authorization": "", //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": "${CLIENT-ID}"
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: {
-        game: "${gameID"
-      }
+      data: `game: "${gameID};"`
     });
     return response.data;
   } catch (e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return e;
   }
 }
 

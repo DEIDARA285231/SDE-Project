@@ -52,6 +52,16 @@ export interface GameInfos {
   genres: [String];
 }
 
+export interface Externals{
+  steam: number;
+  gog: number;
+  youtube: number;
+  microsoft: number;
+  apple: number;
+  twitch: number;
+  android: number;
+}
+
 export interface Apps {
   appid: number;
   name: string;
