@@ -47,6 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gameSpeedrun = exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
+exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.getStoreLow = exports.plainITAD = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = exports.hello = void 0;
 var types_1 = require("./types");
 var core_1 = require("./core");
 var helper_1 = require("./helper");
@@ -229,6 +230,59 @@ exports.releaseIGDB = function (req, res) { return __awaiter(void 0, void 0, voi
         }
     });
 }); };
+exports.plainITAD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var gameID, plain;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                gameID = helper_1.getIdFromRequest(req);
+                if (!(gameID !== false)) return [3 /*break*/, 2];
+                return [4 /*yield*/, core_1.itadGetPlain(gameID)];
+            case 1:
+                plain = _a.sent();
+                if (!types_1.isError(plain)) {
+                    res.contentType("json");
+                }
+                res.send(JSON.stringify(plain["data"]["app/" + gameID]));
+                return [3 /*break*/, 3];
+            case 2:
+                res.status(400);
+                res.send({ error: "Invalid ID" });
+                _a.label = 3;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getStoreLow = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var plain, store, storeLow;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                plain = helper_1.getStringFromRequest(req, "plain");
+                store = helper_1.getStringFromRequest(req, "store");
+                if (!(plain !== false && store != false)) return [3 /*break*/, 2];
+                return [4 /*yield*/, core_1.itadStoreLow(plain, store)];
+            case 1:
+                storeLow = _a.sent();
+                if (!types_1.isError(plain) && !types_1.isError(store)) {
+                    res.contentType("json");
+                }
+                if (storeLow["data"].length > 0) {
+                    res.send(JSON.stringify(storeLow["data"][plain][0].price));
+                }
+                else {
+                    res.status(404);
+                    res.send({ error: "Not Found" });
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                res.status(400);
+                res.send({ error: "Invalid ID" });
+                _a.label = 3;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
 exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, gamePlatforms;
     return __generator(this, function (_a) {
@@ -254,45 +308,53 @@ exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, v
 }); };
 //Steam
 exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var name, steamPrice, infoApp, price;
+    var appID, steamPrice, infoApp, price, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                name = req.query['name'];
-                if (!(name != null && typeof name === 'string')) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getPriceSteam(name)];
+                appID = helper_1.getIdFromRequest(req);
+                if (!(appID !== false)) return [3 /*break*/, 5];
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, core_1.getPriceSteam(appID)];
+            case 2:
                 steamPrice = _a.sent();
                 if (!types_1.isError(steamPrice)) {
                     res.contentType('application/json');
                 }
                 infoApp = steamPrice;
-                price = infoApp["1091500"].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
-                console.log(price / 100);
-                res.send(steamPrice);
-                return [3 /*break*/, 3];
-            case 2:
+                price = infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
+                res.send(JSON.stringify(price / 100));
+                return [3 /*break*/, 4];
+            case 3:
+                e_1 = _a.sent();
+                res.sendStatus(400);
+                res.send({ error: 'Invalid!' });
+                return [3 /*break*/, 4];
+            case 4: return [3 /*break*/, 6];
+            case 5:
                 res.sendStatus(400);
                 res.send({ error: 'Invalid name format!' });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                _a.label = 6;
+            case 6: return [2 /*return*/];
         }
     });
 }); };
 exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var name, steamPlayers;
+    var appID, steamPlayers;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                name = req.query['name'];
-                if (!(name != null && typeof name === 'string')) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getActivePlayersSteam(name)];
+                appID = helper_1.getIdFromRequest(req);
+                if (!(appID !== false)) return [3 /*break*/, 2];
+                return [4 /*yield*/, core_1.getActivePlayersSteam(appID)];
             case 1:
                 steamPlayers = _a.sent();
                 if (!types_1.isError(steamPlayers)) {
                     res.contentType('application/json');
                 }
-                res.send(steamPlayers);
+                res.send(JSON.stringify(steamPlayers["response"]["player_count"]));
                 return [3 /*break*/, 3];
             case 2:
                 res.sendStatus(400);

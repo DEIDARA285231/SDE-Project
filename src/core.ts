@@ -196,7 +196,7 @@ export const getGameReleasesIGDB: (id: number) => Promise<File | Error> = async 
       error: e,
     };
   }
-}
+} 
 
 export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async (id) => {
   const gameID = id;
@@ -222,78 +222,64 @@ export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async
 
 //Steam
 
-export const getPriceSteam: (name: string) => Promise<any | Error> = async (name) => {
-  //chiama il nostro servizio per avere l'id steam del gioco (con rest) e assegnalo ad appID
-  let appID=0;
+export const getPriceSteam: (id: number) => Promise<any | Error> = async (id) => {
   try {
-    const response = await axios.get<any>(`https://store.steampowered.com/api/appdetails?appids=1091500&currency=eur`);
-    //let infoApp=response.data;
-    //let price=infoApp["1091500"].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
-    //return price/100;
+    const response = await axios.get<any>(`https://store.steampowered.com/api/appdetails?appids=${id}&currency=eur`);
     return response.data;
   } catch(e) {
-    console.error(e);
-    return e;
-  };
-}
-
-export const getActivePlayersSteam: (name: string) => Promise<any | Error> = async (name) => {
-  //chiama il nostro servizio per avere l'id steam del gioco (con rest) e assegnalo ad appID
-  let appID=0;
-
-  axios.get<any>(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appID}`).then((response) =>{
-    let infoApp=response.data;
-
-    return infoApp["player_count"];
-  }).catch((e) => {
     console.error(e);
     return {
       error: e,
     };
-  });
+  };
+}
+
+export const getActivePlayersSteam: (id: number) => Promise<any | Error> = async (id) => {
+  try{
+    const response = await axios.get<any>(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${id}`);
+    return response.data;
+  } catch(e) {
+    console.error(e);
+    return {
+      error: e,
+    };
+  };
 };
 
 //Is there any deal
 
 export const itadGetPlain: (IDSteam: number) => Promise<any | Error> = async (IDSteam) => {
-  //parametro idSteam è l'id steam
-  axios.get<any>('https://api.isthereanydeal.com/v01/game/plain/id/',{ params: {
-    key: secrets.ITAD_KEY,
-    shop: "steam",
-    ids: `app/${IDSteam}`
-    }
-  }).then((response) =>{
-    let infoApp=response.data;
-
-    return infoApp[`app/${IDSteam}`];
-  }).catch((e) => {
+  try{
+    const response = await axios.get<any>('https://api.isthereanydeal.com/v01/game/plain/id/',{ params: {
+      key: secrets.ITAD_KEY,
+      shop: "steam",
+      ids: `app/${IDSteam}`
+      }})
+    return response.data;
+  } catch(e){
     console.error(e);
     return {
       error: e,
     };
-  });
+  };
 };
 
-export const itadHistoricalLow: (plain: string) => Promise<any | Error> = async (plain) => {
-  //parametro idSteam è l'id steam
-  axios.get<any>('https://api.isthereanydeal.com/v01/game/lowest/',{ params: {
-    key: secrets.ITAD_KEY,
-    plains: plain,
-    region: "eu2",
-    country: "IT",
-    shops: "steam",
-    }
-  }).then((response) =>{
-    let infoApp=response.data;
-
-    //qui dovrebbe esserci sia prezzo (.price) che data di aggiunta in long (.added)
-    return infoApp[plain];
-  }).catch((e) => {
+export const itadStoreLow: (plain: string, store: string) => Promise<any | Error> = async (plain, store) => {
+  try{
+    const response = await axios.get<any>('https://api.isthereanydeal.com/v01/game/storelow/',{ params: {
+      key: secrets.ITAD_KEY,
+      plains: plain,
+      region: "eu2",
+      country: "IT",
+      shops: store,
+      }})
+    return response.data;
+  } catch(e) {
     console.error(e);
     return {
       error: e,
     };
-  });
+  };
 };
 
 //TWITCH
