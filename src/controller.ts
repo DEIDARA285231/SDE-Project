@@ -13,7 +13,6 @@ import { Request, Response } from 'express';
 
 import { isError } from './types';
 import {
-  getHello,
   getGameIGDB,
   getGamesFromGenreIGDB,
   getArtworkIGDB,
@@ -40,91 +39,6 @@ import {
   getNumberFromRequest,
   getStringFromRequest,
 } from './helper';
-
-//#region --- EXAMPLE ---
-
-export const hello = (req: Request, res: Response) => {
-  // If in the URL (GET request) e.g. localhost:8080/?name=pippo
-  const name = req.query['name'];
-
-  // If in body of the request (as json or form-data)
-  // const name = req.body['name'];
-
-  // If in the URL as a parameter e.g. localhost:8080/pippo/ and route defined as '/:name'
-  // const name = req.params['name'];
-
-  if (name != null && typeof name === 'string') {
-    res.send(getHello(name));
-  } else {
-    res.status(400);
-    res.send({ error: 'Invalid name format!' });
-  }
-};
-
-/*
-export const regions = async (req: Request, res: Response) => {
-  res.send(await getRegions());
-};
-
-export const regionById = async (req: Request, res: Response) => {
-  const id = getIdFromRequest(req);
-  if (id !== false) {
-    res.send(await getRegionById(id));
-  } else {
-    res.status(400);
-    res.send({ error: 'Invalid ID format!' });
-  }
-};
-
-export const casesByRegionId = async (req: Request, res: Response) => {
-  const id = getIdFromRequest(req);
-  if (id !== false) {
-    const date = getDateFromRequest(req);
-    res.send(await getCasesByRegionId(id, date.year, date.month, date.day));
-  } else {
-    res.status(400);
-    res.send({ error: 'Invalid ID format!' });
-  }
-};
-
-export const ranking = async (req: Request, res: Response) => {
-  const date = getDateFromRequest(req);
-  let n = getNumberFromRequest(req, 'n');
-  if (n === false) {
-    n = 5;
-  }
-  let ord = req.query['ord'];
-  if (ord !== 'asc') {
-    ord = 'desc';
-  }
-  res.send(await getRanking(n, ord, date.year, date.month, date.day));
-};
-
-export const barChart = async (req: Request, res: Response) => {
-  const date = getDateFromRequest(req);
-
-  const chart = await getBarChart(date.year, date.month, date.day);
-  if (!isError(chart)) {
-    res.contentType('image/png');
-  }
-  res.send(chart);
-};
-
-export const lineChart = async (req: Request, res: Response) => {
-  const id = getIdFromRequest(req);
-  if (id !== false) {
-    const date = getDateFromRequest(req);
-
-    const chart = await getLineChart(id, date.year, date.month);
-    if (!isError(chart)) {
-      res.contentType('image/png');
-    }
-    res.send(chart);
-  } else {
-    res.status(400);
-    res.send({ error: 'Invalid ID format!' });
-  }
-};*/
 
 //IGDB
 
@@ -250,6 +164,8 @@ export const platformsIGDB = async (req: Request, res: Response) => {
   }
 }
 
+//Steam
+
 export const priceSteam = async (req: Request, res: Response) => {
   const name = req.query['name'];
   if (name != null && typeof name === 'string') {
@@ -282,7 +198,7 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
 };
 
 //Twitch
-
+//Ok, already returns exactly id, name and box_art_url
 export const gameTwitch = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   const gameName = getGameNameFromRequest(req);
@@ -311,6 +227,7 @@ export const gameTwitch = async (req: Request, res: Response) => {
   }
 };
 
+//Ok, already returns exactly id, name and box_art_url
 export const topGamesTwitch = async (req: Request, res: Response) => {
   const topGames = await getTopGamesTwitch();
   res.send(topGames);
@@ -331,11 +248,11 @@ export const searchTwitch = async (req: Request, res: Response) => {
 };
 
 export const streamsTwitch = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"game_id");
+  const gameID = getStringFromRequest(req,"id");
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
 
   if(gameID!==false) {
-    const streams = await getStreamsTwitch(true,gameID);
+    const streams = await getStreamsTwitch(true, gameID);
     res.send(streams);
   } else {
     const streams1 = await getStreamsTwitch(false,"");

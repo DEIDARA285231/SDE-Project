@@ -11,7 +11,6 @@
 
 import express from 'express';
 import {
-  hello,
   gameIGDB,
   genresIGDB,
   coverIGDB,
@@ -38,8 +37,6 @@ const router = express.Router();
 // To add URL parameters (Doable for any method! Not only for GET):
 // router.get('/:parameter1/:parameter2', f);
 
-router.get('/', hello); // Example
-
 //IGDB
 router.get("/games", gameIGDB);   //param name
 router.get("/game/genres", genresIGDB);
@@ -59,8 +56,8 @@ router.get('/steam/activePlayers', activePlayersSteam);
 router.get('/twitch', gameTwitch);              //search game by param id or name
 router.get('/twitch/topGames', topGamesTwitch); //default only 20 results
 router.get('/twitch/search/', searchTwitch);    //search categories by param query
-router.get('/twitch/streams/', streamsTwitch);  //search streams, either top overall or by gameID param
-router.get('/twitch/videos/', videosTwitch);    //search videos, either top overall or by gameID param
+router.get('/twitch/streams/', streamsTwitch);  //search streams, either top overall or by (game)id param
+router.get('/twitch/videos/', videosTwitch);    //search videos, either top overall or by (game)id param
 
 //speedrun
 router.get('/speedrun', gameSpeedrun);          //search game(s) by param id or name

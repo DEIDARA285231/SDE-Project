@@ -46,90 +46,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gameSpeedrun = exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = exports.hello = void 0;
+exports.gameSpeedrun = exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
 var types_1 = require("./types");
 var core_1 = require("./core");
 var helper_1 = require("./helper");
-//#region --- EXAMPLE ---
-exports.hello = function (req, res) {
-    // If in the URL (GET request) e.g. localhost:8080/?name=pippo
-    var name = req.query['name'];
-    // If in body of the request (as json or form-data)
-    // const name = req.body['name'];
-    // If in the URL as a parameter e.g. localhost:8080/pippo/ and route defined as '/:name'
-    // const name = req.params['name'];
-    if (name != null && typeof name === 'string') {
-        res.send(core_1.getHello(name));
-    }
-    else {
-        res.status(400);
-        res.send({ error: 'Invalid name format!' });
-    }
-};
-/*
-export const regions = async (req: Request, res: Response) => {
-  res.send(await getRegions());
-};
-
-export const regionById = async (req: Request, res: Response) => {
-  const id = getIdFromRequest(req);
-  if (id !== false) {
-    res.send(await getRegionById(id));
-  } else {
-    res.status(400);
-    res.send({ error: 'Invalid ID format!' });
-  }
-};
-
-export const casesByRegionId = async (req: Request, res: Response) => {
-  const id = getIdFromRequest(req);
-  if (id !== false) {
-    const date = getDateFromRequest(req);
-    res.send(await getCasesByRegionId(id, date.year, date.month, date.day));
-  } else {
-    res.status(400);
-    res.send({ error: 'Invalid ID format!' });
-  }
-};
-
-export const ranking = async (req: Request, res: Response) => {
-  const date = getDateFromRequest(req);
-  let n = getNumberFromRequest(req, 'n');
-  if (n === false) {
-    n = 5;
-  }
-  let ord = req.query['ord'];
-  if (ord !== 'asc') {
-    ord = 'desc';
-  }
-  res.send(await getRanking(n, ord, date.year, date.month, date.day));
-};
-
-export const barChart = async (req: Request, res: Response) => {
-  const date = getDateFromRequest(req);
-
-  const chart = await getBarChart(date.year, date.month, date.day);
-  if (!isError(chart)) {
-    res.contentType('image/png');
-  }
-  res.send(chart);
-};
-
-export const lineChart = async (req: Request, res: Response) => {
-  const id = getIdFromRequest(req);
-  if (id !== false) {
-    const date = getDateFromRequest(req);
-
-    const chart = await getLineChart(id, date.year, date.month);
-    if (!isError(chart)) {
-      res.contentType('image/png');
-    }
-    res.send(chart);
-  } else {
-    res.status(400);
-    res.send({ error: 'Invalid ID format!' });
-  }
-};*/
 //IGDB
 exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var nameGame, game;
@@ -332,6 +252,7 @@ exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, v
         }
     });
 }); };
+//Steam
 exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var name, steamPrice, infoApp, price;
     return __generator(this, function (_a) {
@@ -382,6 +303,7 @@ exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void
     });
 }); };
 //Twitch
+//Ok, already returns exactly id, name and box_art_url
 exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, gameName, game, game;
     return __generator(this, function (_a) {
@@ -421,6 +343,7 @@ exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void
         }
     });
 }); };
+//Ok, already returns exactly id, name and box_art_url
 exports.topGamesTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var topGames;
     return __generator(this, function (_a) {
@@ -461,7 +384,7 @@ exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, v
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = helper_1.getStringFromRequest(req, "game_id");
+                gameID = helper_1.getStringFromRequest(req, "id");
                 if (!(gameID !== false)) return [3 /*break*/, 2];
                 return [4 /*yield*/, core_1.getStreamsTwitch(true, gameID)];
             case 1:
