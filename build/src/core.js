@@ -162,7 +162,7 @@ exports.getGamesFromGenreIGDB = function (genre) { return __awaiter(void 0, void
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: \"*\"; where name = \"" + gameGenres + "\""
+                        data: "fields: *; where name = \"" + gameGenres + "\";"
                     })];
             case 2:
                 response = _a.sent();

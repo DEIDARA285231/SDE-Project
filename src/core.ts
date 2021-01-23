@@ -97,7 +97,7 @@ export const getGamesFromGenreIGDB: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: "*"; where name = "${gameGenres}"`
+      data: `fields: *; where name = "${gameGenres}";`
     });
     return response.data;
   } catch (e) {
@@ -118,7 +118,7 @@ export const getExternalsIGDB: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: "*"; game: "${gameID}"`
+      data: `fields: *; game: "${gameID}";`
     });
     return response.data;
   } catch (e) {
@@ -135,7 +135,7 @@ export const getTopRatedIGDB: () => Promise<any> = async () => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: "name, rating"` //Missing the sort
+      data: `fields: "name, rating";` //Missing the sort
     });
     return response.data;
   } catch (e) {
