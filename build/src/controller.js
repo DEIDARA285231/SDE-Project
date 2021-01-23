@@ -46,7 +46,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = exports.hello = void 0;
+exports.gameSpeedrun = exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = exports.hello = void 0;
 var types_1 = require("./types");
 var core_1 = require("./core");
 var helper_1 = require("./helper");
@@ -461,7 +461,7 @@ exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, v
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = helper_1.getStringFromRequest(req, "gameID");
+                gameID = helper_1.getStringFromRequest(req, "game_id");
                 if (!(gameID !== false)) return [3 /*break*/, 2];
                 return [4 /*yield*/, core_1.getStreamsTwitch(true, gameID)];
             case 1:
@@ -478,21 +478,45 @@ exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.videosTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, videos;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var gameID, _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
-                gameID = helper_1.getStringFromRequest(req, "gameID");
+                gameID = helper_1.getStringFromRequest(req, "game_id");
                 if (!(gameID !== false)) return [3 /*break*/, 2];
+                //const videos = await getVideosTwitch(gameID);
+                _b = (_a = res).send;
                 return [4 /*yield*/, core_1.getVideosTwitch(gameID)];
             case 1:
-                videos = _a.sent();
-                res.send(videos);
+                //const videos = await getVideosTwitch(gameID);
+                _b.apply(_a, [_c.sent()]);
                 return [3 /*break*/, 3];
             case 2:
                 res.status(400);
                 res.send({ error: "Invalid parameter" });
-                _a.label = 3;
+                _c.label = 3;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.gameSpeedrun = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var gameID, _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                gameID = helper_1.getStringFromRequest(req, "name");
+                if (!(gameID !== false)) return [3 /*break*/, 2];
+                //const videos = await getVideosTwitch(gameID);
+                _b = (_a = res).send;
+                return [4 /*yield*/, core_1.getSpeedrunGameByName(gameID)];
+            case 1:
+                //const videos = await getVideosTwitch(gameID);
+                _b.apply(_a, [_c.sent()]);
+                return [3 /*break*/, 3];
+            case 2:
+                res.status(400);
+                res.send({ error: "Invalid parameter" });
+                _c.label = 3;
             case 3: return [2 /*return*/];
         }
     });

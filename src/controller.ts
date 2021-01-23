@@ -30,7 +30,8 @@ import {
   getTopGamesTwitch,
   getSearchTwitch,
   getStreamsTwitch,
-  getVideosTwitch
+  getVideosTwitch,
+  getSpeedrunGameByName
 } from './core';
 import {
   getDateFromRequest,
@@ -330,7 +331,7 @@ export const searchTwitch = async (req: Request, res: Response) => {
 };
 
 export const streamsTwitch = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"gameID");
+  const gameID = getStringFromRequest(req,"game_id");
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
 
   if(gameID!==false) {
@@ -343,12 +344,25 @@ export const streamsTwitch = async (req: Request, res: Response) => {
 };
 
 export const videosTwitch = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"gameID");
+  const gameID = getStringFromRequest(req,"game_id");
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
 
   if(gameID!==false) {
-    const videos = await getVideosTwitch(gameID);
-    res.send(videos);
+    //const videos = await getVideosTwitch(gameID);
+    res.send(await getVideosTwitch(gameID));
+  } else {
+    res.status(400);
+    res.send({error: "Invalid parameter"});
+  }
+};
+
+export const gameSpeedrun = async (req: Request, res: Response) => {
+  const gameID = getStringFromRequest(req,"name");
+  //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
+
+  if(gameID!==false) {
+    //const videos = await getVideosTwitch(gameID);
+    res.send(await getSpeedrunGameByName(gameID));
   } else {
     res.status(400);
     res.send({error: "Invalid parameter"});

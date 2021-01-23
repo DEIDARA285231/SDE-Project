@@ -27,7 +27,8 @@ import {
   topGamesTwitch,
   searchTwitch,
   streamsTwitch,
-  videosTwitch
+  videosTwitch,
+  gameSpeedrun
 } from './controller';
 
 const router = express.Router();
@@ -55,10 +56,13 @@ router.get('/steam', priceSteam);
 router.get('/steam/activePlayers', activePlayersSteam);
 
 //TWITCH
-router.get('/twitch', gameTwitch);              //search a game by param id or name
+router.get('/twitch', gameTwitch);              //search game by param id or name
 router.get('/twitch/topGames', topGamesTwitch); //default only 20 results
 router.get('/twitch/search/', searchTwitch);    //search categories by param query
 router.get('/twitch/streams/', streamsTwitch);  //search streams, either top overall or by gameID param
-router.get('/twitch/videos/', videosTwitch);
+router.get('/twitch/videos/', videosTwitch);    //search videos, either top overall or by gameID param
+
+//speedrun
+router.get('/speedrun', gameSpeedrun);          //search game(s) by param id or name
 
 export default router;

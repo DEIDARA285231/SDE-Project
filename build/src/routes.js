@@ -34,9 +34,11 @@ router.get("/game/platforms", controller_1.platformsIGDB);
 router.get('/steam', controller_1.priceSteam);
 router.get('/steam/activePlayers', controller_1.activePlayersSteam);
 //TWITCH
-router.get('/twitch', controller_1.gameTwitch); //search a game by param id or name
+router.get('/twitch', controller_1.gameTwitch); //search game by param id or name
 router.get('/twitch/topGames', controller_1.topGamesTwitch); //default only 20 results
 router.get('/twitch/search/', controller_1.searchTwitch); //search categories by param query
 router.get('/twitch/streams/', controller_1.streamsTwitch); //search streams, either top overall or by gameID param
-router.get('/twitch/videos/', controller_1.videosTwitch);
+router.get('/twitch/videos/', controller_1.videosTwitch); //search videos, either top overall or by gameID param
+//speedrun
+router.get('/speedrun', controller_1.gameSpeedrun); //search game(s) by param id or name
 exports.default = router;

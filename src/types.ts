@@ -68,3 +68,11 @@ export interface TwitchGames {
   name: String;
   box_art_url: String;
 }
+
+export interface TwitchVideos {
+  id: number;
+  user_id: number;
+  user_name: String;
+  title: String;
+  url: String;
+}

@@ -10,7 +10,7 @@
  *   It really depends on your project, style and personal preference :)
  */
 
-import { Error, isError, ResponseSteam } from './types';
+import { Error, isError, ResponseSteam, TwitchVideos } from './types';
 import config from '../config';
 import qs from 'qs';
 
@@ -410,7 +410,7 @@ export const getGameReleasesIGDB: (id: number) => Promise<File | Error> = async 
       error: e,
     };
   }
-} 
+}
 
 export const getGamePlatformsIGDB: (id: number) => Promise<File | Error> = async (id) => {
   const gameID = id;
@@ -632,10 +632,10 @@ export const getStreamsTwitch: (param: Boolean, gameID: string) => Promise<File 
   }
 }
 
-export const getVideosTwitch: (gameID: string) => Promise<File | Error> = async (gameID) => {
+export const getVideosTwitch: (gameID: string) => Promise<TwitchVideos[] | Error> = async (gameID) => {
 
   try{
-    const response = await axios.get<File>("https://api.twitch.tv/helix/videos",{
+    const response = await axios.get<TwitchVideos[]>("https://api.twitch.tv/helix/videos",{
       responseType: "json",
       headers: {
         "Authorization": secrets.AUTHORIZATION,
@@ -643,6 +643,28 @@ export const getVideosTwitch: (gameID: string) => Promise<File | Error> = async 
       },
       params: {
         game_id: gameID,
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return {
+      error: e,
+    };
+  }
+}
+
+export const getSpeedrunGameByName: (gameID: string) => Promise<any | Error> = async (gameID) => {
+
+  try{
+    const response = await axios.get<any>("https://www.speedrun.com/api/v1/games",{
+      responseType: "json",
+      headers: {
+        "Authorization": secrets.AUTHORIZATION,
+        "Client-Id": secrets.CLIENT_ID
+      },
+      params: {
+        name: gameID,
       },
     });
     return response.data;
