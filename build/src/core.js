@@ -191,7 +191,7 @@ exports.getExternalsIGDB = function (id) { return __awaiter(void 0, void 0, void
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: \"*\"; game: \"" + gameID + "\""
+                        data: "fields: *; game: \"" + gameID + "\";"
                     })];
             case 2:
                 response = _a.sent();
@@ -216,7 +216,7 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: \"name, rating\"" //Missing the sort
+                        data: "fields: \"name, rating\";" //Missing the sort
                     })];
             case 1:
                 response = _a.sent();

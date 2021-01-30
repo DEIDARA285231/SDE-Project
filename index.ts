@@ -12,12 +12,26 @@ import logger from 'morgan';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import mongoose from 'mongoose';
 
 import config from './config';
 import router from './src/routes';
 
 const index = express();
 
+const uri = "mongodb+srv://SDEUser1:sdeuser1@clustersde.8hbjn.mongodb.net/SDE_DB?retryWrites=true&w=majority";
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  console.log("MongoDB Connected…")
+})
+.catch(err => console.log(err))
+
+mongoose.Promise = global.Promise;
+
+index.use(express.static("public"));
 // Log stack trace of errors (to be used only on development phases!)
 index.use(errorHandler());
 // Log HTTP requests
