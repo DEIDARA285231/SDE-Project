@@ -16,9 +16,21 @@ var morgan_1 = __importDefault(require("morgan"));
 var compression_1 = __importDefault(require("compression"));
 var body_parser_1 = __importDefault(require("body-parser"));
 var cors_1 = __importDefault(require("cors"));
+var mongoose_1 = __importDefault(require("mongoose"));
 var config_1 = __importDefault(require("./config"));
 var routes_1 = __importDefault(require("./src/routes"));
 var index = express_1.default();
+var uri = "mongodb+srv://SDEUser1:sdeuser1@clustersde.8hbjn.mongodb.net/SDE_DB?retryWrites=true&w=majority";
+mongoose_1.default.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+    .then(function () {
+    console.log("MongoDB Connected…");
+})
+    .catch(function (err) { return console.log(err); });
+mongoose_1.default.Promise = global.Promise;
+index.use(express_1.default.static("public"));
 // Log stack trace of errors (to be used only on development phases!)
 index.use(errorhandler_1.default());
 // Log HTTP requests

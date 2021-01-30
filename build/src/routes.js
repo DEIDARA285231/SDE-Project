@@ -15,6 +15,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var controller_1 = require("./controller");
+var Ninja = require("../modules/ninja");
 var router = express_1.default.Router();
 // Possible methods: .get, .post, .put, .patch, .delete
 // To add URL parameters (Doable for any method! Not only for GET):
@@ -43,4 +44,9 @@ router.get('/twitch/streams/', controller_1.streamsTwitch); //search streams, ei
 router.get('/twitch/videos/', controller_1.videosTwitch); //search videos, either top overall or by (game)id param
 //speedrun
 router.get('/speedrun', controller_1.gameSpeedrun); //search game(s) by param id or name
+router.post("/ninjas", function (req, res, next) {
+    Ninja.create(req.body).then(function (ninja) {
+        res.send(ninja);
+    }).catch(next);
+});
 exports.default = router;
