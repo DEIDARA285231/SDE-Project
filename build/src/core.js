@@ -104,7 +104,7 @@ exports.getArtworkIGDB = function (id) { return __awaiter(void 0, void 0, void 0
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "game: \"" + gameID + "\";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions 
+                        data: "game: \"" + gameID + "\";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
                     })];
             case 2:
                 response = _a.sent();

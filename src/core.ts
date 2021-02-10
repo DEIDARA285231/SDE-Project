@@ -11,7 +11,7 @@
  */
 
 import { Error, isError, ResponseSteam, TwitchVideos } from './types';
-import config from '../config';
+import config from '../config/config';
 import qs from 'qs';
 
 import axios from 'axios';
@@ -55,7 +55,7 @@ export const getArtworkIGDB: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions 
+      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
     });
     return response.data;
   } catch (e) {
@@ -177,7 +177,7 @@ export const getGameReleasesIGDB: (id: number) => Promise<any> = async (id) => {
   } catch (e) {
     return e;
   }
-} 
+}
 
 export const getGamePlatformsIGDB: (id: number) => Promise<any> = async (id) => {
   const gameID = id;
