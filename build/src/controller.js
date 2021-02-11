@@ -50,29 +50,98 @@ exports.gameSpeedrun = exports.videosTwitch = exports.streamsTwitch = exports.se
 var types_1 = require("./types");
 var core_1 = require("./core");
 var helper_1 = require("./helper");
+var ExternalDB = require('../models/Externals');
 //IGDB
 exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var nameGame, game;
+    var nameGameInserted, gameInDB, game, game, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, err_1, gameID, game;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                nameGame = helper_1.getGameNameFromRequest(req);
-                if (!(nameGame !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getGameIGDB(nameGame)];
+                nameGameInserted = helper_1.getGameNameFromRequest(req);
+                if (!(nameGameInserted !== false)) return [3 /*break*/, 14];
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 12, , 13]);
+                return [4 /*yield*/, ExternalDB.findOne({ gameName: nameGameInserted })];
+            case 2:
+                gameInDB = _a.sent();
+                if (!gameInDB) return [3 /*break*/, 4];
+                //c'è il gioco nel DB
+                if (!types_1.isError(gameInDB)) {
+                    res.contentType('json');
+                }
+                return [4 /*yield*/, core_1.getGameIGDBbyID(gameInDB.gameId)];
+            case 3:
+                game = _a.sent();
+                res.send(game);
+                return [3 /*break*/, 11];
+            case 4: return [4 /*yield*/, core_1.getGameIGDB(nameGameInserted)];
+            case 5:
+                game = _a.sent();
+                if (!(game !== (undefined))) return [3 /*break*/, 10];
+                return [4 /*yield*/, core_1.getExternalsIGDB(game.id)];
+            case 6:
+                externalIds = _a.sent();
+                indexTwitch = -1, indexSteam = -1, indexGog = -1;
+                for (i = 0; i < externalIds.length; i++) {
+                    if (externalIds[i].category === 14) {
+                        indexTwitch = i;
+                    }
+                    else if (externalIds[i].category === 1) {
+                        indexSteam = i;
+                    }
+                    else if (externalIds[i].category === 5) {
+                        indexGog = i;
+                    }
+                }
+                newExternal = {
+                    gameName: game.name,
+                    gameId: game.id,
+                    twitchId: externalIds[indexTwitch]["id"]
+                };
+                if (!(indexSteam !== -1)) return [3 /*break*/, 8];
+                newExternal.steamId = externalIds[indexSteam]["uid"];
+                if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 8];
+                return [4 /*yield*/, core_1.itadGetPlain(newExternal.steamId)];
+            case 7:
+                responseItad = _a.sent();
+                newExternal.itad_plain = responseItad["data"]["app/" + newExternal.steamId];
+                _a.label = 8;
+            case 8:
+                if (indexGog !== -1) {
+                    newExternal.gogId = externalIds[indexGog]["id"];
+                }
+                return [4 /*yield*/, ExternalDB.create(newExternal)];
+            case 9:
+                _a.sent();
+                res.send(game);
+                return [3 /*break*/, 11];
+            case 10:
+                res.status(404);
+                res.send({ error: "Game not found" });
+                _a.label = 11;
+            case 11: return [3 /*break*/, 13];
+            case 12:
+                err_1 = _a.sent();
+                console.error(err_1);
+                return [3 /*break*/, 13];
+            case 13: return [3 /*break*/, 17];
+            case 14:
+                gameID = helper_1.getIdFromRequest(req);
+                if (!(gameID !== false)) return [3 /*break*/, 16];
+                return [4 /*yield*/, core_1.getGameIGDBbyID(gameID)];
+            case 15:
                 game = _a.sent();
                 if (!types_1.isError(game)) {
                     res.contentType('json');
                 }
-                //maybe here i need to initialize the new type
-                console.log(game);
                 res.send(game);
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 17];
+            case 16:
                 res.status(400);
-                res.send({ error: "Invalid name format" });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                res.send({ error: "Invalid name or ID format" });
+                _a.label = 17;
+            case 17: return [2 /*return*/];
         }
     });
 }); };
@@ -230,7 +299,7 @@ exports.releaseIGDB = function (req, res) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.plainITAD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, plain;
+    var gameID, plain, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -242,7 +311,11 @@ exports.plainITAD = function (req, res) { return __awaiter(void 0, void 0, void 
                 if (!types_1.isError(plain)) {
                     res.contentType("json");
                 }
-                res.send(JSON.stringify(plain["data"]["app/" + gameID]));
+                response = {
+                    idSteam: gameID,
+                    plain: plain["data"]["app/" + gameID]
+                };
+                res.send(response);
                 return [3 /*break*/, 3];
             case 2:
                 res.status(400);
