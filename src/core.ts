@@ -36,6 +36,24 @@ export const getGameIGDB: (name: string) => Promise<any> = async (name) => {
       },
       data: `fields *; search "${gameName}"; limit 1;`
     });
+    return response.data[0];
+  } catch (e) {
+    return e;
+  }
+}
+
+export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
+  try {
+    const response = await axios({
+      url: "https://api.igdb.com/v4/games",
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Client-ID': `${secrets.CLIENT_ID}`,
+          'Authorization': `${secrets.AUTHORIZATION}`,
+      },
+      data: `fields *; where id = ${id};`
+    });
     return response.data;
   } catch (e) {
     return e;
@@ -113,12 +131,13 @@ export const getExternalsIGDB: (
   try{
     const response = await axios({
       url: "https://api.igdb.com/v4/external_games",
+      method: 'POST',
       headers: {
         "Accept": "application/json",
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: *; game: "${gameID}";`
+      data: `fields id, category, uid; where game = ${gameID};`
     });
     return response.data;
   } catch (e) {

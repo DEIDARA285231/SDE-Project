@@ -11,9 +11,10 @@
 
 import { Request, Response } from 'express';
 
-import { isError } from './types';
+import { isError, Externals } from './types';
 import {
   getGameIGDB,
+  getGameIGDBbyID,
   getGamesFromGenreIGDB,
   getArtworkIGDB,
   getCoverIGDB,
@@ -42,21 +43,79 @@ import {
   getStringFromRequest,
 } from './helper';
 
+const ExternalDB = require('../models/Externals')
+
 //IGDB
 
 export const gameIGDB = async (req: Request, res: Response) => {
-  const nameGame = getGameNameFromRequest(req);
-  if(nameGame !== false){
-    const game = await getGameIGDB(nameGame);
-    if (!isError(game)) {
-      res.contentType('json');
+  const nameGameInserted = getGameNameFromRequest(req);
+  if(nameGameInserted !== false){
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameName: nameGameInserted });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+
+        const game = await getGameIGDBbyID(gameInDB.gameId);
+        res.send(game);
+      }else {
+        //non c'è il gioco nel DB
+        const game = await getGameIGDB(nameGameInserted);
+        if (game !==(undefined)){
+          const externalIds=await getExternalsIGDB(game.id);
+          let indexTwitch=-1, indexSteam=-1, indexGog=-1;
+          for (let i=0; i<externalIds.length; i++){
+            if (externalIds[i].category===14){
+              indexTwitch=i;
+            }else if(externalIds[i].category===1){
+              indexSteam=i;
+            }else if(externalIds[i].category===5){
+              indexGog=i;
+            }
+          }
+          const newExternal: Externals = {
+            gameName: game.name,
+            gameId: game.id,
+            twitchId: externalIds[indexTwitch]["id"]
+          }
+
+          if (indexSteam!==-1){
+            newExternal.steamId=externalIds[indexSteam]["uid"];
+            if (newExternal.steamId !==undefined){
+              const responseItad = await itadGetPlain(newExternal.steamId);
+              newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
+            }
+          }
+          if (indexGog!==-1){
+            newExternal.gogId=externalIds[indexGog]["id"];
+          }
+          await ExternalDB.create(newExternal);
+          res.send(game);
+        }else{
+          res.status(404);
+          res.send({error: "Game not found"})
+        }
+      }
+    }catch (err) {
+      console.error(err)
     }
-    //maybe here i need to initialize the new type
-    console.log(game);
-    res.send(game)
+    
   }else{
-    res.status(400);
-    res.send({error: "Invalid name format"})
+    const gameID = getIdFromRequest(req);
+    if(gameID !== false){
+      const game = await getGameIGDBbyID(gameID);
+      if (!isError(game)) {
+        res.contentType('json');
+      }
+      res.send(game);
+    }else{
+      res.status(400);
+      res.send({error: "Invalid name or ID format"})
+    }
+    
   }
 }
 
@@ -159,7 +218,11 @@ export const plainITAD = async (req: Request, res: Response) => {
     if(!isError(plain)){
       res.contentType("json");
     }
-    res.send(JSON.stringify(plain["data"][`app/${gameID}`]));
+    const response = {
+      idSteam: gameID,
+      plain: plain["data"][`app/${gameID}`]
+    }
+    res.send(response);
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})

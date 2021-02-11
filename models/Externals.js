@@ -20,7 +20,7 @@ const ExternalsSchema = new mongoose.Schema({
     required: true
   },
   itad_plain: {
-    type: String
+    type: Stri
   }
 })
 

@@ -53,13 +53,12 @@ export interface GameInfos {
 }
 
 export interface Externals{
-  steam: number;
-  gog: number;
-  youtube: number;
-  microsoft: number;
-  apple: number;
-  twitch: number;
-  android: number;
+  gameName: string;
+  gameId: number;
+  steamId?: number;
+  gogId?: number;
+  twitchId: number;
+  itad_plain?: string;
 }
 
 export interface Apps {

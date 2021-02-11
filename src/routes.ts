@@ -32,8 +32,6 @@ import {
   getStoreLow
 } from './controller';
 
-const Ninja = require("../modules/ninja");
-
 const router = express.Router();
 
 // Possible methods: .get, .post, .put, .patch, .delete
@@ -70,9 +68,4 @@ router.get('/twitch/videos/', videosTwitch);    //search videos, either top over
 //speedrun
 router.get('/speedrun', gameSpeedrun);          //search game(s) by param id or name
 
-router.post("/ninjas", function(req, res, next){
-  Ninja.create(req.body).then(function(ninja:any){
-    res.send(ninja);
-  }).catch(next);
-});
 export default router;
