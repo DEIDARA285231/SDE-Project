@@ -6,24 +6,21 @@ const ExternalsSchema = new mongoose.Schema({
     required: true
   },
   gameId: {
-    type: number,
+    type: Number,
     required: true
   },
   steamId: {
-    type: number,
-    required: true
+    type: Number
   },
   gogId: {
-    type: number,
-    required: true
-  },
-  youtubeId: {
-    type: number,
-    required: true
+    type: Number
   },
   twitchId: {
-    type: number,
+    type: Number,
     required: true
+  },
+  itad_plain: {
+    type: String
   }
 })
 
