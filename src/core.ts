@@ -67,7 +67,7 @@ export const getArtworkIGDB: (
   try {
     const response = await axios({
       url: "https://api.igdb.com/v4/artworks",
-      method: `POST`,
+      method: 'POST',
       responseType: 'arraybuffer',
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
@@ -89,7 +89,7 @@ export const getCoverIGDB: (
     const response = await axios({
       url: 'https://api.igdb.com/v4/covers',
       responseType: 'arraybuffer',
-      method: `POST`,
+      method: 'POST',
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
@@ -109,7 +109,7 @@ export const getGamesFromGenreIGDB: (
   try {
     const response = await axios({
       url: "https://api.igdb.com/v4/genres",
-      method: `POST`,
+      method: 'POST',
       headers: {
         "Accept": "application/json",
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
@@ -149,6 +149,7 @@ export const getTopRatedIGDB: () => Promise<any> = async () => {
   try{
     const response = await axios({
       url: "https://api.igdb.com/v4/games/",
+      method: 'POST',
       headers: {
         "Accept": "application/json",
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
@@ -167,6 +168,7 @@ export const getGameVideosIGDB: (id: number) => Promise<any> = async (id) => {
   try{
     const response = await axios({
       url: "https://api.igdb.com/v4/game_videos",
+      method: 'POST',
       responseType: "stream",
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
@@ -185,6 +187,7 @@ export const getGameReleasesIGDB: (id: number) => Promise<any> = async (id) => {
   try{
     const response = await axios({
       url: "https://api.igdb.com/v4/release_dates",
+      method: 'POST',
       responseType: "stream",
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
@@ -203,6 +206,7 @@ export const getGamePlatformsIGDB: (id: number) => Promise<any> = async (id) => 
   try{
     const response = await axios({
       url: "https://api.igdb.com/v4/platforms",
+      method: 'POST',
       responseType: "stream",
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
