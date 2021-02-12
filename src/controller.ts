@@ -102,7 +102,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
     }catch (err) {
       console.error(err)
     }
-    
+
   }else{
     const gameID = getIdFromRequest(req);
     if(gameID !== false){
@@ -115,7 +115,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
       res.status(400);
       res.send({error: "Invalid name or ID format"})
     }
-    
+
   }
 }
 
@@ -234,7 +234,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
   //amazonus, origin, epic, steam, gog -> struttura dati per contenerli?
   const store = getStringFromRequest(req, "store");
   if(plain !== false && store!=false){
-    const storeLow = await itadStoreLow(plain, store); 
+    const storeLow = await itadStoreLow(plain, store);
     if(!isError(plain) && !isError(store)){
       res.contentType("json");
     }
@@ -244,7 +244,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
       res.status(404);
       res.send({error: "Not Found"})
     }
-    
+
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
@@ -282,7 +282,7 @@ export const priceSteam = async (req: Request, res: Response) => {
       res.sendStatus(400);
       res.send({ error: 'Invalid!' });
     }
-    
+
   } else {
     res.sendStatus(400);
     res.send({ error: 'Invalid name format!' });
