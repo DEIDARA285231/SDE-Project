@@ -366,13 +366,13 @@ export const searchTwitch = async (req: Request, res: Response) => {
 };
 
 export const streamsTwitch = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"id");
+  const gameID = getStringFromRequest(req,"game_id");
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
   if(gameID!==false) {
     const streams = await getStreamsTwitch(gameID);
     res.send(streams);
   } else {
-    
+    //ricerca per nome
     //const streams1 = await getStreamsTwitch(false,"");
     //res.send(streams1);
   }
