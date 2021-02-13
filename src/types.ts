@@ -61,17 +61,6 @@ export interface Externals{
   itad_plain?: string;
 }
 
-export interface Apps {
-  appid: number;
-  name: string;
-}
-
-export interface ResponseSteam{
-  applist: {
-    apps: Array<Apps>
-  };
-}
-
 export interface TwitchGames {
   id: number;
   name: String;
@@ -79,9 +68,20 @@ export interface TwitchGames {
 }
 
 export interface TwitchVideos {
-  id: number;
-  user_id: number;
   user_name: String;
   title: String;
   url: String;
+  view_count: number;
+  type: string;
+  language: string;
+  duration: string;
+}
+
+export interface TwitchStreams {
+  user_name: string;
+  viewer_count: number;
+  game_name: string;
+  game_id: string;
+  title: string;
+  language: string;
 }
