@@ -11,7 +11,7 @@
 
 import { Request, Response } from 'express';
 
-import { isError, Externals } from './types';
+import { isError, Externals, TwitchStream } from './types';
 import {
   getGameIGDB,
   getGameIGDBbyID,
@@ -368,13 +368,13 @@ export const searchTwitch = async (req: Request, res: Response) => {
 export const streamsTwitch = async (req: Request, res: Response) => {
   const gameID = getStringFromRequest(req,"id");
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
-
   if(gameID!==false) {
-    const streams = await getStreamsTwitch(true, gameID);
+    const streams = await getStreamsTwitch(gameID);
     res.send(streams);
   } else {
-    const streams1 = await getStreamsTwitch(false,"");
-    res.send(streams1);
+    
+    //const streams1 = await getStreamsTwitch(false,"");
+    //res.send(streams1);
   }
 };
 

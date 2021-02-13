@@ -124,7 +124,7 @@ exports.getArtworkIGDB = function (id) { return __awaiter(void 0, void 0, void 0
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/artworks",
-                        method: "POST",
+                        method: 'POST',
                         responseType: 'arraybuffer',
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
@@ -154,7 +154,7 @@ exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, 
                 return [4 /*yield*/, axios_1.default({
                         url: 'https://api.igdb.com/v4/covers',
                         responseType: 'arraybuffer',
-                        method: "POST",
+                        method: 'POST',
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
@@ -182,7 +182,7 @@ exports.getGamesFromGenreIGDB = function (genre) { return __awaiter(void 0, void
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/genres",
-                        method: "POST",
+                        method: 'POST',
                         headers: {
                             "Accept": "application/json",
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
@@ -238,6 +238,7 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
                 _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/games/",
+                        method: 'POST',
                         headers: {
                             "Accept": "application/json",
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
@@ -266,6 +267,7 @@ exports.getGameVideosIGDB = function (id) { return __awaiter(void 0, void 0, voi
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/game_videos",
+                        method: 'POST',
                         responseType: "stream",
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
@@ -294,6 +296,7 @@ exports.getGameReleasesIGDB = function (id) { return __awaiter(void 0, void 0, v
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/release_dates",
+                        method: 'POST',
                         responseType: "stream",
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
@@ -322,6 +325,7 @@ exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, 
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/platforms",
+                        method: 'POST',
                         responseType: "stream",
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
@@ -515,8 +519,12 @@ exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 
                         }
                     })];
             case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
+                response = (_a.sent()).data.data;
+                return [2 /*return*/, response
+                        .map(function (rawdata) { return ({
+                        id: rawdata.id,
+                        name: rawdata.name
+                    }); })];
             case 2:
                 e_17 = _a.sent();
                 console.log("e");
@@ -556,13 +564,12 @@ exports.getSearchTwitch = function (query) { return __awaiter(void 0, void 0, vo
         }
     });
 }); };
-exports.getStreamsTwitch = function (param, gameID) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, response1, e_19;
+exports.getStreamsTwitch = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, e_19;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 5, , 6]);
-                if (!(param === true)) return [3 /*break*/, 2];
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/streams", {
                         responseType: "json",
                         headers: {
@@ -574,26 +581,23 @@ exports.getStreamsTwitch = function (param, gameID) { return __awaiter(void 0, v
                         },
                     })];
             case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2: return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/streams", {
-                    responseType: "json",
-                    headers: {
-                        "Authorization": secrets_1.default.AUTHORIZATION,
-                        "Client-Id": secrets_1.default.CLIENT_ID
-                    },
-                })];
-            case 3:
-                response1 = _a.sent();
-                return [2 /*return*/, response1.data];
-            case 4: return [3 /*break*/, 6];
-            case 5:
+                response = (_a.sent()).data.data;
+                return [2 /*return*/, response
+                        .map(function (rawData) { return ({
+                        user_name: rawData.user_name,
+                        viewer_count: rawData.viewer_count,
+                        game_name: rawData.game_name,
+                        game_id: rawData.game_id,
+                        title: rawData.title,
+                        language: rawData.language
+                    }); })];
+            case 2:
                 e_19 = _a.sent();
                 console.log(e_19);
                 return [2 /*return*/, {
                         error: e_19,
                     }];
-            case 6: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -614,8 +618,18 @@ exports.getVideosTwitch = function (gameID) { return __awaiter(void 0, void 0, v
                         },
                     })];
             case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
+                response = (_a.sent()).data.data;
+                return [2 /*return*/, response
+                        .map(function (rawData) { return ({
+                        game_id: gameID,
+                        user_name: rawData.user_name,
+                        view_count: rawData.view_count,
+                        title: rawData.title,
+                        language: rawData.language,
+                        duration: rawData.duration,
+                        url: rawData.url,
+                        type: rawData.type
+                    }); })];
             case 2:
                 e_20 = _a.sent();
                 console.log(e_20);

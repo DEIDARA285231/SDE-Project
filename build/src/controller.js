@@ -326,7 +326,7 @@ exports.plainITAD = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.getStoreLow = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var plain, store, storeLow;
+    var plain, store, storeLow, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -340,7 +340,12 @@ exports.getStoreLow = function (req, res) { return __awaiter(void 0, void 0, voi
                     res.contentType("json");
                 }
                 if (storeLow["data"].length > 0) {
-                    res.send(JSON.stringify(storeLow["data"][plain][0].price));
+                    response = {
+                        game: plain,
+                        store: store,
+                        storeLowestPrice: storeLow["data"][plain][0].price
+                    };
+                    res.send(response);
                 }
                 else {
                     res.status(404);
@@ -380,7 +385,7 @@ exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, v
 }); };
 //Steam
 exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var appID, steamPrice, infoApp, price, e_1;
+    var appID, steamPrice, response, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -395,9 +400,11 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
                 if (!types_1.isError(steamPrice)) {
                     res.contentType('application/json');
                 }
-                infoApp = steamPrice;
-                price = infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
-                res.send(JSON.stringify(price / 100));
+                response = {
+                    idSteam: appID,
+                    price: steamPrice[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]
+                };
+                res.send(response);
                 return [3 /*break*/, 4];
             case 3:
                 e_1 = _a.sent();
@@ -414,7 +421,7 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var appID, steamPlayers;
+    var appID, steamPlayers, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -426,7 +433,11 @@ exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void
                 if (!types_1.isError(steamPlayers)) {
                     res.contentType('application/json');
                 }
-                res.send(JSON.stringify(steamPlayers["response"]["player_count"]));
+                response = {
+                    idSteam: appID,
+                    activePlayers: steamPlayers["response"]["player_count"]
+                };
+                res.send(response);
                 return [3 /*break*/, 3];
             case 2:
                 res.sendStatus(400);
@@ -514,23 +525,18 @@ exports.searchTwitch = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, streams, streams1;
+    var gameID, streams;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 gameID = helper_1.getStringFromRequest(req, "id");
                 if (!(gameID !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getStreamsTwitch(true, gameID)];
+                return [4 /*yield*/, core_1.getStreamsTwitch(gameID)];
             case 1:
                 streams = _a.sent();
                 res.send(streams);
-                return [3 /*break*/, 4];
-            case 2: return [4 /*yield*/, core_1.getStreamsTwitch(false, "")];
-            case 3:
-                streams1 = _a.sent();
-                res.send(streams1);
-                _a.label = 4;
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 2];
+            case 2: return [2 /*return*/];
         }
     });
 }); };
