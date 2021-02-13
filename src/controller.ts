@@ -380,11 +380,22 @@ export const streamsTwitch = async (req: Request, res: Response) => {
 
 export const videosTwitch = async (req: Request, res: Response) => {
   const gameID = getStringFromRequest(req,"game_id");
+  let periodSet = new Set(["all", "day", "week", "month"])
+  let period = getStringFromRequest(req, "period");
+  period = (periodSet.has(String(period))) ? String(period) : "month";
+
+  let sortSet = new Set(["time", "views"])
+  let sort = getStringFromRequest(req, "sort");
+  sort = (sortSet.has(String(sort))) ? String(sort) : "views";
+
+  let typeSet = new Set(["all", "upload", "archive", "highlight"])
+  let type = getStringFromRequest(req, "type");
+  type = (typeSet.has(String(type))) ? String(type) : "all";
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
 
   if(gameID!==false) {
     //const videos = await getVideosTwitch(gameID);
-    res.send(await getVideosTwitch(gameID));
+    res.send(await getVideosTwitch(gameID, period, sort, type));
   } else {
     res.status(400);
     res.send({error: "Invalid parameter"});

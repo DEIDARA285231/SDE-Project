@@ -405,7 +405,7 @@ export const getStreamsTwitch: (gameID: string) => Promise<TwitchStream[] | Erro
   }
 }
 
-export const getVideosTwitch: (gameID: string) => Promise<TwitchVideo[] | Error> = async (gameID) => {
+export const getVideosTwitch: (gameID: string, period: string, sort: string, type: string) => Promise<TwitchVideo[] | Error> = async (gameID, period, sort, type) => {
 
   try{
     const response: TwitchVideo[] = (await axios.get<any>("https://api.twitch.tv/helix/videos",{
@@ -416,6 +416,9 @@ export const getVideosTwitch: (gameID: string) => Promise<TwitchVideo[] | Error>
       },
       params: {
         game_id: gameID,
+        period: period,
+        sort: sort,
+        type: type
       },
     })).data.data;
     return response

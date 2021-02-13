@@ -601,7 +601,7 @@ exports.getStreamsTwitch = function (gameID) { return __awaiter(void 0, void 0, 
         }
     });
 }); };
-exports.getVideosTwitch = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getVideosTwitch = function (gameID, period, sort, type) { return __awaiter(void 0, void 0, void 0, function () {
     var response, e_20;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -615,6 +615,9 @@ exports.getVideosTwitch = function (gameID) { return __awaiter(void 0, void 0, v
                         },
                         params: {
                             game_id: gameID,
+                            period: period,
+                            sort: sort,
+                            type: type
                         },
                     })];
             case 1:

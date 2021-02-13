@@ -529,7 +529,7 @@ exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, v
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = helper_1.getStringFromRequest(req, "id");
+                gameID = helper_1.getStringFromRequest(req, "game_id");
                 if (!(gameID !== false)) return [3 /*break*/, 2];
                 return [4 /*yield*/, core_1.getStreamsTwitch(gameID)];
             case 1:
@@ -541,15 +541,24 @@ exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.videosTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, _a, _b;
+    var gameID, periodSet, period, sortSet, sort, typeSet, type, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
                 gameID = helper_1.getStringFromRequest(req, "game_id");
+                periodSet = new Set(["all", "day", "week", "month"]);
+                period = helper_1.getStringFromRequest(req, "period");
+                period = (periodSet.has(String(period))) ? String(period) : "month";
+                sortSet = new Set(["time", "views"]);
+                sort = helper_1.getStringFromRequest(req, "sort");
+                sort = (sortSet.has(String(sort))) ? String(sort) : "views";
+                typeSet = new Set(["all", "upload", "archive", "highlight"]);
+                type = helper_1.getStringFromRequest(req, "type");
+                type = (typeSet.has(String(type))) ? String(type) : "all";
                 if (!(gameID !== false)) return [3 /*break*/, 2];
                 //const videos = await getVideosTwitch(gameID);
                 _b = (_a = res).send;
-                return [4 /*yield*/, core_1.getVideosTwitch(gameID)];
+                return [4 /*yield*/, core_1.getVideosTwitch(gameID, period, sort, type)];
             case 1:
                 //const videos = await getVideosTwitch(gameID);
                 _b.apply(_a, [_c.sent()]);
