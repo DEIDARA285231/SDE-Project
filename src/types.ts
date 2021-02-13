@@ -67,7 +67,8 @@ export interface TwitchGames {
   box_art_url: String;
 }
 
-export interface TwitchVideos {
+export interface TwitchVideo {
+  game_id: String;
   user_name: String;
   title: String;
   url: String;
@@ -77,11 +78,16 @@ export interface TwitchVideos {
   duration: string;
 }
 
-export interface TwitchStreams {
+export interface TwitchStream{
   user_name: string;
   viewer_count: number;
   game_name: string;
   game_id: string;
   title: string;
   language: string;
+}
+
+export interface TwitchTopGame{
+  id: string;
+  name: string;
 }
