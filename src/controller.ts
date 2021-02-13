@@ -239,7 +239,12 @@ export const getStoreLow = async (req: Request, res: Response) => {
       res.contentType("json");
     }
     if (storeLow["data"].length >0){
-      res.send(JSON.stringify(storeLow["data"][plain][0].price));
+      const response = {
+        game: plain,
+        store: store,
+        storeLowestPrice: storeLow["data"][plain][0].price
+      }
+      res.send(response);
     }else{
       res.status(404);
       res.send({error: "Not Found"})
@@ -275,9 +280,12 @@ export const priceSteam = async (req: Request, res: Response) => {
       if (!isError(steamPrice)) {
         res.contentType('application/json');
       }
-      let infoApp=steamPrice;
-      let price=infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
-      res.send(JSON.stringify(price/100));
+      
+      const response = {
+        idSteam: appID,
+        price: steamPrice[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]
+      }
+      res.send(response);
     }catch(e){
       res.sendStatus(400);
       res.send({ error: 'Invalid!' });
@@ -296,7 +304,11 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
     if (!isError(steamPlayers)) {
       res.contentType('application/json');
     }
-    res.send(JSON.stringify(steamPlayers["response"]["player_count"]));
+    const response = {
+      idSteam: appID,
+      activePlayers: steamPlayers["response"]["player_count"]
+    }
+    res.send(response);
   } else {
     res.sendStatus(400);
     res.send({ error: 'Invalid name format!' });
