@@ -23,6 +23,7 @@ import {
   getGameVideosIGDB,
   getGameReleasesIGDB,
   getGamePlatformsIGDB,
+  getGameNameByID,
   getPriceSteam,
   getActivePlayersSteam,
   getTwitchGameById,
@@ -44,6 +45,7 @@ import {
 } from './helper';
 
 const ExternalDB = require('../models/Externals')
+import axios from 'axios';
 
 //IGDB
 
@@ -65,34 +67,16 @@ export const gameIGDB = async (req: Request, res: Response) => {
         //non c'è il gioco nel DB
         const game = await getGameIGDB(nameGameInserted);
         if (game !==(undefined)){
-          const externalIds=await getExternalsIGDB(game.id);
-          let indexTwitch=-1, indexSteam=-1, indexGog=-1;
-          for (let i=0; i<externalIds.length; i++){
-            if (externalIds[i].category===14){
-              indexTwitch=i;
-            }else if(externalIds[i].category===1){
-              indexSteam=i;
-            }else if(externalIds[i].category===5){
-              indexGog=i;
+          await axios({
+            url: "http://localhost:3000/api/game/externalGame",
+            method: 'GET',
+            headers: {
+              "Accept": "application/json",
+            },
+            params: {
+              game_id: game.id
             }
-          }
-          const newExternal: Externals = {
-            gameName: game.name,
-            gameId: game.id,
-            twitchId: externalIds[indexTwitch]["uid"]
-          }
-
-          if (indexSteam!==-1){
-            newExternal.steamId=externalIds[indexSteam]["uid"];
-            if (newExternal.steamId !==undefined){
-              const responseItad = await itadGetPlain(newExternal.steamId);
-              newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
-            }
-          }
-          if (indexGog!==-1){
-            newExternal.gogId=externalIds[indexGog]["uid"];
-          }
-          await ExternalDB.create(newExternal);
+          });
           res.send(game);
         }else{
           res.status(404);
@@ -133,6 +117,20 @@ export const genresIGDB = async (req: Request, res: Response) => {
   }
 }
 
+export const gameNameIGDB = async (req: Request, res: Response) => {
+  const gameID = getIdFromRequest(req);
+  if(gameID !== false){
+    const gameName = await getGameNameByID(gameID);
+    if(!isError(gameName)){
+      res.contentType("json");
+    }
+    res.send(gameName);
+  }else{
+    res.status(404);
+    res.send({error: "Game Not Found"})
+  }
+}
+
 export const artworkIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
@@ -164,11 +162,35 @@ export const coverIGDB = async (req: Request, res: Response) => {
 export const externalGameIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
-    const externalSites = await getExternalsIGDB(gameID);
-    if(!isError(externalSites)){
-      res.contentType("json");
+    const externalIds=await getExternalsIGDB(gameID);
+    let indexTwitch=-1, indexSteam=-1, indexGog=-1;
+    for (let i=0; i<externalIds.length; i++){
+      if (externalIds[i].category===14){
+        indexTwitch=i;
+      }else if(externalIds[i].category===1){
+        indexSteam=i;
+      }else if(externalIds[i].category===5){
+        indexGog=i;
+      }
     }
-    res.send(externalSites);
+    const gameName=await getGameNameByID(gameID);
+    const newExternal: Externals = {
+      gameName: gameName["name"],
+      gameId: gameID,
+      twitchId: externalIds[indexTwitch]["uid"]
+    }
+    if (indexSteam!==-1){
+      newExternal.steamId=externalIds[indexSteam]["uid"];
+      if (newExternal.steamId !==undefined){
+        const responseItad = await itadGetPlain(newExternal.steamId);
+        newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
+      }
+    }
+    if (indexGog!==-1){
+      newExternal.gogId=externalIds[indexGog]["uid"];
+    }
+    await ExternalDB.create(newExternal);
+    res.send(newExternal);
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
@@ -276,42 +298,116 @@ export const priceSteam = async (req: Request, res: Response) => {
   const appID = getIdFromRequest(req);
   if (appID!==false) {
     try{
-      const steamPrice = await getPriceSteam(appID);
-      if (!isError(steamPrice)) {
-        res.contentType('application/json');
-      }
-      
-      const response = {
-        idSteam: appID,
-        price: steamPrice[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]
-      }
-      res.send(response);
+      let gameInDB = await ExternalDB.findOne({ gameId: appID });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.steamId !== undefined){
+          const steamPrice = await getPriceSteam(gameInDB.steamId);
+          const response = {
+            game_id: appID,
+            game_name: gameInDB.gameName,
+            price: steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on Steam"})
+        }
+        
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            game_id: appID
+          }
+        });
+        console.log(responseExt)
+        if (responseExt.data.steamId !== undefined){
+          const steamPrice = await getPriceSteam(responseExt.data.steamId);
+          const response = {
+            game_id: appID,
+            game_name: responseExt.data.gameName,
+            price: steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+          }
+          if (!isError(steamPrice)) {
+            res.contentType('json');
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on Steam"})
+        }
+      }    
     }catch(e){
-      res.sendStatus(400);
+      res.status(400);
       res.send({ error: 'Invalid!' });
     }
-
-  } else {
-    res.sendStatus(400);
-    res.send({ error: 'Invalid name format!' });
+  }else {
+    res.status(400);
+    res.send({ error: 'Invalid parameter!' });
   }
 };
 
 export const activePlayersSteam = async (req: Request, res: Response) => {
   const appID = getIdFromRequest(req);
   if (appID!==false) {
-    const steamPlayers = await getActivePlayersSteam(appID);
-    if (!isError(steamPlayers)) {
-      res.contentType('application/json');
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameId: appID });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.steamId !== undefined){
+          const steamPlayers = await getActivePlayersSteam(gameInDB.steamId);
+          const response = {
+            game_id: appID,
+            game_name: gameInDB.gameName,
+            activePlayers: steamPlayers["response"]["player_count"]
+          }
+          
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on Steam"})
+        }
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            game_id: appID
+          }
+        });
+        if (responseExt.data.steamId !== undefined){
+          const steamPlayers = await getActivePlayersSteam(responseExt.data.steamId);
+          const response = {
+            game_id: appID,
+            game_name: responseExt.data.gameName,
+            activePlayers: steamPlayers["response"]["player_count"]
+          }
+          if (!isError(steamPlayers)) {
+            res.contentType('json');
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on Steam"})
+        }
+      }    
+    }catch(e){
+      res.status(400);
+      res.send({ error: 'Invalid!' });
     }
-    const response = {
-      idSteam: appID,
-      activePlayers: steamPlayers["response"]["player_count"]
-    }
-    res.send(response);
-  } else {
-    res.sendStatus(400);
-    res.send({ error: 'Invalid name format!' });
+  }else {
+    res.status(400);
+    res.send({ error: 'Invalid parameter!' });
   }
 };
 
@@ -369,8 +465,41 @@ export const streamsTwitch = async (req: Request, res: Response) => {
   const gameID = getStringFromRequest(req,"game_id");
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
   if(gameID!==false) {
-    const streams = await getStreamsTwitch(gameID);
-    res.send(streams);
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.twitchId !== undefined){
+          const streams = await getStreamsTwitch(gameID);
+          res.send(streams);
+        }else{
+          res.status(404);
+          res.send({error: "Game not broadcasted on Twitch"})
+        }
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            game_id: gameID
+          }
+        });
+        if (responseExt.data.twitchId !== undefined){
+          const streams = await getStreamsTwitch(gameID);
+          res.send(streams);
+        }else{
+          res.status(404);
+          res.send({error: "Game not broadcasted on Twitch"})
+        }
+      }    
+    }catch(e){
+      res.status(400);
+      res.send({ error: 'Invalid!' });
+    }
   } else {
     //ricerca per nome
     //const streams1 = await getStreamsTwitch(false,"");
