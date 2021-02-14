@@ -60,6 +60,24 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
   }
 }
 
+export const getGameNameByID: (id: number) => Promise<any> = async (id) => {
+  try {
+    const response = await axios({
+      url: "https://api.igdb.com/v4/games",
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Client-ID': `${secrets.CLIENT_ID}`,
+          'Authorization': `${secrets.AUTHORIZATION}`,
+      },
+      data: `fields name; where id = ${id};`
+    });
+    return response.data;
+  } catch (e) {
+    return e;
+  }
+}
+
 export const getArtworkIGDB: (
   id: number
 ) => Promise<any> = async (id) => {
@@ -343,7 +361,8 @@ export const getTopGamesTwitch: () => Promise<TwitchTopGame[] | Error> = async (
     return response
     .map(rawdata => ({
       id: rawdata.id,
-      name: rawdata.name
+      name: rawdata.name,
+      box_art_url: rawdata.box_art_url
     }));
   } catch (e) {
     console.log("e");
