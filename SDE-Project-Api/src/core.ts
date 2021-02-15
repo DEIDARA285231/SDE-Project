@@ -94,7 +94,7 @@ export const getCoverIGDB: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+      data: `game: "${gameID}";` //We need to define if we want more parameters to be processed, for example eliminating the  repetitions
     });
     return response.data;
   } catch (e) {
@@ -155,7 +155,7 @@ export const getTopRatedIGDB: () => Promise<any> = async () => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: "name, rating";` //Missing the sort
+      data: `fields: name, rating;` //Missing the sort
     });
     return response.data;
   } catch (e) {
@@ -193,7 +193,7 @@ export const getGameReleasesIGDB: (id: number) => Promise<any> = async (id) => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID};"`
+      data: `where game="${gameID};"`
     });
     return response.data;
   } catch (e) {
@@ -212,7 +212,7 @@ export const getGamePlatformsIGDB: (id: number) => Promise<any> = async (id) => 
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID};"`
+      data: `where game="${gameID};"`
     });
     return response.data;
   } catch (e) {
