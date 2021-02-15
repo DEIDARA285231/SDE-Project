@@ -79,7 +79,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
           const newExternal: Externals = {
             gameName: game.name,
             gameId: game.id,
-            twitchId: externalIds[indexTwitch]["id"]
+            twitchId: externalIds[indexTwitch]["uid"]
           }
 
           if (indexSteam!==-1){
@@ -90,7 +90,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
             }
           }
           if (indexGog!==-1){
-            newExternal.gogId=externalIds[indexGog]["id"];
+            newExternal.gogId=externalIds[indexGog]["uid"];
           }
           await ExternalDB.create(newExternal);
           res.send(game);

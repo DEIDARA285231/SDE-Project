@@ -97,7 +97,7 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                 newExternal = {
                     gameName: game.name,
                     gameId: game.id,
-                    twitchId: externalIds[indexTwitch]["id"]
+                    twitchId: externalIds[indexTwitch]["uid"]
                 };
                 if (!(indexSteam !== -1)) return [3 /*break*/, 8];
                 newExternal.steamId = externalIds[indexSteam]["uid"];
@@ -109,7 +109,7 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                 _a.label = 8;
             case 8:
                 if (indexGog !== -1) {
-                    newExternal.gogId = externalIds[indexGog]["id"];
+                    newExternal.gogId = externalIds[indexGog]["uid"];
                 }
                 return [4 /*yield*/, ExternalDB.create(newExternal)];
             case 9:
