@@ -10,7 +10,7 @@
  *   It really depends on your project, style and personal preference :)
  */
 
-import { Error, isError, ResponseSteam, TwitchVideos } from './types';
+import { Error, TwitchStream, TwitchTopGame, TwitchVideo } from './types';
 import config from '../config/config';
 import qs from 'qs';
 
@@ -53,6 +53,24 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
       data: `fields *; where id = ${id};`
+    });
+    return response.data[0];
+  } catch (e) {
+    return e;
+  }
+}
+
+export const getGameNameByID: (id: number) => Promise<any> = async (id) => {
+  try {
+    const response = await axios({
+      url: "https://api.igdb.com/v4/games",
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Client-ID': `${secrets.CLIENT_ID}`,
+          'Authorization': `${secrets.AUTHORIZATION}`,
+      },
+      data: `fields name; where id = ${id};`
     });
     return response.data;
   } catch (e) {
@@ -284,7 +302,7 @@ export const itadStoreLow: (plain: string, store: string) => Promise<any | Error
 
 //TWITCH
 
-export const getTwitchGameById: (id: number) => Promise<File | Error> = async (id) => {
+export const getTwitchGameById: (id: string) => Promise<File | Error> = async (id) => {
 
   const gameID = id;
 
@@ -330,17 +348,22 @@ export const getTwitchGameByName: (name: string) => Promise<File | Error> = asyn
   }
 }
 
-export const getTopGamesTwitch: () => Promise<File | Error> = async () => {
+export const getTopGamesTwitch: () => Promise<TwitchTopGame[] | Error> = async () => {
 
   try{
-    const response = await axios.get<File>("https://api.twitch.tv/helix/games/top",{
+    const response: TwitchTopGame[] =(await axios.get<any>("https://api.twitch.tv/helix/games/top",{
       responseType: "json",
       headers: {
         "Authorization": secrets.AUTHORIZATION,
         "Client-Id": secrets.CLIENT_ID
       }
-    });
-    return response.data;
+    })).data.data;
+    return response
+    .map(rawdata => ({
+      id: rawdata.id,
+      name: rawdata.name,
+      box_art_url: rawdata.box_art_url
+    }));
   } catch (e) {
     console.log("e");
     return {
@@ -371,43 +394,10 @@ export const getSearchTwitch: (query: string) => Promise<File | Error> = async (
   }
 }
 
-export const getStreamsTwitch: (param: Boolean, gameID: string) => Promise<File | Error> = async (param, gameID) => {
+export const getStreamsTwitch: (gameID: string) => Promise<TwitchStream[] | Error> = async (gameID) => {
 
   try{
-    if(param===true) {
-      const response = await axios.get<File>("https://api.twitch.tv/helix/streams",{
-        responseType: "json",
-        headers: {
-          "Authorization": secrets.AUTHORIZATION,
-          "Client-Id": secrets.CLIENT_ID
-        },
-        params: {
-          game_id: gameID,
-        },
-      });
-      return response.data;
-    } else {
-      const response1 = await axios.get<File>("https://api.twitch.tv/helix/streams",{
-        responseType: "json",
-        headers: {
-          "Authorization": secrets.AUTHORIZATION,
-          "Client-Id": secrets.CLIENT_ID
-        },
-      });
-      return response1.data;
-    }
-  } catch (e) {
-    console.log(e);
-    return {
-      error: e,
-    };
-  }
-}
-
-export const getVideosTwitch: (gameID: string) => Promise<TwitchVideos[] | Error> = async (gameID) => {
-
-  try{
-    const response = await axios.get<TwitchVideos[]>("https://api.twitch.tv/helix/videos",{
+    const response: TwitchStream[] = (await axios.get<any>("https://api.twitch.tv/helix/streams",{
       responseType: "json",
       headers: {
         "Authorization": secrets.AUTHORIZATION,
@@ -416,8 +406,51 @@ export const getVideosTwitch: (gameID: string) => Promise<TwitchVideos[] | Error
       params: {
         game_id: gameID,
       },
-    });
-    return response.data;
+    })).data.data;
+    return response
+    .map(rawData => ({
+      user_name: rawData.user_name,
+      viewer_count: rawData.viewer_count,
+      game_name: rawData.game_name,
+      game_id: rawData.game_id,
+      title: rawData.title,
+      language: rawData.language
+    }));
+  } catch (e) {
+    console.log(e);
+    return {
+      error: e,
+    };
+  }
+}
+
+export const getVideosTwitch: (gameID: string, period: string, sort: string, type: string) => Promise<TwitchVideo[] | Error> = async (gameID, period, sort, type) => {
+
+  try{
+    const response: TwitchVideo[] = (await axios.get<any>("https://api.twitch.tv/helix/videos",{
+      responseType: "json",
+      headers: {
+        "Authorization": secrets.AUTHORIZATION,
+        "Client-Id": secrets.CLIENT_ID
+      },
+      params: {
+        game_id: gameID,
+        period: period,
+        sort: sort,
+        type: type
+      },
+    })).data.data;
+    return response
+    .map(rawData => ({
+      game_id: gameID,
+      user_name: rawData.user_name,
+      view_count: rawData.view_count,
+      title: rawData.title,
+      language: rawData.language,
+      duration: rawData.duration,
+      url: rawData.url,
+      type: rawData.type
+    }));
   } catch (e) {
     console.log(e);
     return {
