@@ -57,7 +57,7 @@ export const getStringFromRequest: (req: Request, param: string) => string | fal
  * available, false otherwise
  */
 export const getIdFromRequest: (req: Request) => number | false = (req) => {
-  return getNumberFromRequest(req, 'game_id');
+  return getNumberFromRequest(req, 'id');
 };
 
 /**

@@ -74,7 +74,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
               "Accept": "application/json",
             },
             params: {
-              game_id: game.id
+              id: game.id
             }
           });
           res.send(game);
@@ -308,7 +308,7 @@ export const priceSteam = async (req: Request, res: Response) => {
         if (gameInDB.steamId !== undefined){
           const steamPrice = await getPriceSteam(gameInDB.steamId);
           const response = {
-            game_id: appID,
+            id: appID,
             game_name: gameInDB.gameName,
             price: steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
           }
@@ -323,14 +323,14 @@ export const priceSteam = async (req: Request, res: Response) => {
           url: "http://localhost:3000/api/game/externalGame",
           method: 'GET',
           params: {
-            game_id: appID
+            id: appID
           }
         });
         console.log(responseExt)
         if (responseExt.data.steamId !== undefined){
           const steamPrice = await getPriceSteam(responseExt.data.steamId);
           const response = {
-            game_id: appID,
+            id: appID,
             game_name: responseExt.data.gameName,
             price: steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
           }
@@ -367,7 +367,7 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
         if (gameInDB.steamId !== undefined){
           const steamPlayers = await getActivePlayersSteam(gameInDB.steamId);
           const response = {
-            game_id: appID,
+            id: appID,
             game_name: gameInDB.gameName,
             activePlayers: steamPlayers["response"]["player_count"]
           }
@@ -382,13 +382,13 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
           url: "http://localhost:3000/api/game/externalGame",
           method: 'GET',
           params: {
-            game_id: appID
+            id: appID
           }
         });
         if (responseExt.data.steamId !== undefined){
           const steamPlayers = await getActivePlayersSteam(responseExt.data.steamId);
           const response = {
-            game_id: appID,
+            id: appID,
             game_name: responseExt.data.gameName,
             activePlayers: steamPlayers["response"]["player_count"]
           }
@@ -462,7 +462,7 @@ export const searchTwitch = async (req: Request, res: Response) => {
 };
 
 export const streamsTwitch = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"game_id");
+  const gameID = getIdFromRequest(req);
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
   if(gameID!==false) {
     try{
@@ -474,7 +474,7 @@ export const streamsTwitch = async (req: Request, res: Response) => {
           res.contentType('json');
         }
         if (gameInDB.twitchId !== undefined){
-          const streams = await getStreamsTwitch(gameID);
+          const streams = await getStreamsTwitch(gameInDB.twitchId);
           res.send(streams);
         }else{
           res.status(404);
@@ -489,7 +489,7 @@ export const streamsTwitch = async (req: Request, res: Response) => {
           }
         });
         if (responseExt.data.twitchId !== undefined){
-          const streams = await getStreamsTwitch(gameID);
+          const streams = await getStreamsTwitch(responseExt.data.twitchId);
           res.send(streams);
         }else{
           res.status(404);
@@ -508,7 +508,7 @@ export const streamsTwitch = async (req: Request, res: Response) => {
 };
 
 export const videosTwitch = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"game_id");
+  const gameID = getStringFromRequest(req,"id");
   let periodSet = new Set(["all", "day", "week", "month"])
   let period = getStringFromRequest(req, "period");
   period = (periodSet.has(String(period))) ? String(period) : "month";
