@@ -90,7 +90,7 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                             "Accept": "application/json",
                         },
                         params: {
-                            game_id: game.id
+                            id: game.id
                         }
                     })];
             case 6:
@@ -224,11 +224,13 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
         switch (_a.label) {
             case 0:
                 gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 6];
+                if (!(gameID !== false)) return [3 /*break*/, 8];
                 return [4 /*yield*/, core_1.getExternalsIGDB(gameID)];
             case 1:
                 externalIds = _a.sent();
                 indexTwitch = -1, indexSteam = -1, indexGog = -1;
+                console.log(externalIds);
+                if (!(externalIds.length > 0)) return [3 /*break*/, 6];
                 for (i = 0; i < externalIds.length; i++) {
                     if (externalIds[i].category === 14) {
                         indexTwitch = i;
@@ -269,7 +271,12 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                 res.status(400);
                 res.send({ error: "Invalid ID" });
                 _a.label = 7;
-            case 7: return [2 /*return*/];
+            case 7: return [3 /*break*/, 9];
+            case 8:
+                res.status(400);
+                res.send({ error: "Invalid ID" });
+                _a.label = 9;
+            case 9: return [2 /*return*/];
         }
     });
 }); };
@@ -443,7 +450,7 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
             case 3:
                 steamPrice = _a.sent();
                 response = {
-                    game_id: appID,
+                    id: appID,
                     game_name: gameInDB.gameName,
                     price: steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"] / 100
                 };
@@ -458,7 +465,7 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
                     url: "http://localhost:3000/api/game/externalGame",
                     method: 'GET',
                     params: {
-                        game_id: appID
+                        id: appID
                     }
                 })];
             case 7:
@@ -469,7 +476,7 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
             case 8:
                 steamPrice = _a.sent();
                 response = {
-                    game_id: appID,
+                    id: appID,
                     game_name: responseExt.data.gameName,
                     price: steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"] / 100
                 };
@@ -486,7 +493,6 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
             case 11:
                 e_1 = _a.sent();
                 res.status(400);
-                console.log(e_1);
                 res.send({ error: 'Invalid!' });
                 return [3 /*break*/, 12];
             case 12: return [3 /*break*/, 14];
@@ -499,36 +505,85 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var appID, steamPlayers, response;
+    var appID, gameInDB, steamPlayers, response, responseExt, steamPlayers, response, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 appID = helper_1.getIdFromRequest(req);
-                if (!(appID !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getActivePlayersSteam(appID)];
+                if (!(appID !== false)) return [3 /*break*/, 13];
+                _a.label = 1;
             case 1:
-                steamPlayers = _a.sent();
-                if (!types_1.isError(steamPlayers)) {
-                    res.contentType('application/json');
+                _a.trys.push([1, 11, , 12]);
+                return [4 /*yield*/, ExternalDB.findOne({ gameId: appID })];
+            case 2:
+                gameInDB = _a.sent();
+                if (!gameInDB) return [3 /*break*/, 6];
+                //c'è il gioco nel DB
+                if (!types_1.isError(gameInDB)) {
+                    res.contentType('json');
                 }
+                if (!(gameInDB.steamId !== undefined)) return [3 /*break*/, 4];
+                return [4 /*yield*/, core_1.getActivePlayersSteam(gameInDB.steamId)];
+            case 3:
+                steamPlayers = _a.sent();
                 response = {
-                    idSteam: appID,
+                    id: appID,
+                    game_name: gameInDB.gameName,
                     activePlayers: steamPlayers["response"]["player_count"]
                 };
                 res.send(response);
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 5];
+            case 4:
+                res.status(404);
+                res.send({ error: "Game not on Steam" });
+                _a.label = 5;
+            case 5: return [3 /*break*/, 10];
+            case 6: return [4 /*yield*/, axios_1.default({
+                    url: "http://localhost:3000/api/game/externalGame",
+                    method: 'GET',
+                    params: {
+                        id: appID
+                    }
+                })];
+            case 7:
+                responseExt = _a.sent();
+                if (!(responseExt.data.steamId !== undefined)) return [3 /*break*/, 9];
+                return [4 /*yield*/, core_1.getActivePlayersSteam(responseExt.data.steamId)];
+            case 8:
+                steamPlayers = _a.sent();
+                response = {
+                    id: appID,
+                    game_name: responseExt.data.gameName,
+                    activePlayers: steamPlayers["response"]["player_count"]
+                };
+                if (!types_1.isError(steamPlayers)) {
+                    res.contentType('json');
+                }
+                res.send(response);
+                return [3 /*break*/, 10];
+            case 9:
+                res.status(404);
+                res.send({ error: "Game not on Steam" });
+                _a.label = 10;
+            case 10: return [3 /*break*/, 12];
+            case 11:
+                e_2 = _a.sent();
                 res.status(400);
-                res.send({ error: 'Invalid name format!' });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                res.send({ error: 'Invalid!' });
+                return [3 /*break*/, 12];
+            case 12: return [3 /*break*/, 14];
+            case 13:
+                res.status(400);
+                res.send({ error: 'Invalid parameter!' });
+                _a.label = 14;
+            case 14: return [2 /*return*/];
         }
     });
 }); };
 //Twitch
 //Ok, already returns exactly id, name and box_art_url
 exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, gameName, game, game;
+    var gameID, gameName, gameInDB, game, responseExt, game, e_3, gameInDB, game_1, responseExt, gameInDBNew, game_2, e_4, game;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -537,32 +592,130 @@ exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void
                 if (!(gameID !== false && gameName !== false)) return [3 /*break*/, 1];
                 res.status(400);
                 res.send({ error: "Provide only game id OR game name" });
-                return [3 /*break*/, 6];
+                return [3 /*break*/, 34];
             case 1:
-                if (!(gameID !== false)) return [3 /*break*/, 3];
-                return [4 /*yield*/, core_1.getTwitchGameById(gameID)];
+                if (!(gameID !== false)) return [3 /*break*/, 14];
+                _a.label = 2;
             case 2:
-                game = _a.sent();
-                if (!types_1.isError(game)) {
-                    res.contentType("json");
-                }
-                res.send(game);
-                return [3 /*break*/, 6];
+                _a.trys.push([2, 12, , 13]);
+                return [4 /*yield*/, ExternalDB.findOne({ gameId: gameID })];
             case 3:
-                if (!(gameName !== false)) return [3 /*break*/, 5];
-                return [4 /*yield*/, core_1.getTwitchGameByName(gameName)];
+                gameInDB = _a.sent();
+                if (!gameInDB) return [3 /*break*/, 7];
+                //c'è il gioco nel DB
+                if (!types_1.isError(gameInDB)) {
+                    res.contentType('json');
+                }
+                if (!(gameInDB.twitchId !== undefined)) return [3 /*break*/, 5];
+                return [4 /*yield*/, core_1.getTwitchGameById(String(gameInDB.twitchId))];
             case 4:
                 game = _a.sent();
-                if (!types_1.isError(game)) {
-                    res.contentType("json");
-                }
                 res.send(game);
                 return [3 /*break*/, 6];
             case 5:
+                res.status(404);
+                res.send({ error: "Game not broadcasted on Twitch" });
+                _a.label = 6;
+            case 6: return [3 /*break*/, 11];
+            case 7: return [4 /*yield*/, axios_1.default({
+                    url: "http://localhost:3000/api/game/externalGame",
+                    method: 'GET',
+                    params: {
+                        id: gameID
+                    }
+                })];
+            case 8:
+                responseExt = _a.sent();
+                if (!(responseExt.data.twitchId !== undefined)) return [3 /*break*/, 10];
+                return [4 /*yield*/, core_1.getTwitchGameById(String(responseExt.data.twitchId))];
+            case 9:
+                game = _a.sent();
+                res.send(game);
+                return [3 /*break*/, 11];
+            case 10:
+                res.status(404);
+                res.send({ error: "Game not broadcasted on Twitch" });
+                _a.label = 11;
+            case 11: return [3 /*break*/, 13];
+            case 12:
+                e_3 = _a.sent();
+                res.status(400);
+                res.send({ error: 'Invalid!' });
+                return [3 /*break*/, 13];
+            case 13: return [3 /*break*/, 34];
+            case 14:
+                if (!(gameName !== false)) return [3 /*break*/, 33];
+                _a.label = 15;
+            case 15:
+                _a.trys.push([15, 30, , 31]);
+                return [4 /*yield*/, ExternalDB.findOne({ gameName: gameName })];
+            case 16:
+                gameInDB = _a.sent();
+                if (!gameInDB) return [3 /*break*/, 20];
+                if (!(gameInDB.twitchId !== undefined)) return [3 /*break*/, 18];
+                return [4 /*yield*/, core_1.getTwitchGameById(String(gameInDB.twitchId))];
+            case 17:
+                game_1 = _a.sent();
+                res.send(game_1);
+                return [3 /*break*/, 19];
+            case 18:
+                res.status(404);
+                res.send({ error: "Game not broadcasted on Twitch" });
+                _a.label = 19;
+            case 19: return [3 /*break*/, 29];
+            case 20: return [4 /*yield*/, axios_1.default({
+                    url: "http://localhost:3000/api/games",
+                    method: 'GET',
+                    params: {
+                        name: gameName
+                    }
+                })];
+            case 21:
+                responseExt = _a.sent();
+                if (!(responseExt.data.id !== undefined)) return [3 /*break*/, 28];
+                return [4 /*yield*/, ExternalDB.findOne({ gameId: responseExt.data.id })];
+            case 22:
+                gameInDBNew = _a.sent();
+                if (!gameInDBNew) return [3 /*break*/, 26];
+                if (!(gameInDBNew.twitchId !== undefined)) return [3 /*break*/, 24];
+                return [4 /*yield*/, core_1.getTwitchGameById(String(gameInDBNew.twitchId))];
+            case 23:
+                game_2 = _a.sent();
+                res.send(game_2);
+                return [3 /*break*/, 25];
+            case 24:
+                res.status(404);
+                res.send({ error: "Game not broadcasted on Twitch" });
+                _a.label = 25;
+            case 25: return [3 /*break*/, 27];
+            case 26:
+                res.status(400);
+                res.send({ error: "Error" });
+                _a.label = 27;
+            case 27: return [3 /*break*/, 29];
+            case 28:
+                res.status(404);
+                res.send({ error: "Game not Found" });
+                _a.label = 29;
+            case 29: return [3 /*break*/, 31];
+            case 30:
+                e_4 = _a.sent();
+                res.status(400);
+                res.send({ error: 'Invalid!' });
+                return [3 /*break*/, 31];
+            case 31: return [4 /*yield*/, core_1.getTwitchGameByName(gameName)];
+            case 32:
+                game = _a.sent();
+                if (!types_1.isError(game)) {
+                    res.contentType("json");
+                }
+                res.send(game);
+                return [3 /*break*/, 34];
+            case 33:
                 res.status(400);
                 res.send({ error: "Invalid parameter" });
-                _a.label = 6;
-            case 6: return [2 /*return*/];
+                _a.label = 34;
+            case 34: return [2 /*return*/];
         }
     });
 }); };
@@ -603,27 +756,70 @@ exports.searchTwitch = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, streams;
+    var gameID, gameInDB, streams, responseExt, streams, e_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = helper_1.getStringFromRequest(req, "game_id");
-                if (!(gameID !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getStreamsTwitch(gameID)];
+                gameID = helper_1.getIdFromRequest(req);
+                if (!(gameID !== false)) return [3 /*break*/, 13];
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 11, , 12]);
+                return [4 /*yield*/, ExternalDB.findOne({ gameId: gameID })];
+            case 2:
+                gameInDB = _a.sent();
+                if (!gameInDB) return [3 /*break*/, 6];
+                //c'è il gioco nel DB
+                if (!types_1.isError(gameInDB)) {
+                    res.contentType('json');
+                }
+                if (!(gameInDB.twitchId !== undefined)) return [3 /*break*/, 4];
+                return [4 /*yield*/, core_1.getStreamsTwitch(String(gameInDB.twitchId))];
+            case 3:
                 streams = _a.sent();
                 res.send(streams);
-                return [3 /*break*/, 2];
-            case 2: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 4:
+                res.status(404);
+                res.send({ error: "Game not broadcasted on Twitch" });
+                _a.label = 5;
+            case 5: return [3 /*break*/, 10];
+            case 6: return [4 /*yield*/, axios_1.default({
+                    url: "http://localhost:3000/api/game/externalGame",
+                    method: 'GET',
+                    params: {
+                        id: gameID
+                    }
+                })];
+            case 7:
+                responseExt = _a.sent();
+                if (!(responseExt.data.twitchId !== undefined)) return [3 /*break*/, 9];
+                return [4 /*yield*/, core_1.getStreamsTwitch(String(responseExt.data.twitchId))];
+            case 8:
+                streams = _a.sent();
+                res.send(streams);
+                return [3 /*break*/, 10];
+            case 9:
+                res.status(404);
+                res.send({ error: "Game not broadcasted on Twitch" });
+                _a.label = 10;
+            case 10: return [3 /*break*/, 12];
+            case 11:
+                e_5 = _a.sent();
+                res.status(400);
+                res.send({ error: 'Invalid!' });
+                return [3 /*break*/, 12];
+            case 12: return [3 /*break*/, 13];
+            case 13: return [2 /*return*/];
         }
     });
 }); };
 exports.videosTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, periodSet, period, sortSet, sort, typeSet, type, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var gameID, periodSet, period, sortSet, sort, typeSet, type, gameInDB, _a, _b, responseExt, _c, _d, e_6;
+    return __generator(this, function (_e) {
+        switch (_e.label) {
             case 0:
-                gameID = helper_1.getStringFromRequest(req, "game_id");
+                gameID = helper_1.getIdFromRequest(req);
                 periodSet = new Set(["all", "day", "week", "month"]);
                 period = helper_1.getStringFromRequest(req, "period");
                 period = (periodSet.has(String(period))) ? String(period) : "month";
@@ -633,19 +829,60 @@ exports.videosTwitch = function (req, res) { return __awaiter(void 0, void 0, vo
                 typeSet = new Set(["all", "upload", "archive", "highlight"]);
                 type = helper_1.getStringFromRequest(req, "type");
                 type = (typeSet.has(String(type))) ? String(type) : "all";
-                if (!(gameID !== false)) return [3 /*break*/, 2];
-                //const videos = await getVideosTwitch(gameID);
-                _b = (_a = res).send;
-                return [4 /*yield*/, core_1.getVideosTwitch(gameID, period, sort, type)];
+                if (!(gameID !== false)) return [3 /*break*/, 13];
+                _e.label = 1;
             case 1:
-                //const videos = await getVideosTwitch(gameID);
-                _b.apply(_a, [_c.sent()]);
-                return [3 /*break*/, 3];
+                _e.trys.push([1, 11, , 12]);
+                return [4 /*yield*/, ExternalDB.findOne({ gameId: gameID })];
             case 2:
+                gameInDB = _e.sent();
+                if (!gameInDB) return [3 /*break*/, 6];
+                //c'è il gioco nel DB
+                if (!types_1.isError(gameInDB)) {
+                    res.contentType('json');
+                }
+                if (!(gameInDB.twitchId !== undefined)) return [3 /*break*/, 4];
+                _b = (_a = res).send;
+                return [4 /*yield*/, core_1.getVideosTwitch(String(gameInDB.twitchId), period, sort, type)];
+            case 3:
+                _b.apply(_a, [_e.sent()]);
+                return [3 /*break*/, 5];
+            case 4:
+                res.status(404);
+                res.send({ error: "Game not broadcasted on Twitch" });
+                _e.label = 5;
+            case 5: return [3 /*break*/, 10];
+            case 6: return [4 /*yield*/, axios_1.default({
+                    url: "http://localhost:3000/api/game/externalGame",
+                    method: 'GET',
+                    params: {
+                        id: gameID
+                    }
+                })];
+            case 7:
+                responseExt = _e.sent();
+                if (!(responseExt.data.twitchId !== undefined)) return [3 /*break*/, 9];
+                _d = (_c = res).send;
+                return [4 /*yield*/, core_1.getVideosTwitch(String(responseExt.data.twitchId), period, sort, type)];
+            case 8:
+                _d.apply(_c, [_e.sent()]);
+                return [3 /*break*/, 10];
+            case 9:
+                res.status(404);
+                res.send({ error: "Game not broadcasted on Twitch" });
+                _e.label = 10;
+            case 10: return [3 /*break*/, 12];
+            case 11:
+                e_6 = _e.sent();
+                res.status(400);
+                res.send({ error: 'Error!' });
+                return [3 /*break*/, 12];
+            case 12: return [3 /*break*/, 14];
+            case 13:
                 res.status(400);
                 res.send({ error: "Invalid parameter" });
-                _c.label = 3;
-            case 3: return [2 /*return*/];
+                _e.label = 14;
+            case 14: return [2 /*return*/];
         }
     });
 }); };

@@ -54,7 +54,7 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
       },
       data: `fields *; where id = ${id};`
     });
-    return response.data;
+    return response.data[0];
   } catch (e) {
     return e;
   }
@@ -302,7 +302,7 @@ export const itadStoreLow: (plain: string, store: string) => Promise<any | Error
 
 //TWITCH
 
-export const getTwitchGameById: (id: number) => Promise<File | Error> = async (id) => {
+export const getTwitchGameById: (id: string) => Promise<File | Error> = async (id) => {
 
   const gameID = id;
 

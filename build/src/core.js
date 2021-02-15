@@ -105,7 +105,7 @@ exports.getGameIGDBbyID = function (id) { return __awaiter(void 0, void 0, void 
                     })];
             case 1:
                 response = _a.sent();
-                return [2 /*return*/, response.data];
+                return [2 /*return*/, response.data[0]];
             case 2:
                 e_2 = _a.sent();
                 return [2 /*return*/, e_2];
@@ -549,7 +549,8 @@ exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 
                 return [2 /*return*/, response
                         .map(function (rawdata) { return ({
                         id: rawdata.id,
-                        name: rawdata.name
+                        name: rawdata.name,
+                        box_art_url: rawdata.box_art_url
                     }); })];
             case 2:
                 e_18 = _a.sent();

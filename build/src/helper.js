@@ -48,7 +48,7 @@ exports.getStringFromRequest = function (req, param) {
  * available, false otherwise
  */
 exports.getIdFromRequest = function (req) {
-    return exports.getNumberFromRequest(req, 'game_id');
+    return exports.getNumberFromRequest(req, 'id');
 };
 /**
  * Extract day, month and year from the request query-string
