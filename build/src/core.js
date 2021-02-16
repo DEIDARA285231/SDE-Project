@@ -50,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSpeedrunGameByName = exports.getVideosTwitch = exports.getStreamsTwitch = exports.getSearchTwitch = exports.getTopGamesTwitch = exports.getTwitchGameByName = exports.getTwitchGameById = exports.itadStoreLow = exports.itadGetPlain = exports.getActivePlayersSteam = exports.getPriceSteam = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDB = exports.getGamesFromGenreIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDBbyID = exports.getGameIGDB = void 0;
+exports.getSpeedrunGameByName = exports.getVideosTwitch = exports.getStreamsTwitch = exports.getSearchTwitch = exports.getTopGamesTwitch = exports.getTwitchGameByName = exports.getTwitchGameById = exports.itadStoreLow = exports.itadGetPlain = exports.getActivePlayersSteam = exports.getPriceSteam = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDBbyName = exports.getExternalsIGDB = exports.getGenreFromIdIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDBbyID = exports.getGameIGDB = void 0;
 var qs_1 = __importDefault(require("qs"));
 var axios_1 = __importDefault(require("axios"));
 var secrets_1 = __importDefault(require("../secrets"));
@@ -75,7 +75,7 @@ exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0,
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields *; search \"" + gameName + "\"; limit 1;"
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\"; limit 1"
                     })];
             case 2:
                 response = _a.sent();
@@ -101,11 +101,11 @@ exports.getGameIGDBbyID = function (id) { return __awaiter(void 0, void 0, void 
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields *; where id = " + id + ";"
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = " + id + ";"
                     })];
             case 1:
                 response = _a.sent();
-                return [2 /*return*/, response.data];
+                return [2 /*return*/, response.data[0]];
             case 2:
                 e_2 = _a.sent();
                 return [2 /*return*/, e_2];
@@ -114,31 +114,33 @@ exports.getGameIGDBbyID = function (id) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.getArtworkIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_3;
+    var response, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/artworks",
-                        method: "POST",
-                        responseType: 'arraybuffer',
+                        method: 'POST',
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "game: \"" + gameID + "\";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+                        data: "fields: game, width, height, url; where game = " + id + ";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
                     })];
+            case 1:
+                response = (_a.sent()).data;
+                return [2 /*return*/, response.map(function (rawData) { return ({
+                        id: rawData.id,
+                        game: rawData.game,
+                        width: rawData.width,
+                        height: rawData.height,
+                        url: rawData.url.substring(2).replace("t_thumb", "t_original")
+                    }); })];
             case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 3:
                 e_3 = _a.sent();
                 return [2 /*return*/, e_3];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -152,18 +154,23 @@ exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, 
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
-                        url: 'https://api.igdb.com/v4/covers',
-                        responseType: 'arraybuffer',
-                        method: "POST",
+                        url: "https://api.igdb.com/v4/covers",
+                        method: 'POST',
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "game: \"" + gameID + "\";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+                        data: "fields: game, width, height, url; where game = " + id + ";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
                     })];
             case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
+                response = (_a.sent()).data;
+                return [2 /*return*/, response.map(function (rawData) { return ({
+                        id: rawData.id,
+                        game: rawData.game,
+                        width: rawData.width,
+                        height: rawData.height,
+                        url: rawData.url.substring(2).replace("t_thumb", "t_original")
+                    }); })];
             case 3:
                 e_4 = _a.sent();
                 return [2 /*return*/, e_4];
@@ -171,33 +178,30 @@ exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
-exports.getGamesFromGenreIGDB = function (genre) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameGenres, response, e_5;
+exports.getGenreFromIdIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, e_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameGenres = genre;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/genres",
-                        method: "POST",
+                        method: 'POST',
                         headers: {
                             "Accept": "application/json",
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: *; where name = \"" + gameGenres + "\";"
+                        data: "fields: id, name; where id = " + id + ";"
                     })];
-            case 2:
+            case 1:
                 response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 3:
+                return [2 /*return*/, response.data[0]];
+            case 2:
                 e_5 = _a.sent();
                 console.log(e_5);
                 return [2 /*return*/, e_5];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -218,7 +222,7 @@ exports.getExternalsIGDB = function (id) { return __awaiter(void 0, void 0, void
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields id, category, uid; where game = " + gameID + ";"
+                        data: "fields: game, name, category, uid; where game = " + gameID + ";"
                     })];
             case 2:
                 response = _a.sent();
@@ -230,20 +234,21 @@ exports.getExternalsIGDB = function (id) { return __awaiter(void 0, void 0, void
         }
     });
 }); };
-exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0, function () {
+exports.getExternalsIGDBbyName = function (gameName) { return __awaiter(void 0, void 0, void 0, function () {
     var response, e_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
-                        url: "https://api.igdb.com/v4/games/",
+                        url: "https://api.igdb.com/v4/external_games",
+                        method: 'POST',
                         headers: {
                             "Accept": "application/json",
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: \"name, rating\";" //Missing the sort
+                        data: "fields: game, name, category, uid; where name = \"" + gameName + "\";"
                     })];
             case 1:
                 response = _a.sent();
@@ -255,35 +260,33 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); };
-exports.getGameVideosIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_8;
+exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var response, e_8;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
-                        url: "https://api.igdb.com/v4/game_videos",
-                        responseType: "stream",
+                        url: "https://api.igdb.com/v4/games/",
+                        method: 'POST',
                         headers: {
+                            "Accept": "application/json",
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
-                            "Client-ID": "" + secrets_1.default.CLIENT_ID,
+                            "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "game: \"" + gameID + ";\""
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null;"
                     })];
-            case 2:
+            case 1:
                 response = _a.sent();
                 return [2 /*return*/, response.data];
-            case 3:
+            case 2:
                 e_8 = _a.sent();
                 return [2 /*return*/, e_8];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getGameReleasesIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getGameVideosIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, response, e_9;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -293,11 +296,12 @@ exports.getGameReleasesIGDB = function (id) { return __awaiter(void 0, void 0, v
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
-                        url: "https://api.igdb.com/v4/release_dates",
+                        url: "https://api.igdb.com/v4/game_videos",
+                        method: 'POST',
                         responseType: "stream",
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
-                            "Client-ID": "" + secrets_1.default.CLIENT_ID
+                            "Client-ID": "" + secrets_1.default.CLIENT_ID,
                         },
                         data: "game: \"" + gameID + ";\""
                     })];
@@ -311,7 +315,7 @@ exports.getGameReleasesIGDB = function (id) { return __awaiter(void 0, void 0, v
         }
     });
 }); };
-exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getGameReleasesIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, response, e_10;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -321,7 +325,8 @@ exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, 
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
-                        url: "https://api.igdb.com/v4/platforms",
+                        url: "https://api.igdb.com/v4/release_dates",
+                        method: 'POST',
                         responseType: "stream",
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
@@ -339,36 +344,43 @@ exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, 
         }
     });
 }); };
-//Steam
-exports.getPriceSteam = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_11;
+exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var gameID, response, e_11;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://store.steampowered.com/api/appdetails?appids=" + id + "&currency=eur")];
+                gameID = id;
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, axios_1.default({
+                        url: "https://api.igdb.com/v4/platforms",
+                        method: 'POST',
+                        responseType: "stream",
+                        headers: {
+                            "Authorization": "" + secrets_1.default.AUTHORIZATION,
+                            "Client-ID": "" + secrets_1.default.CLIENT_ID
+                        },
+                        data: "game: \"" + gameID + ";\""
+                    })];
+            case 2:
                 response = _a.sent();
                 return [2 /*return*/, response.data];
-            case 2:
-                e_11 = _a.sent();
-                console.error(e_11);
-                return [2 /*return*/, {
-                        error: e_11,
-                    }];
             case 3:
-                ;
-                return [2 /*return*/];
+                e_11 = _a.sent();
+                return [2 /*return*/, e_11];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.getActivePlayersSteam = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+//Steam
+exports.getPriceSteam = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     var response, e_12;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=" + id)];
+                return [4 /*yield*/, axios_1.default.get("https://store.steampowered.com/api/appdetails?appids=" + id + "&currency=eur")];
             case 1:
                 response = _a.sent();
                 return [2 /*return*/, response.data];
@@ -384,18 +396,13 @@ exports.getActivePlayersSteam = function (id) { return __awaiter(void 0, void 0,
         }
     });
 }); };
-//Is there any deal
-exports.itadGetPlain = function (IDSteam) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getActivePlayersSteam = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     var response, e_13;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get('https://api.isthereanydeal.com/v01/game/plain/id/', { params: {
-                            key: secrets_1.default.ITAD_KEY,
-                            shop: "steam",
-                            ids: "app/" + IDSteam
-                        } })];
+                return [4 /*yield*/, axios_1.default.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=" + id)];
             case 1:
                 response = _a.sent();
                 return [2 /*return*/, response.data];
@@ -411,18 +418,17 @@ exports.itadGetPlain = function (IDSteam) { return __awaiter(void 0, void 0, voi
         }
     });
 }); };
-exports.itadStoreLow = function (plain, store) { return __awaiter(void 0, void 0, void 0, function () {
+//Is there any deal
+exports.itadGetPlain = function (IDSteam) { return __awaiter(void 0, void 0, void 0, function () {
     var response, e_14;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get('https://api.isthereanydeal.com/v01/game/storelow/', { params: {
+                return [4 /*yield*/, axios_1.default.get('https://api.isthereanydeal.com/v01/game/plain/id/', { params: {
                             key: secrets_1.default.ITAD_KEY,
-                            plains: plain,
-                            region: "eu2",
-                            country: "IT",
-                            shops: store,
+                            shop: "steam",
+                            ids: "app/" + IDSteam
                         } })];
             case 1:
                 response = _a.sent();
@@ -439,9 +445,37 @@ exports.itadStoreLow = function (plain, store) { return __awaiter(void 0, void 0
         }
     });
 }); };
+exports.itadStoreLow = function (plain, store) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, e_15;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, axios_1.default.get('https://api.isthereanydeal.com/v01/game/storelow/', { params: {
+                            key: secrets_1.default.ITAD_KEY,
+                            plains: plain,
+                            region: "eu2",
+                            country: "IT",
+                            shops: store,
+                        } })];
+            case 1:
+                response = _a.sent();
+                return [2 /*return*/, response.data];
+            case 2:
+                e_15 = _a.sent();
+                console.error(e_15);
+                return [2 /*return*/, {
+                        error: e_15,
+                    }];
+            case 3:
+                ;
+                return [2 /*return*/];
+        }
+    });
+}); };
 //TWITCH
 exports.getTwitchGameById = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_15;
+    var gameID, response, e_16;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -463,17 +497,17 @@ exports.getTwitchGameById = function (id) { return __awaiter(void 0, void 0, voi
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 3:
-                e_15 = _a.sent();
+                e_16 = _a.sent();
                 console.log("e");
                 return [2 /*return*/, {
-                        error: e_15,
+                        error: e_16,
                     }];
             case 4: return [2 /*return*/];
         }
     });
 }); };
 exports.getTwitchGameByName = function (name) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_16;
+    var response, e_17;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -492,17 +526,17 @@ exports.getTwitchGameByName = function (name) { return __awaiter(void 0, void 0,
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 2:
-                e_16 = _a.sent();
+                e_17 = _a.sent();
                 console.log("e");
                 return [2 /*return*/, {
-                        error: e_16,
+                        error: e_17,
                     }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_17;
+    var response, e_18;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -515,20 +549,25 @@ exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 
                         }
                     })];
             case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
+                response = (_a.sent()).data.data;
+                return [2 /*return*/, response
+                        .map(function (rawdata) { return ({
+                        id: rawdata.id,
+                        name: rawdata.name,
+                        box_art_url: rawdata.box_art_url
+                    }); })];
             case 2:
-                e_17 = _a.sent();
+                e_18 = _a.sent();
                 console.log("e");
                 return [2 /*return*/, {
-                        error: e_17,
+                        error: e_18,
                     }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.getSearchTwitch = function (query) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_18;
+    var response, e_19;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -547,22 +586,21 @@ exports.getSearchTwitch = function (query) { return __awaiter(void 0, void 0, vo
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 2:
-                e_18 = _a.sent();
+                e_19 = _a.sent();
                 console.log("e");
                 return [2 /*return*/, {
-                        error: e_18,
+                        error: e_19,
                     }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getStreamsTwitch = function (param, gameID) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, response1, e_19;
+exports.getStreamsTwitch = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, e_20;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 5, , 6]);
-                if (!(param === true)) return [3 /*break*/, 2];
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/streams", {
                         responseType: "json",
                         headers: {
@@ -574,31 +612,28 @@ exports.getStreamsTwitch = function (param, gameID) { return __awaiter(void 0, v
                         },
                     })];
             case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2: return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/streams", {
-                    responseType: "json",
-                    headers: {
-                        "Authorization": secrets_1.default.AUTHORIZATION,
-                        "Client-Id": secrets_1.default.CLIENT_ID
-                    },
-                })];
-            case 3:
-                response1 = _a.sent();
-                return [2 /*return*/, response1.data];
-            case 4: return [3 /*break*/, 6];
-            case 5:
-                e_19 = _a.sent();
-                console.log(e_19);
+                response = (_a.sent()).data.data;
+                return [2 /*return*/, response
+                        .map(function (rawData) { return ({
+                        user_name: rawData.user_name,
+                        viewer_count: rawData.viewer_count,
+                        game_name: rawData.game_name,
+                        game_id: rawData.game_id,
+                        title: rawData.title,
+                        language: rawData.language
+                    }); })];
+            case 2:
+                e_20 = _a.sent();
+                console.log(e_20);
                 return [2 /*return*/, {
-                        error: e_19,
+                        error: e_20,
                     }];
-            case 6: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getVideosTwitch = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_20;
+exports.getVideosTwitch = function (gameID, period, sort, type) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, e_21;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -611,23 +646,36 @@ exports.getVideosTwitch = function (gameID) { return __awaiter(void 0, void 0, v
                         },
                         params: {
                             game_id: gameID,
+                            period: period,
+                            sort: sort,
+                            type: type
                         },
                     })];
             case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
+                response = (_a.sent()).data.data;
+                return [2 /*return*/, response
+                        .map(function (rawData) { return ({
+                        game_id: gameID,
+                        user_name: rawData.user_name,
+                        view_count: rawData.view_count,
+                        title: rawData.title,
+                        language: rawData.language,
+                        duration: rawData.duration,
+                        url: rawData.url,
+                        type: rawData.type
+                    }); })];
             case 2:
-                e_20 = _a.sent();
-                console.log(e_20);
+                e_21 = _a.sent();
+                console.log(e_21);
                 return [2 /*return*/, {
-                        error: e_20,
+                        error: e_21,
                     }];
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.getSpeedrunGameByName = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_21;
+    var response, e_22;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -646,10 +694,10 @@ exports.getSpeedrunGameByName = function (gameID) { return __awaiter(void 0, voi
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 2:
-                e_21 = _a.sent();
-                console.log(e_21);
+                e_22 = _a.sent();
+                console.log(e_22);
                 return [2 /*return*/, {
-                        error: e_21,
+                        error: e_22,
                     }];
             case 3: return [2 /*return*/];
         }

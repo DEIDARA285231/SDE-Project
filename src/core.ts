@@ -10,13 +10,14 @@
  *   It really depends on your project, style and personal preference :)
  */
 
-import { Error, isError, ResponseSteam, TwitchVideos } from './types';
+import { ArtworkCoverIGDB, Error, TwitchStream, TwitchTopGame, TwitchVideo } from './types';
 import config from '../config/config';
 import qs from 'qs';
 
 import axios from 'axios';
 import secrets from '../secrets';
 import { getGameNameFromRequest } from './helper';
+import { raw } from 'body-parser';
 axios.defaults.paramsSerializer = (params) => {
   return qs.stringify(params, { indices: false });
 };
@@ -34,7 +35,7 @@ export const getGameIGDB: (name: string) => Promise<any> = async (name) => {
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields *; search "${gameName}"; limit 1;`
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit 1`
     });
     return response.data[0];
   } catch (e) {
@@ -52,9 +53,9 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields *; where id = ${id};`
-    });
-    return response.data;
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = ${id};`
+    })
+    return response.data[0];
   } catch (e) {
     return e;
   }
@@ -63,19 +64,24 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
 export const getArtworkIGDB: (
   id: number
 ) => Promise<any> = async (id) => {
-  const gameID = id;
+  
   try {
-    const response = await axios({
+    const response : ArtworkCoverIGDB[] = (await axios({
       url: "https://api.igdb.com/v4/artworks",
       method: 'POST',
-      responseType: 'arraybuffer',
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
-    });
-    return response.data;
+      data: `fields: game, width, height, url; where game = ${id};` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+    })).data;
+    return response.map(rawData => ({
+      id: rawData.id,
+      game: rawData.game,
+      width: rawData.width,
+      height: rawData.height,
+      url: rawData.url.substring(2).replace("t_thumb", "t_original")
+    }));
   } catch (e) {
     return e;
   }
@@ -86,26 +92,30 @@ export const getCoverIGDB: (
 ) => Promise<any> = async (id) => {
   const gameID = id;
   try {
-    const response = await axios({
-      url: 'https://api.igdb.com/v4/covers',
-      responseType: 'arraybuffer',
+    const response : ArtworkCoverIGDB[] = (await axios({
+      url: "https://api.igdb.com/v4/covers",
       method: 'POST',
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
-    });
-    return response.data;
+      data: `fields: game, width, height, url; where game = ${id};` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+    })).data;
+    return response.map(rawData => ({
+      id: rawData.id,
+      game: rawData.game,
+      width: rawData.width,
+      height: rawData.height,
+      url: rawData.url.substring(2).replace("t_thumb", "t_original")
+    }));
   } catch (e) {
     return e;
   }
 }
 
-export const getGamesFromGenreIGDB: (
-  genre: string
-) => Promise<any> = async (genre) => {
-  const gameGenres = genre;
+export const getGenreFromIdIGDB: (
+  id: number
+) => Promise<any> = async (id) => {
   try {
     const response = await axios({
       url: "https://api.igdb.com/v4/genres",
@@ -115,9 +125,9 @@ export const getGamesFromGenreIGDB: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: *; where name = "${gameGenres}";`
+      data: `fields: id, name; where id = ${id};`
     });
-    return response.data;
+    return response.data[0];
   } catch (e) {
     console.log(e)
     return e;
@@ -137,7 +147,27 @@ export const getExternalsIGDB: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields id, category, uid; where game = ${gameID};`
+      data: `fields: game, name, category, uid; where game = ${gameID};`
+    });
+    return response.data;
+  } catch (e) {
+    return e;
+  }
+}
+
+export const getExternalsIGDBbyName: (
+  gameName: string
+) => Promise<any> = async (gameName) => {
+  try{
+    const response = await axios({
+      url: "https://api.igdb.com/v4/external_games",
+      method: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
+      },
+      data: `fields: game, name, category, uid; where name = "${gameName}";`
     });
     return response.data;
   } catch (e) {
@@ -155,7 +185,7 @@ export const getTopRatedIGDB: () => Promise<any> = async () => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: "name, rating";` //Missing the sort
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null;`
     });
     return response.data;
   } catch (e) {
@@ -284,7 +314,7 @@ export const itadStoreLow: (plain: string, store: string) => Promise<any | Error
 
 //TWITCH
 
-export const getTwitchGameById: (id: number) => Promise<File | Error> = async (id) => {
+export const getTwitchGameById: (id: string) => Promise<File | Error> = async (id) => {
 
   const gameID = id;
 
@@ -330,17 +360,22 @@ export const getTwitchGameByName: (name: string) => Promise<File | Error> = asyn
   }
 }
 
-export const getTopGamesTwitch: () => Promise<File | Error> = async () => {
+export const getTopGamesTwitch: () => Promise<TwitchTopGame[] | Error> = async () => {
 
   try{
-    const response = await axios.get<File>("https://api.twitch.tv/helix/games/top",{
+    const response: TwitchTopGame[] =(await axios.get<any>("https://api.twitch.tv/helix/games/top",{
       responseType: "json",
       headers: {
         "Authorization": secrets.AUTHORIZATION,
         "Client-Id": secrets.CLIENT_ID
       }
-    });
-    return response.data;
+    })).data.data;
+    return response
+    .map(rawdata => ({
+      id: rawdata.id,
+      name: rawdata.name,
+      box_art_url: rawdata.box_art_url
+    }));
   } catch (e) {
     console.log("e");
     return {
@@ -371,43 +406,10 @@ export const getSearchTwitch: (query: string) => Promise<File | Error> = async (
   }
 }
 
-export const getStreamsTwitch: (param: Boolean, gameID: string) => Promise<File | Error> = async (param, gameID) => {
+export const getStreamsTwitch: (gameID: string) => Promise<TwitchStream[] | Error> = async (gameID) => {
 
   try{
-    if(param===true) {
-      const response = await axios.get<File>("https://api.twitch.tv/helix/streams",{
-        responseType: "json",
-        headers: {
-          "Authorization": secrets.AUTHORIZATION,
-          "Client-Id": secrets.CLIENT_ID
-        },
-        params: {
-          game_id: gameID,
-        },
-      });
-      return response.data;
-    } else {
-      const response1 = await axios.get<File>("https://api.twitch.tv/helix/streams",{
-        responseType: "json",
-        headers: {
-          "Authorization": secrets.AUTHORIZATION,
-          "Client-Id": secrets.CLIENT_ID
-        },
-      });
-      return response1.data;
-    }
-  } catch (e) {
-    console.log(e);
-    return {
-      error: e,
-    };
-  }
-}
-
-export const getVideosTwitch: (gameID: string) => Promise<TwitchVideos[] | Error> = async (gameID) => {
-
-  try{
-    const response = await axios.get<TwitchVideos[]>("https://api.twitch.tv/helix/videos",{
+    const response: TwitchStream[] = (await axios.get<any>("https://api.twitch.tv/helix/streams",{
       responseType: "json",
       headers: {
         "Authorization": secrets.AUTHORIZATION,
@@ -416,8 +418,51 @@ export const getVideosTwitch: (gameID: string) => Promise<TwitchVideos[] | Error
       params: {
         game_id: gameID,
       },
-    });
-    return response.data;
+    })).data.data;
+    return response
+    .map(rawData => ({
+      user_name: rawData.user_name,
+      viewer_count: rawData.viewer_count,
+      game_name: rawData.game_name,
+      game_id: rawData.game_id,
+      title: rawData.title,
+      language: rawData.language
+    }));
+  } catch (e) {
+    console.log(e);
+    return {
+      error: e,
+    };
+  }
+}
+
+export const getVideosTwitch: (gameID: string, period: string, sort: string, type: string) => Promise<TwitchVideo[] | Error> = async (gameID, period, sort, type) => {
+
+  try{
+    const response: TwitchVideo[] = (await axios.get<any>("https://api.twitch.tv/helix/videos",{
+      responseType: "json",
+      headers: {
+        "Authorization": secrets.AUTHORIZATION,
+        "Client-Id": secrets.CLIENT_ID
+      },
+      params: {
+        game_id: gameID,
+        period: period,
+        sort: sort,
+        type: type
+      },
+    })).data.data;
+    return response
+    .map(rawData => ({
+      game_id: gameID,
+      user_name: rawData.user_name,
+      view_count: rawData.view_count,
+      title: rawData.title,
+      language: rawData.language,
+      duration: rawData.duration,
+      url: rawData.url,
+      type: rawData.type
+    }));
   } catch (e) {
     console.log(e);
     return {

@@ -15,7 +15,7 @@ import { isError, Externals } from './types';
 import {
   getGameIGDB,
   getGameIGDBbyID,
-  getGamesFromGenreIGDB,
+  getGenreFromIdIGDB,
   getArtworkIGDB,
   getCoverIGDB,
   getExternalsIGDB,
@@ -33,7 +33,8 @@ import {
   getVideosTwitch,
   getSpeedrunGameByName,
   itadGetPlain,
-  itadStoreLow
+  itadStoreLow,
+  getExternalsIGDBbyName
 } from './core';
 import {
   getDateFromRequest,
@@ -44,6 +45,7 @@ import {
 } from './helper';
 
 const ExternalDB = require('../models/Externals')
+import axios from 'axios';
 
 //IGDB
 
@@ -60,40 +62,53 @@ export const gameIGDB = async (req: Request, res: Response) => {
         }
 
         const game = await getGameIGDBbyID(gameInDB.gameId);
+        if (game.genres !== undefined){
+          for(let i=0;i<game.genres.length; i++){
+            const responseGenre = await axios({
+              url: "http://localhost:3000/api/game/genres",
+              method: 'GET',
+              headers: {
+                "Accept": "application/json",
+              },
+              params: {
+                id: game.genres[i]
+              }
+            })
+            game.genres[i]=responseGenre.data["name"]
+          }
+          res.send(game);
+        }
         res.send(game);
       }else {
         //non c'è il gioco nel DB
         const game = await getGameIGDB(nameGameInserted);
         if (game !==(undefined)){
-          const externalIds=await getExternalsIGDB(game.id);
-          let indexTwitch=-1, indexSteam=-1, indexGog=-1;
-          for (let i=0; i<externalIds.length; i++){
-            if (externalIds[i].category===14){
-              indexTwitch=i;
-            }else if(externalIds[i].category===1){
-              indexSteam=i;
-            }else if(externalIds[i].category===5){
-              indexGog=i;
+          await axios({
+            url: "http://localhost:3000/api/game/externalGame",
+            method: 'GET',
+            headers: {
+              "Accept": "application/json",
+            },
+            params: {
+              id: game.id
             }
-          }
-          const newExternal: Externals = {
-            gameName: game.name,
-            gameId: game.id,
-            twitchId: externalIds[indexTwitch]["uid"]
-          }
-
-          if (indexSteam!==-1){
-            newExternal.steamId=externalIds[indexSteam]["uid"];
-            if (newExternal.steamId !==undefined){
-              const responseItad = await itadGetPlain(newExternal.steamId);
-              newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
+          });
+          if (game.genres !== undefined){
+            for(let i=0;i<game.genres.length; i++){
+              const responseGenre = await axios({
+                url: "http://localhost:3000/api/game/genres",
+                method: 'GET',
+                headers: {
+                  "Accept": "application/json",
+                },
+                params: {
+                  id: game.genres[i]
+                }
+              })
+              game.genres[i]=responseGenre.data["name"]
             }
+            res.send(game);
           }
-          if (indexGog!==-1){
-            newExternal.gogId=externalIds[indexGog]["uid"];
-          }
-          await ExternalDB.create(newExternal);
-          res.send(game);
         }else{
           res.status(404);
           res.send({error: "Game not found"})
@@ -110,6 +125,22 @@ export const gameIGDB = async (req: Request, res: Response) => {
       if (!isError(game)) {
         res.contentType('json');
       }
+      if (game.genres !== undefined){
+        for(let i=0;i<game.genres.length; i++){
+          const responseGenre = await axios({
+            url: "http://localhost:3000/api/game/genres",
+            method: 'GET',
+            headers: {
+              "Accept": "application/json",
+            },
+            params: {
+              id: game.genres[i]
+            }
+          })
+          game.genres[i]=responseGenre.data["name"]
+        }
+        res.send(game);
+      }
       res.send(game);
     }else{
       res.status(400);
@@ -120,13 +151,13 @@ export const gameIGDB = async (req: Request, res: Response) => {
 }
 
 export const genresIGDB = async (req: Request, res: Response) => {
-  const genre = getStringFromRequest(req, "gameGenre");
-  if(genre !== false){
-    const games = await getGamesFromGenreIGDB(genre);
-    if(!isError(games)){
+  const genreID = getIdFromRequest(req)
+  if(genreID !== false){
+    const genre = await getGenreFromIdIGDB(genreID);
+    if(!isError(genre)){
       res.contentType("json");
     }
-    res.send(games);
+    res.send(genre);
   }else{
     res.status(400);
     res.send({error: "Invalid genre"})
@@ -138,7 +169,7 @@ export const artworkIGDB = async (req: Request, res: Response) => {
   if(gameID !== false){
     const gameArtwork = await getArtworkIGDB(gameID);
     if(!isError(gameArtwork)){
-      res.contentType("image/png");
+      res.contentType("json");
     }
     res.send(gameArtwork);
   }else{
@@ -152,7 +183,7 @@ export const coverIGDB = async (req: Request, res: Response) => {
   if(gameID !== false){
     const gameCover = await getCoverIGDB(gameID);
     if(!isError(gameCover)){
-      res.contentType("image/png");
+      res.contentType("json");
     }
     res.send(gameCover);
   }else{
@@ -163,12 +194,75 @@ export const coverIGDB = async (req: Request, res: Response) => {
 
 export const externalGameIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
+  const name = getGameNameFromRequest(req)
   if(gameID !== false){
-    const externalSites = await getExternalsIGDB(gameID);
-    if(!isError(externalSites)){
-      res.contentType("json");
+    const externalIds=await getExternalsIGDB(gameID);
+    let indexTwitch=-1, indexSteam=-1, indexGog=-1;
+    if (externalIds.length > 0){
+      for (let i=0; i<externalIds.length; i++){
+        if (externalIds[i].category===14){
+          indexTwitch=i;
+        }else if(externalIds[i].category===1){
+          indexSteam=i;
+        }else if(externalIds[i].category===5){
+          indexGog=i;
+        }
+      }
+      const newExternal: Externals = {
+        gameName: externalIds[indexTwitch]["name"],
+        gameId: gameID,
+        twitchId: externalIds[indexTwitch]["uid"]
+      }
+      if (indexSteam!==-1){
+        newExternal.steamId=externalIds[indexSteam]["uid"];
+        if (newExternal.steamId !==undefined){
+          const responseItad = await itadGetPlain(newExternal.steamId);
+          newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
+        }
+      }
+      if (indexGog!==-1){
+        newExternal.gogId=externalIds[indexGog]["uid"];
+      }
+      await ExternalDB.create(newExternal);
+      res.send(newExternal);
+    }else{
+      res.status(400);
+      res.send({error: "Invalid ID"})  
     }
-    res.send(externalSites);
+  }else if(name !== false) {
+    const externalIds=await getExternalsIGDBbyName(name);
+    let indexTwitch=-1, indexSteam=-1, indexGog=-1;
+    if (externalIds.length > 0){
+      for (let i=0; i<externalIds.length; i++){
+        if (externalIds[i].category===14){
+          indexTwitch=i;
+        }else if(externalIds[i].category===1){
+          indexSteam=i;
+        }else if(externalIds[i].category===5){
+          indexGog=i;
+        }
+      } 
+      const newExternal: Externals = {
+        gameName: name,
+        gameId: externalIds[indexTwitch]["game"],
+        twitchId: externalIds[indexTwitch]["uid"]
+      }
+      if (indexSteam!==-1){
+        newExternal.steamId=externalIds[indexSteam]["uid"];
+        if (newExternal.steamId !==undefined){
+          const responseItad = await itadGetPlain(newExternal.steamId);
+          newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
+        }
+      }
+      if (indexGog!==-1){
+        newExternal.gogId=externalIds[indexGog]["uid"];
+      }
+      await ExternalDB.create(newExternal);
+      res.send(newExternal);
+    }else{
+      res.status(400);
+      res.send({error: "Invalid ID"})  
+    }
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
@@ -177,6 +271,24 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
 
 export const topRatedIGDB = async (req: Request, res: Response) => {
   const topRated = await getTopRatedIGDB();
+  for (let entry=0; entry < topRated.length; entry++){
+    if (topRated[entry].genres !== undefined){
+      for(let i=0;i<topRated[entry].genres.length; i++){
+        const responseGenre = await axios({
+          url: "http://localhost:3000/api/game/genres",
+          method: 'GET',
+          headers: {
+            "Accept": "application/json",
+          },
+          params: {
+            id: topRated[entry].genres[i]
+          }
+        })
+        topRated[entry].genres[i]=responseGenre.data["name"]
+      }
+    }
+  }
+  
   if(!isError(topRated)){
     res.contentType("json");
   }
@@ -214,15 +326,50 @@ export const releaseIGDB = async (req: Request, res: Response) => {
 export const plainITAD = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
-    const plain = await itadGetPlain(gameID);
-    if(!isError(plain)){
-      res.contentType("json");
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.steamId !== undefined){
+          const plain = await itadGetPlain(gameInDB.steamId);      
+          const response = {
+            id: gameID,
+            steamId: gameInDB.steamId,
+            plain: plain["data"][`app/${gameID}`]
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on IsThereAnyDeal.com"})
+        }
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            id: gameID
+          }
+        });
+        if (responseExt.data.steamId !== undefined){
+          const plain = await itadGetPlain(responseExt.data.steamId);      
+          const response = {
+            id: gameID,
+            steamId: gameInDB.steamId,
+            plain: plain["data"][`app/${gameID}`]
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on IsThereAnyDeal.com"})
+        }
+      }    
+    }catch(e){
+      res.status(400);
+      res.send({ error: 'Invalid!' });
     }
-    const response = {
-      idSteam: gameID,
-      plain: plain["data"][`app/${gameID}`]
-    }
-    res.send(response);
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
@@ -230,21 +377,65 @@ export const plainITAD = async (req: Request, res: Response) => {
 }
 
 export const getStoreLow = async (req: Request, res: Response) => {
-  const plain = getStringFromRequest(req, "plain");
-  //amazonus, origin, epic, steam, gog -> struttura dati per contenerli?
-  const store = getStringFromRequest(req, "store");
-  if(plain !== false && store!=false){
-    const storeLow = await itadStoreLow(plain, store);
-    if(!isError(plain) && !isError(store)){
-      res.contentType("json");
-    }
-    if (storeLow["data"].length >0){
-      res.send(JSON.stringify(storeLow["data"][plain][0].price));
-    }else{
-      res.status(404);
-      res.send({error: "Not Found"})
-    }
+  const gameID = getIdFromRequest(req);
+  let storeSet = new Set(["amazonus", "origin", "epic", "steam", "gog"])
+  let store = getStringFromRequest(req, "store");
+  store = (storeSet.has(String(store))) ? String(store) : "steam";
+  
 
+  if(gameID !== false){
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+      if (gameInDB) {
+        if (gameInDB.itad_plain !== undefined){
+          const storeLow = await itadStoreLow(gameInDB.itad_plain, store);
+          if (storeLow["data"].length >0){
+            const response = {
+              id: gameID,
+              plain: gameInDB.itad_plain,
+              store: store,
+              storeLowestPrice: storeLow["data"][gameInDB.itad_plain][0].price
+            }
+          res.send(response);
+          }else{
+            res.status(404);
+            res.send({error: "Store Low Not Found"})
+          }
+        }else{
+          res.status(404);
+          res.send({error: "Game not on IsThereAnyDeal.com"})
+        }
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            id: gameID
+          }
+        });
+        if (responseExt.data.itad_plain !== undefined){
+          const storeLow = await itadStoreLow(responseExt.data.itad_plain, store);
+          if (storeLow["data"].length >0){
+            const response = {
+              id: gameID,
+              plain: responseExt.data.itad_plain,
+              store: store,
+              storeLowestPrice: storeLow["data"][responseExt.data.itad_plain][0].price
+            }
+          res.send(response);
+          }else{
+            res.status(404);
+            res.send({error: "Store Low Not Found"})
+          }
+        }else{
+          res.status(404);
+          res.send({error: "Game not on IsThereAnyDeal.com"})
+        }
+      }    
+    }catch(e){
+      res.status(400);
+      res.send({ error: 'Invalid!' });
+    }
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
@@ -271,35 +462,115 @@ export const priceSteam = async (req: Request, res: Response) => {
   const appID = getIdFromRequest(req);
   if (appID!==false) {
     try{
-      const steamPrice = await getPriceSteam(appID);
-      if (!isError(steamPrice)) {
-        res.contentType('application/json');
-      }
-      let infoApp=steamPrice;
-      let price=infoApp[appID.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"];
-      res.send(JSON.stringify(price/100));
+      let gameInDB = await ExternalDB.findOne({ gameId: appID });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.steamId !== undefined){
+          const steamPrice = await getPriceSteam(gameInDB.steamId);
+          const response = {
+            id: appID,
+            game_name: gameInDB.gameName,
+            price: steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on Steam"})
+        }
+        
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            id: appID
+          }
+        });
+        
+        if (responseExt.data.steamId !== undefined){
+          const steamPrice = await getPriceSteam(responseExt.data.steamId);
+          const response = {
+            id: appID,
+            game_name: responseExt.data.gameName,
+            price: steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+          }
+          if (!isError(steamPrice)) {
+            res.contentType('json');
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on Steam"})
+        }
+      }    
     }catch(e){
-      res.sendStatus(400);
+      res.status(400);
       res.send({ error: 'Invalid!' });
     }
-
-  } else {
-    res.sendStatus(400);
-    res.send({ error: 'Invalid name format!' });
+  }else {
+    res.status(400);
+    res.send({ error: 'Invalid parameter!' });
   }
 };
 
 export const activePlayersSteam = async (req: Request, res: Response) => {
   const appID = getIdFromRequest(req);
   if (appID!==false) {
-    const steamPlayers = await getActivePlayersSteam(appID);
-    if (!isError(steamPlayers)) {
-      res.contentType('application/json');
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameId: appID });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.steamId !== undefined){
+          const steamPlayers = await getActivePlayersSteam(gameInDB.steamId);
+          const response = {
+            id: appID,
+            game_name: gameInDB.gameName,
+            activePlayers: steamPlayers["response"]["player_count"]
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on Steam"})
+        }
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            id: appID
+          }
+        });
+        if (responseExt.data.steamId !== undefined){
+          const steamPlayers = await getActivePlayersSteam(responseExt.data.steamId);
+          const response = {
+            id: appID,
+            game_name: responseExt.data.gameName,
+            activePlayers: steamPlayers["response"]["player_count"]
+          }
+          if (!isError(steamPlayers)) {
+            res.contentType('json');
+          }
+          res.send(response);
+        }else{
+          res.status(404);
+          res.send({error: "Game not on Steam"})
+        }
+      }    
+    }catch(e){
+      res.status(400);
+      res.send({ error: 'Invalid!' });
     }
-    res.send(JSON.stringify(steamPlayers["response"]["player_count"]));
-  } else {
-    res.sendStatus(400);
-    res.send({ error: 'Invalid name format!' });
+  }else {
+    res.status(400);
+    res.send({ error: 'Invalid parameter!' });
   }
 };
 
@@ -313,18 +584,74 @@ export const gameTwitch = async (req: Request, res: Response) => {
     res.send({error: "Provide only game id OR game name"})
   } else {
     if(gameID !== false){
-      const game = await getTwitchGameById(gameID);
-      if(!isError(game)){
-        res.contentType("json");
+      try{
+        let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+  
+        if (gameInDB) {
+          //c'è il gioco nel DB
+          if (!isError(gameInDB)) {
+            res.contentType('json');
+          }
+          if (gameInDB.twitchId !== undefined){
+            const game = await getTwitchGameById(String(gameInDB.twitchId));
+            res.send(game);
+          }else{
+            res.status(404);
+            res.send({error: "Game not broadcasted on Twitch"})
+          }
+        }else {
+          const responseExt = await axios({
+            url: "http://localhost:3000/api/game/externalGame",
+            method: 'GET',
+            params: {
+              id: gameID
+            }
+          });
+          if (responseExt.data.twitchId !== undefined){
+            const game = await getTwitchGameById(String(responseExt.data.twitchId));
+            res.send(game);
+          }else{
+            res.status(404);
+            res.send({error: "Game not broadcasted on Twitch"})
+          }
+        }    
+      }catch(e){
+        res.status(400);
+        res.send({ error: 'Invalid!' });
       }
-      res.send(game);
     } else {
       if(gameName !== false) {
-        const game = await getTwitchGameByName(gameName);
-        if(!isError(game)){
-          res.contentType("json");
+        try{
+          let gameInDB = await ExternalDB.findOne({ gameName: gameName });
+          if (gameInDB) {
+                        
+            if (gameInDB.twitchId !== undefined){
+              const game = await getTwitchGameById(String(gameInDB.twitchId));
+              res.send(game);
+            }else{
+              res.status(404);
+              res.send({error: "Game not broadcasted on Twitch"})
+            }
+          }else {
+            const responseExt = await axios({
+              url: "http://localhost:3000/api/game/externalGame",
+              method: 'GET',
+              params: {
+                name: gameName
+              }
+            });
+            if (responseExt.data.twitchId !== undefined){
+              const game = await getTwitchGameById(String(responseExt.data.twitchId));
+              res.send(game);
+            }else{
+              res.status(404);
+              res.send({error: "Game not broadcasted on Twitch"})
+            }
+          }    
+        }catch(e){
+          res.status(400);
+          res.send({ error: 'Invalid!' });
         }
-        res.send(game);
       } else {
         res.status(400);
         res.send({error: "Invalid parameter"})
@@ -354,25 +681,100 @@ export const searchTwitch = async (req: Request, res: Response) => {
 };
 
 export const streamsTwitch = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"id");
+  const gameID = getIdFromRequest(req);
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
-
   if(gameID!==false) {
-    const streams = await getStreamsTwitch(true, gameID);
-    res.send(streams);
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.twitchId !== undefined){
+          const streams = await getStreamsTwitch(String(gameInDB.twitchId));
+          res.send(streams);
+        }else{
+          res.status(404);
+          res.send({error: "Game not broadcasted on Twitch"})
+        }
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            id: gameID
+          }
+        });
+        if (responseExt.data.twitchId !== undefined){
+          const streams = await getStreamsTwitch(String(responseExt.data.twitchId));
+          res.send(streams);
+        }else{
+          res.status(404);
+          res.send({error: "Game not broadcasted on Twitch"})
+        }
+      }    
+    }catch(e){
+      res.status(400);
+      res.send({ error: 'Invalid!' });
+    }
   } else {
-    const streams1 = await getStreamsTwitch(false,"");
-    res.send(streams1);
+    //ricerca per nome
+    //const streams1 = await getStreamsTwitch(false,"");
+    //res.send(streams1);
   }
 };
 
 export const videosTwitch = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"game_id");
+  const gameID = getIdFromRequest(req);
+  let periodSet = new Set(["all", "day", "week", "month"])
+  let period = getStringFromRequest(req, "period");
+  period = (periodSet.has(String(period))) ? String(period) : "month";
+
+  let sortSet = new Set(["time", "views"])
+  let sort = getStringFromRequest(req, "sort");
+  sort = (sortSet.has(String(sort))) ? String(sort) : "views";
+
+  let typeSet = new Set(["all", "upload", "archive", "highlight"])
+  let type = getStringFromRequest(req, "type");
+  type = (typeSet.has(String(type))) ? String(type) : "all";
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
 
   if(gameID!==false) {
-    //const videos = await getVideosTwitch(gameID);
-    res.send(await getVideosTwitch(gameID));
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.twitchId !== undefined){
+          res.send(await getVideosTwitch(String(gameInDB.twitchId), period, sort, type));
+        }else{
+          res.status(404);
+          res.send({error: "Game not broadcasted on Twitch"})
+        }
+      }else {
+        const responseExt = await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          params: {
+            id: gameID
+          }
+        });
+        if (responseExt.data.twitchId !== undefined){
+          res.send(await getVideosTwitch(String(responseExt.data.twitchId), period, sort, type));
+        }else{
+          res.status(404);
+          res.send({error: "Game not broadcasted on Twitch"})
+        }
+      }    
+    }catch(e){
+      res.status(400);
+      res.send({ error: 'Error!' });
+    }
   } else {
     res.status(400);
     res.send({error: "Invalid parameter"});
