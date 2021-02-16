@@ -580,11 +580,6 @@ export const gameTwitch = async (req: Request, res: Response) => {
           res.status(400);
           res.send({ error: 'Invalid!' });
         }
-        const game = await getTwitchGameByName(gameName);
-        if(!isError(game)){
-          res.contentType("json");
-        }
-        res.send(game);
       } else {
         res.status(400);
         res.send({error: "Invalid parameter"})
