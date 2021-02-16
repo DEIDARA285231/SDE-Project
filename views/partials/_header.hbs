@@ -5,7 +5,18 @@
       <i class="fas fa-bars"></i>
     </a>
     <ul class="sidenav" id="mobile-demo">
-      <li><a href="/trending">Trending</a></li>
+      <li>
+        <form style="margin: 5px" action="http://localhost:3000/game">
+          <div class="input-group" style="white-space: nowrap; overflow-x: auto;">
+            <div class="input-group-btn" style="display: inline-block">
+              <button class="btn btn-default" style="padding-bottom: 0px" type="submit">
+                GO
+              </button>
+            </div>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Search" style="display: inline-block">
+          </div>
+        </form>
+      </li>
       <li><a href="/dashboard">Dashboard</a></li>
       <li><a href="/auth/logout">Logout</a></li>
     </ul>

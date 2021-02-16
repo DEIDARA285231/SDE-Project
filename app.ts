@@ -15,6 +15,9 @@ const MongoStore = require('connect-mongo')(session)
 import { connect } from './config/db';
 import config from './config/config';
 import router from './src/routes';
+import routerTwitch from './src/twitch/routes';
+import routerSteam from './src/steam/routes';
+import routerItad from './src/itad/routes';
 
 //Passport config
 require('./config/passport')(passport)
@@ -56,6 +59,9 @@ app.use('/auth',require('./routes/auth'))
 
 // Uses router for all routes (we split the server logics and the routes definition)
 app.use('/api/', router);
+app.use('/api/twitch', routerTwitch);
+app.use('/api/steam', routerSteam);
+app.use('/api/itad', routerItad);
 
 // Start listening for requests! :)
 app.listen(config.PORT, config.HOST);
