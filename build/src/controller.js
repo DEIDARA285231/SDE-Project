@@ -49,7 +49,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gameSpeedrun = exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.getStoreLow = exports.plainITAD = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.gameNameIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
+exports.gameSpeedrun = exports.videosTwitch = exports.streamsTwitch = exports.searchTwitch = exports.topGamesTwitch = exports.gameTwitch = exports.activePlayersSteam = exports.priceSteam = exports.platformsIGDB = exports.getStoreLow = exports.plainITAD = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
 var types_1 = require("./types");
 var core_1 = require("./core");
 var helper_1 = require("./helper");
@@ -149,29 +149,6 @@ exports.genresIGDB = function (req, res) { return __awaiter(void 0, void 0, void
         }
     });
 }); };
-exports.gameNameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, gameName;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getGameNameByID(gameID)];
-            case 1:
-                gameName = _a.sent();
-                if (!types_1.isError(gameName)) {
-                    res.contentType("json");
-                }
-                res.send(gameName);
-                return [3 /*break*/, 3];
-            case 2:
-                res.status(404);
-                res.send({ error: "Game Not Found" });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
 exports.artworkIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, gameArtwork;
     return __generator(this, function (_a) {
@@ -219,18 +196,18 @@ exports.coverIGDB = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, externalIds, indexTwitch, indexSteam, indexGog, i, gameName, newExternal, responseItad;
+    var gameID, name, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 8];
+                name = helper_1.getGameNameFromRequest(req);
+                if (!(gameID !== false)) return [3 /*break*/, 7];
                 return [4 /*yield*/, core_1.getExternalsIGDB(gameID)];
             case 1:
                 externalIds = _a.sent();
                 indexTwitch = -1, indexSteam = -1, indexGog = -1;
-                console.log(externalIds);
-                if (!(externalIds.length > 0)) return [3 /*break*/, 6];
+                if (!(externalIds.length > 0)) return [3 /*break*/, 5];
                 for (i = 0; i < externalIds.length; i++) {
                     if (externalIds[i].category === 14) {
                         indexTwitch = i;
@@ -242,41 +219,83 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                         indexGog = i;
                     }
                 }
-                return [4 /*yield*/, core_1.getGameNameByID(gameID)];
-            case 2:
-                gameName = _a.sent();
                 newExternal = {
-                    gameName: gameName["name"],
+                    gameName: externalIds[indexTwitch]["name"],
                     gameId: gameID,
                     twitchId: externalIds[indexTwitch]["uid"]
                 };
-                if (!(indexSteam !== -1)) return [3 /*break*/, 4];
+                if (!(indexSteam !== -1)) return [3 /*break*/, 3];
                 newExternal.steamId = externalIds[indexSteam]["uid"];
-                if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 4];
+                if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 3];
                 return [4 /*yield*/, core_1.itadGetPlain(newExternal.steamId)];
-            case 3:
+            case 2:
                 responseItad = _a.sent();
                 newExternal.itad_plain = responseItad["data"]["app/" + newExternal.steamId];
-                _a.label = 4;
-            case 4:
+                _a.label = 3;
+            case 3:
                 if (indexGog !== -1) {
                     newExternal.gogId = externalIds[indexGog]["uid"];
                 }
                 return [4 /*yield*/, ExternalDB.create(newExternal)];
-            case 5:
+            case 4:
                 _a.sent();
                 res.send(newExternal);
-                return [3 /*break*/, 7];
-            case 6:
+                return [3 /*break*/, 6];
+            case 5:
                 res.status(400);
                 res.send({ error: "Invalid ID" });
-                _a.label = 7;
-            case 7: return [3 /*break*/, 9];
+                _a.label = 6;
+            case 6: return [3 /*break*/, 15];
+            case 7:
+                if (!(name !== false)) return [3 /*break*/, 14];
+                return [4 /*yield*/, core_1.getExternalsIGDBbyName(name)];
             case 8:
+                externalIds = _a.sent();
+                indexTwitch = -1, indexSteam = -1, indexGog = -1;
+                if (!(externalIds.length > 0)) return [3 /*break*/, 12];
+                for (i = 0; i < externalIds.length; i++) {
+                    if (externalIds[i].category === 14) {
+                        indexTwitch = i;
+                    }
+                    else if (externalIds[i].category === 1) {
+                        indexSteam = i;
+                    }
+                    else if (externalIds[i].category === 5) {
+                        indexGog = i;
+                    }
+                }
+                newExternal = {
+                    gameName: name,
+                    gameId: externalIds[indexTwitch]["game"],
+                    twitchId: externalIds[indexTwitch]["uid"]
+                };
+                if (!(indexSteam !== -1)) return [3 /*break*/, 10];
+                newExternal.steamId = externalIds[indexSteam]["uid"];
+                if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 10];
+                return [4 /*yield*/, core_1.itadGetPlain(newExternal.steamId)];
+            case 9:
+                responseItad = _a.sent();
+                newExternal.itad_plain = responseItad["data"]["app/" + newExternal.steamId];
+                _a.label = 10;
+            case 10:
+                if (indexGog !== -1) {
+                    newExternal.gogId = externalIds[indexGog]["uid"];
+                }
+                return [4 /*yield*/, ExternalDB.create(newExternal)];
+            case 11:
+                _a.sent();
+                res.send(newExternal);
+                return [3 /*break*/, 13];
+            case 12:
                 res.status(400);
                 res.send({ error: "Invalid ID" });
-                _a.label = 9;
-            case 9: return [2 /*return*/];
+                _a.label = 13;
+            case 13: return [3 /*break*/, 15];
+            case 14:
+                res.status(400);
+                res.send({ error: "Invalid ID" });
+                _a.label = 15;
+            case 15: return [2 /*return*/];
         }
     });
 }); };
@@ -342,64 +361,161 @@ exports.releaseIGDB = function (req, res) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.plainITAD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, plain, response;
+    var gameID, gameInDB, plain, response, responseExt, plain, response, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.itadGetPlain(gameID)];
+                if (!(gameID !== false)) return [3 /*break*/, 13];
+                _a.label = 1;
             case 1:
-                plain = _a.sent();
-                if (!types_1.isError(plain)) {
-                    res.contentType("json");
+                _a.trys.push([1, 11, , 12]);
+                return [4 /*yield*/, ExternalDB.findOne({ gameId: gameID })];
+            case 2:
+                gameInDB = _a.sent();
+                if (!gameInDB) return [3 /*break*/, 6];
+                //c'è il gioco nel DB
+                if (!types_1.isError(gameInDB)) {
+                    res.contentType('json');
                 }
+                if (!(gameInDB.steamId !== undefined)) return [3 /*break*/, 4];
+                return [4 /*yield*/, core_1.itadGetPlain(gameInDB.steamId)];
+            case 3:
+                plain = _a.sent();
                 response = {
-                    idSteam: gameID,
+                    id: gameID,
+                    steamId: gameInDB.steamId,
                     plain: plain["data"]["app/" + gameID]
                 };
                 res.send(response);
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 5];
+            case 4:
+                res.status(404);
+                res.send({ error: "Game not on IsThereAnyDeal.com" });
+                _a.label = 5;
+            case 5: return [3 /*break*/, 10];
+            case 6: return [4 /*yield*/, axios_1.default({
+                    url: "http://localhost:3000/api/game/externalGame",
+                    method: 'GET',
+                    params: {
+                        id: gameID
+                    }
+                })];
+            case 7:
+                responseExt = _a.sent();
+                if (!(responseExt.data.steamId !== undefined)) return [3 /*break*/, 9];
+                return [4 /*yield*/, core_1.itadGetPlain(responseExt.data.steamId)];
+            case 8:
+                plain = _a.sent();
+                response = {
+                    id: gameID,
+                    steamId: gameInDB.steamId,
+                    plain: plain["data"]["app/" + gameID]
+                };
+                res.send(response);
+                return [3 /*break*/, 10];
+            case 9:
+                res.status(404);
+                res.send({ error: "Game not on IsThereAnyDeal.com" });
+                _a.label = 10;
+            case 10: return [3 /*break*/, 12];
+            case 11:
+                e_1 = _a.sent();
+                res.status(400);
+                res.send({ error: 'Invalid!' });
+                return [3 /*break*/, 12];
+            case 12: return [3 /*break*/, 14];
+            case 13:
                 res.status(400);
                 res.send({ error: "Invalid ID" });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                _a.label = 14;
+            case 14: return [2 /*return*/];
         }
     });
 }); };
 exports.getStoreLow = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var plain, store, storeLow, response;
+    var gameID, storeSet, store, gameInDB, storeLow, response, responseExt, storeLow, response, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                plain = helper_1.getStringFromRequest(req, "plain");
+                gameID = helper_1.getIdFromRequest(req);
+                storeSet = new Set(["amazonus", "origin", "epic", "steam", "gog"]);
                 store = helper_1.getStringFromRequest(req, "store");
-                if (!(plain !== false && store != false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.itadStoreLow(plain, store)];
+                store = (storeSet.has(String(store))) ? String(store) : "steam";
+                if (!(gameID !== false)) return [3 /*break*/, 13];
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 11, , 12]);
+                return [4 /*yield*/, ExternalDB.findOne({ gameId: gameID })];
+            case 2:
+                gameInDB = _a.sent();
+                if (!gameInDB) return [3 /*break*/, 6];
+                if (!(gameInDB.itad_plain !== undefined)) return [3 /*break*/, 4];
+                return [4 /*yield*/, core_1.itadStoreLow(gameInDB.itad_plain, store)];
+            case 3:
                 storeLow = _a.sent();
-                if (!types_1.isError(plain) && !types_1.isError(store)) {
-                    res.contentType("json");
-                }
                 if (storeLow["data"].length > 0) {
                     response = {
-                        game: plain,
+                        id: gameID,
+                        plain: gameInDB.itad_plain,
                         store: store,
-                        storeLowestPrice: storeLow["data"][plain][0].price
+                        storeLowestPrice: storeLow["data"][gameInDB.itad_plain][0].price
                     };
                     res.send(response);
                 }
                 else {
                     res.status(404);
-                    res.send({ error: "Not Found" });
+                    res.send({ error: "Store Low Not Found" });
                 }
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 5];
+            case 4:
+                res.status(404);
+                res.send({ error: "Game not on IsThereAnyDeal.com" });
+                _a.label = 5;
+            case 5: return [3 /*break*/, 10];
+            case 6: return [4 /*yield*/, axios_1.default({
+                    url: "http://localhost:3000/api/game/externalGame",
+                    method: 'GET',
+                    params: {
+                        id: gameID
+                    }
+                })];
+            case 7:
+                responseExt = _a.sent();
+                if (!(responseExt.data.itad_plain !== undefined)) return [3 /*break*/, 9];
+                return [4 /*yield*/, core_1.itadStoreLow(responseExt.data.itad_plain, store)];
+            case 8:
+                storeLow = _a.sent();
+                if (storeLow["data"].length > 0) {
+                    response = {
+                        id: gameID,
+                        plain: responseExt.data.itad_plain,
+                        store: store,
+                        storeLowestPrice: storeLow["data"][responseExt.data.itad_plain][0].price
+                    };
+                    res.send(response);
+                }
+                else {
+                    res.status(404);
+                    res.send({ error: "Store Low Not Found" });
+                }
+                return [3 /*break*/, 10];
+            case 9:
+                res.status(404);
+                res.send({ error: "Game not on IsThereAnyDeal.com" });
+                _a.label = 10;
+            case 10: return [3 /*break*/, 12];
+            case 11:
+                e_2 = _a.sent();
+                res.status(400);
+                res.send({ error: 'Invalid!' });
+                return [3 /*break*/, 12];
+            case 12: return [3 /*break*/, 14];
+            case 13:
                 res.status(400);
                 res.send({ error: "Invalid ID" });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                _a.label = 14;
+            case 14: return [2 /*return*/];
         }
     });
 }); };
@@ -428,7 +544,7 @@ exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, v
 }); };
 //Steam
 exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var appID, gameInDB, steamPrice, response, responseExt, steamPrice, response, e_1;
+    var appID, gameInDB, steamPrice, response, responseExt, steamPrice, response, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -470,7 +586,6 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
                 })];
             case 7:
                 responseExt = _a.sent();
-                console.log(responseExt);
                 if (!(responseExt.data.steamId !== undefined)) return [3 /*break*/, 9];
                 return [4 /*yield*/, core_1.getPriceSteam(responseExt.data.steamId)];
             case 8:
@@ -491,7 +606,7 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
                 _a.label = 10;
             case 10: return [3 /*break*/, 12];
             case 11:
-                e_1 = _a.sent();
+                e_3 = _a.sent();
                 res.status(400);
                 res.send({ error: 'Invalid!' });
                 return [3 /*break*/, 12];
@@ -505,7 +620,7 @@ exports.priceSteam = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var appID, gameInDB, steamPlayers, response, responseExt, steamPlayers, response, e_2;
+    var appID, gameInDB, steamPlayers, response, responseExt, steamPlayers, response, e_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -567,7 +682,7 @@ exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void
                 _a.label = 10;
             case 10: return [3 /*break*/, 12];
             case 11:
-                e_2 = _a.sent();
+                e_4 = _a.sent();
                 res.status(400);
                 res.send({ error: 'Invalid!' });
                 return [3 /*break*/, 12];
@@ -583,7 +698,7 @@ exports.activePlayersSteam = function (req, res) { return __awaiter(void 0, void
 //Twitch
 //Ok, already returns exactly id, name and box_art_url
 exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, gameName, gameInDB, game, responseExt, game, e_3, gameInDB, game_1, responseExt, gameInDBNew, game_2, e_4, game;
+    var gameID, gameName, gameInDB, game, responseExt, game, e_5, gameInDB, game, responseExt, game, e_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -592,7 +707,7 @@ exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void
                 if (!(gameID !== false && gameName !== false)) return [3 /*break*/, 1];
                 res.status(400);
                 res.send({ error: "Provide only game id OR game name" });
-                return [3 /*break*/, 34];
+                return [3 /*break*/, 28];
             case 1:
                 if (!(gameID !== false)) return [3 /*break*/, 14];
                 _a.label = 2;
@@ -638,16 +753,16 @@ exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void
                 _a.label = 11;
             case 11: return [3 /*break*/, 13];
             case 12:
-                e_3 = _a.sent();
+                e_5 = _a.sent();
                 res.status(400);
                 res.send({ error: 'Invalid!' });
                 return [3 /*break*/, 13];
-            case 13: return [3 /*break*/, 34];
+            case 13: return [3 /*break*/, 28];
             case 14:
-                if (!(gameName !== false)) return [3 /*break*/, 33];
+                if (!(gameName !== false)) return [3 /*break*/, 27];
                 _a.label = 15;
             case 15:
-                _a.trys.push([15, 30, , 31]);
+                _a.trys.push([15, 25, , 26]);
                 return [4 /*yield*/, ExternalDB.findOne({ gameName: gameName })];
             case 16:
                 gameInDB = _a.sent();
@@ -655,16 +770,16 @@ exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void
                 if (!(gameInDB.twitchId !== undefined)) return [3 /*break*/, 18];
                 return [4 /*yield*/, core_1.getTwitchGameById(String(gameInDB.twitchId))];
             case 17:
-                game_1 = _a.sent();
-                res.send(game_1);
+                game = _a.sent();
+                res.send(game);
                 return [3 /*break*/, 19];
             case 18:
                 res.status(404);
                 res.send({ error: "Game not broadcasted on Twitch" });
                 _a.label = 19;
-            case 19: return [3 /*break*/, 29];
+            case 19: return [3 /*break*/, 24];
             case 20: return [4 /*yield*/, axios_1.default({
-                    url: "http://localhost:3000/api/games",
+                    url: "http://localhost:3000/api/game/externalGame",
                     method: 'GET',
                     params: {
                         name: gameName
@@ -672,50 +787,28 @@ exports.gameTwitch = function (req, res) { return __awaiter(void 0, void 0, void
                 })];
             case 21:
                 responseExt = _a.sent();
-                if (!(responseExt.data.id !== undefined)) return [3 /*break*/, 28];
-                return [4 /*yield*/, ExternalDB.findOne({ gameId: responseExt.data.id })];
+                if (!(responseExt.data.twitchId !== undefined)) return [3 /*break*/, 23];
+                return [4 /*yield*/, core_1.getTwitchGameById(String(responseExt.data.twitchId))];
             case 22:
-                gameInDBNew = _a.sent();
-                if (!gameInDBNew) return [3 /*break*/, 26];
-                if (!(gameInDBNew.twitchId !== undefined)) return [3 /*break*/, 24];
-                return [4 /*yield*/, core_1.getTwitchGameById(String(gameInDBNew.twitchId))];
+                game = _a.sent();
+                res.send(game);
+                return [3 /*break*/, 24];
             case 23:
-                game_2 = _a.sent();
-                res.send(game_2);
-                return [3 /*break*/, 25];
-            case 24:
                 res.status(404);
                 res.send({ error: "Game not broadcasted on Twitch" });
-                _a.label = 25;
-            case 25: return [3 /*break*/, 27];
-            case 26:
-                res.status(400);
-                res.send({ error: "Error" });
-                _a.label = 27;
-            case 27: return [3 /*break*/, 29];
-            case 28:
-                res.status(404);
-                res.send({ error: "Game not Found" });
-                _a.label = 29;
-            case 29: return [3 /*break*/, 31];
-            case 30:
-                e_4 = _a.sent();
+                _a.label = 24;
+            case 24: return [3 /*break*/, 26];
+            case 25:
+                e_6 = _a.sent();
                 res.status(400);
                 res.send({ error: 'Invalid!' });
-                return [3 /*break*/, 31];
-            case 31: return [4 /*yield*/, core_1.getTwitchGameByName(gameName)];
-            case 32:
-                game = _a.sent();
-                if (!types_1.isError(game)) {
-                    res.contentType("json");
-                }
-                res.send(game);
-                return [3 /*break*/, 34];
-            case 33:
+                return [3 /*break*/, 26];
+            case 26: return [3 /*break*/, 28];
+            case 27:
                 res.status(400);
                 res.send({ error: "Invalid parameter" });
-                _a.label = 34;
-            case 34: return [2 /*return*/];
+                _a.label = 28;
+            case 28: return [2 /*return*/];
         }
     });
 }); };
@@ -756,7 +849,7 @@ exports.searchTwitch = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, gameInDB, streams, responseExt, streams, e_5;
+    var gameID, gameInDB, streams, responseExt, streams, e_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -805,7 +898,7 @@ exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, v
                 _a.label = 10;
             case 10: return [3 /*break*/, 12];
             case 11:
-                e_5 = _a.sent();
+                e_7 = _a.sent();
                 res.status(400);
                 res.send({ error: 'Invalid!' });
                 return [3 /*break*/, 12];
@@ -815,7 +908,7 @@ exports.streamsTwitch = function (req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.videosTwitch = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, periodSet, period, sortSet, sort, typeSet, type, gameInDB, _a, _b, responseExt, _c, _d, e_6;
+    var gameID, periodSet, period, sortSet, sort, typeSet, type, gameInDB, _a, _b, responseExt, _c, _d, e_8;
     return __generator(this, function (_e) {
         switch (_e.label) {
             case 0:
@@ -873,7 +966,7 @@ exports.videosTwitch = function (req, res) { return __awaiter(void 0, void 0, vo
                 _e.label = 10;
             case 10: return [3 /*break*/, 12];
             case 11:
-                e_6 = _e.sent();
+                e_8 = _e.sent();
                 res.status(400);
                 res.send({ error: 'Error!' });
                 return [3 /*break*/, 12];
