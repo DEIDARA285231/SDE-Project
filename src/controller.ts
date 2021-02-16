@@ -136,7 +136,7 @@ export const coverIGDB = async (req: Request, res: Response) => {
   if(gameID !== false){
     const gameCover = await getCoverIGDB(gameID);
     if(!isError(gameCover)){
-      res.contentType("image/png");
+      res.contentType("json");
     }
     res.send(gameCover);
   }else{

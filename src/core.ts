@@ -10,7 +10,7 @@
  *   It really depends on your project, style and personal preference :)
  */
 
-import { ArtworkIGDB, Error, TwitchStream, TwitchTopGame, TwitchVideo } from './types';
+import { ArtworkCoverIGDB, Error, TwitchStream, TwitchTopGame, TwitchVideo } from './types';
 import config from '../config/config';
 import qs from 'qs';
 
@@ -66,7 +66,7 @@ export const getArtworkIGDB: (
 ) => Promise<any> = async (id) => {
   
   try {
-    const response : ArtworkIGDB[] = (await axios({
+    const response : ArtworkCoverIGDB[] = (await axios({
       url: "https://api.igdb.com/v4/artworks",
       method: 'POST',
       headers: {
@@ -92,17 +92,22 @@ export const getCoverIGDB: (
 ) => Promise<any> = async (id) => {
   const gameID = id;
   try {
-    const response = await axios({
-      url: 'https://api.igdb.com/v4/covers',
-      responseType: 'arraybuffer',
+    const response : ArtworkCoverIGDB[] = (await axios({
+      url: "https://api.igdb.com/v4/covers",
       method: 'POST',
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
-    });
-    return response.data;
+      data: `fields: game, width, height, url; where game = ${id};` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+    })).data;
+    return response.map(rawData => ({
+      id: rawData.id,
+      game: rawData.game,
+      width: rawData.width,
+      height: rawData.height,
+      url: rawData.url.substring(2).replace("t_thumb", "t_original")
+    }));
   } catch (e) {
     return e;
   }

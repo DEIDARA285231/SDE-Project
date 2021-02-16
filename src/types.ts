@@ -31,7 +31,7 @@ export interface Externals{
   itad_plain?: string;
 }
 
-export interface ArtworkIGDB{
+export interface ArtworkCoverIGDB{
   id: number;
   game: number;
   width: number;
