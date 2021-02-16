@@ -11,11 +11,11 @@
 
 import { Request, Response } from 'express';
 
-import { isError, Externals, TwitchStream } from './types';
+import { isError, Externals } from './types';
 import {
   getGameIGDB,
   getGameIGDBbyID,
-  getGamesFromGenreIGDB,
+  getGenreFromIdIGDB,
   getArtworkIGDB,
   getCoverIGDB,
   getExternalsIGDB,
@@ -23,7 +23,6 @@ import {
   getGameVideosIGDB,
   getGameReleasesIGDB,
   getGamePlatformsIGDB,
-  getGameNameByID,
   getPriceSteam,
   getActivePlayersSteam,
   getTwitchGameById,
@@ -34,7 +33,8 @@ import {
   getVideosTwitch,
   getSpeedrunGameByName,
   itadGetPlain,
-  itadStoreLow
+  itadStoreLow,
+  getExternalsIGDBbyName
 } from './core';
 import {
   getDateFromRequest,
@@ -62,6 +62,22 @@ export const gameIGDB = async (req: Request, res: Response) => {
         }
 
         const game = await getGameIGDBbyID(gameInDB.gameId);
+        if (game.genres !== undefined){
+          for(let i=0;i<game.genres.length; i++){
+            const responseGenre = await axios({
+              url: "http://localhost:3000/api/game/genres",
+              method: 'GET',
+              headers: {
+                "Accept": "application/json",
+              },
+              params: {
+                id: game.genres[i]
+              }
+            })
+            game.genres[i]=responseGenre.data["name"]
+          }
+          res.send(game);
+        }
         res.send(game);
       }else {
         //non c'è il gioco nel DB
@@ -77,7 +93,22 @@ export const gameIGDB = async (req: Request, res: Response) => {
               id: game.id
             }
           });
-          res.send(game);
+          if (game.genres !== undefined){
+            for(let i=0;i<game.genres.length; i++){
+              const responseGenre = await axios({
+                url: "http://localhost:3000/api/game/genres",
+                method: 'GET',
+                headers: {
+                  "Accept": "application/json",
+                },
+                params: {
+                  id: game.genres[i]
+                }
+              })
+              game.genres[i]=responseGenre.data["name"]
+            }
+            res.send(game);
+          }
         }else{
           res.status(404);
           res.send({error: "Game not found"})
@@ -94,6 +125,22 @@ export const gameIGDB = async (req: Request, res: Response) => {
       if (!isError(game)) {
         res.contentType('json');
       }
+      if (game.genres !== undefined){
+        for(let i=0;i<game.genres.length; i++){
+          const responseGenre = await axios({
+            url: "http://localhost:3000/api/game/genres",
+            method: 'GET',
+            headers: {
+              "Accept": "application/json",
+            },
+            params: {
+              id: game.genres[i]
+            }
+          })
+          game.genres[i]=responseGenre.data["name"]
+        }
+        res.send(game);
+      }
       res.send(game);
     }else{
       res.status(400);
@@ -104,30 +151,16 @@ export const gameIGDB = async (req: Request, res: Response) => {
 }
 
 export const genresIGDB = async (req: Request, res: Response) => {
-  const genre = getStringFromRequest(req, "gameGenre");
-  if(genre !== false){
-    const games = await getGamesFromGenreIGDB(genre);
-    if(!isError(games)){
+  const genreID = getIdFromRequest(req)
+  if(genreID !== false){
+    const genre = await getGenreFromIdIGDB(genreID);
+    if(!isError(genre)){
       res.contentType("json");
     }
-    res.send(games);
+    res.send(genre);
   }else{
     res.status(400);
     res.send({error: "Invalid genre"})
-  }
-}
-
-export const gameNameIGDB = async (req: Request, res: Response) => {
-  const gameID = getIdFromRequest(req);
-  if(gameID !== false){
-    const gameName = await getGameNameByID(gameID);
-    if(!isError(gameName)){
-      res.contentType("json");
-    }
-    res.send(gameName);
-  }else{
-    res.status(404);
-    res.send({error: "Game Not Found"})
   }
 }
 
@@ -136,7 +169,7 @@ export const artworkIGDB = async (req: Request, res: Response) => {
   if(gameID !== false){
     const gameArtwork = await getArtworkIGDB(gameID);
     if(!isError(gameArtwork)){
-      res.contentType("image/png");
+      res.contentType("json");
     }
     res.send(gameArtwork);
   }else{
@@ -150,7 +183,7 @@ export const coverIGDB = async (req: Request, res: Response) => {
   if(gameID !== false){
     const gameCover = await getCoverIGDB(gameID);
     if(!isError(gameCover)){
-      res.contentType("image/png");
+      res.contentType("json");
     }
     res.send(gameCover);
   }else{
@@ -161,10 +194,10 @@ export const coverIGDB = async (req: Request, res: Response) => {
 
 export const externalGameIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
+  const name = getGameNameFromRequest(req)
   if(gameID !== false){
     const externalIds=await getExternalsIGDB(gameID);
     let indexTwitch=-1, indexSteam=-1, indexGog=-1;
-    console.log(externalIds)
     if (externalIds.length > 0){
       for (let i=0; i<externalIds.length; i++){
         if (externalIds[i].category===14){
@@ -175,10 +208,43 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           indexGog=i;
         }
       }
-      const gameName=await getGameNameByID(gameID);
       const newExternal: Externals = {
-        gameName: gameName["name"],
+        gameName: externalIds[indexTwitch]["name"],
         gameId: gameID,
+        twitchId: externalIds[indexTwitch]["uid"]
+      }
+      if (indexSteam!==-1){
+        newExternal.steamId=externalIds[indexSteam]["uid"];
+        if (newExternal.steamId !==undefined){
+          const responseItad = await itadGetPlain(newExternal.steamId);
+          newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
+        }
+      }
+      if (indexGog!==-1){
+        newExternal.gogId=externalIds[indexGog]["uid"];
+      }
+      await ExternalDB.create(newExternal);
+      res.send(newExternal);
+    }else{
+      res.status(400);
+      res.send({error: "Invalid ID"})  
+    }
+  }else if(name !== false) {
+    const externalIds=await getExternalsIGDBbyName(name);
+    let indexTwitch=-1, indexSteam=-1, indexGog=-1;
+    if (externalIds.length > 0){
+      for (let i=0; i<externalIds.length; i++){
+        if (externalIds[i].category===14){
+          indexTwitch=i;
+        }else if(externalIds[i].category===1){
+          indexSteam=i;
+        }else if(externalIds[i].category===5){
+          indexGog=i;
+        }
+      } 
+      const newExternal: Externals = {
+        gameName: name,
+        gameId: externalIds[indexTwitch]["game"],
         twitchId: externalIds[indexTwitch]["uid"]
       }
       if (indexSteam!==-1){
@@ -205,6 +271,24 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
 
 export const topRatedIGDB = async (req: Request, res: Response) => {
   const topRated = await getTopRatedIGDB();
+  for (let entry=0; entry < topRated.length; entry++){
+    if (topRated[entry].genres !== undefined){
+      for(let i=0;i<topRated[entry].genres.length; i++){
+        const responseGenre = await axios({
+          url: "http://localhost:3000/api/game/genres",
+          method: 'GET',
+          headers: {
+            "Accept": "application/json",
+          },
+          params: {
+            id: topRated[entry].genres[i]
+          }
+        })
+        topRated[entry].genres[i]=responseGenre.data["name"]
+      }
+    }
+  }
+  
   if(!isError(topRated)){
     res.contentType("json");
   }
@@ -406,7 +490,7 @@ export const priceSteam = async (req: Request, res: Response) => {
             id: appID
           }
         });
-        console.log(responseExt)
+        
         if (responseExt.data.steamId !== undefined){
           const steamPrice = await getPriceSteam(responseExt.data.steamId);
           const response = {
@@ -451,7 +535,6 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
             game_name: gameInDB.gameName,
             activePlayers: steamPlayers["response"]["player_count"]
           }
-          
           res.send(response);
         }else{
           res.status(404);
@@ -551,40 +634,24 @@ export const gameTwitch = async (req: Request, res: Response) => {
             }
           }else {
             const responseExt = await axios({
-              url: "http://localhost:3000/api/games",
+              url: "http://localhost:3000/api/game/externalGame",
               method: 'GET',
               params: {
                 name: gameName
               }
             });
-            if (responseExt.data.id !== undefined){
-              let gameInDBNew = await ExternalDB.findOne({ gameId: responseExt.data.id });
-              if (gameInDBNew) {        
-                if (gameInDBNew.twitchId !== undefined){
-                  const game = await getTwitchGameById(String(gameInDBNew.twitchId));
-                  res.send(game);
-                }else{
-                  res.status(404);
-                  res.send({error: "Game not broadcasted on Twitch"})
-                }
-              }else{
-                res.status(400);
-                res.send({error: "Error"})  
-              }
+            if (responseExt.data.twitchId !== undefined){
+              const game = await getTwitchGameById(String(responseExt.data.twitchId));
+              res.send(game);
             }else{
               res.status(404);
-              res.send({error: "Game not Found"})
+              res.send({error: "Game not broadcasted on Twitch"})
             }
           }    
         }catch(e){
           res.status(400);
           res.send({ error: 'Invalid!' });
         }
-        const game = await getTwitchGameByName(gameName);
-        if(!isError(game)){
-          res.contentType("json");
-        }
-        res.send(game);
       } else {
         res.status(400);
         res.send({error: "Invalid parameter"})

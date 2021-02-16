@@ -29,7 +29,6 @@ router.get("/games/topRated", controller_1.topRatedIGDB);
 router.get("/game/gameVideos", controller_1.gameVideosIGDB);
 router.get("/game/releaseDates", controller_1.releaseIGDB);
 router.get("/game/platforms", controller_1.platformsIGDB);
-router.get("/game/name", controller_1.gameNameIGDB);
 //STEAM
 router.get('/steam/price', controller_1.priceSteam);
 router.get('/steam/activePlayers', controller_1.activePlayersSteam);
