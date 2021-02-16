@@ -114,31 +114,33 @@ exports.getGameIGDBbyID = function (id) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.getArtworkIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_3;
+    var response, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/artworks",
                         method: 'POST',
-                        responseType: 'arraybuffer',
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "game: \"" + gameID + "\";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+                        data: "fields: game, width, height, url; where game = " + id + ";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
                     })];
+            case 1:
+                response = (_a.sent()).data;
+                return [2 /*return*/, response.map(function (rawData) { return ({
+                        id: rawData.id,
+                        game: rawData.game,
+                        width: rawData.width,
+                        height: rawData.height,
+                        url: rawData.url.substring(2).replace("t_thumb", "t_original")
+                    }); })];
             case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 3:
                 e_3 = _a.sent();
                 return [2 /*return*/, e_3];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };

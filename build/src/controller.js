@@ -160,7 +160,7 @@ exports.artworkIGDB = function (req, res) { return __awaiter(void 0, void 0, voi
             case 1:
                 gameArtwork = _a.sent();
                 if (!types_1.isError(gameArtwork)) {
-                    res.contentType("image/png");
+                    res.contentType("json");
                 }
                 res.send(gameArtwork);
                 return [3 /*break*/, 3];

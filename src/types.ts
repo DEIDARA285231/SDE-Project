@@ -31,6 +31,14 @@ export interface Externals{
   itad_plain?: string;
 }
 
+export interface ArtworkIGDB{
+  id: number;
+  game: number;
+  width: number;
+  height: number;
+  url: string;
+}
+
 export interface TwitchGames {
   id: number;
   name: String;

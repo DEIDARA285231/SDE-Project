@@ -10,7 +10,7 @@
  *   It really depends on your project, style and personal preference :)
  */
 
-import { Error, TwitchStream, TwitchTopGame, TwitchVideo } from './types';
+import { ArtworkIGDB, Error, TwitchStream, TwitchTopGame, TwitchVideo } from './types';
 import config from '../config/config';
 import qs from 'qs';
 
@@ -64,19 +64,24 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
 export const getArtworkIGDB: (
   id: number
 ) => Promise<any> = async (id) => {
-  const gameID = id;
+  
   try {
-    const response = await axios({
+    const response : ArtworkIGDB[] = (await axios({
       url: "https://api.igdb.com/v4/artworks",
       method: 'POST',
-      responseType: 'arraybuffer',
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID}";` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
-    });
-    return response.data;
+      data: `fields: game, width, height, url; where game = ${id};` //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+    })).data;
+    return response.map(rawData => ({
+      id: rawData.id,
+      game: rawData.game,
+      width: rawData.width,
+      height: rawData.height,
+      url: rawData.url.substring(2).replace("t_thumb", "t_original")
+    }));
   } catch (e) {
     return e;
   }

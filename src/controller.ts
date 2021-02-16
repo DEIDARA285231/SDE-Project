@@ -122,7 +122,7 @@ export const artworkIGDB = async (req: Request, res: Response) => {
   if(gameID !== false){
     const gameArtwork = await getArtworkIGDB(gameID);
     if(!isError(gameArtwork)){
-      res.contentType("image/png");
+      res.contentType("json");
     }
     res.send(gameArtwork);
   }else{
