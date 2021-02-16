@@ -1,15 +1,4 @@
 "use strict";
-/*********
- * Core functionalities
- *   All the processing logics are defined here. In this way, we leave in the
- *   controller all the input/output filtering and selection, and here we write
- *   the "raw" logics. In this way they're also re-usable! :)
- *   Obviously, in a real project, those functionalities should be divided as well.
- *   "Core" is not a fixed word for this type of file, sometimes
- *   people put those functions in a Utils file, sometimes in a Helper
- *   file, sometimes in a Services folder with different files for every service..
- *   It really depends on your project, style and personal preference :)
- */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -50,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSpeedrunGameByName = exports.getVideosTwitch = exports.getStreamsTwitch = exports.getSearchTwitch = exports.getTopGamesTwitch = exports.getTwitchGameByName = exports.getTwitchGameById = exports.itadStoreLow = exports.itadGetPlain = exports.getActivePlayersSteam = exports.getPriceSteam = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDBbyName = exports.getExternalsIGDB = exports.getGenreFromIdIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDBbyID = exports.getGameIGDB = void 0;
+exports.getSpeedrunGameByName = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDBbyName = exports.getExternalsIGDB = exports.getGenreFromIdIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDBbyID = exports.getGameIGDB = void 0;
 var qs_1 = __importDefault(require("qs"));
 var axios_1 = __importDefault(require("axios"));
 var secrets_1 = __importDefault(require("../secrets"));
@@ -145,14 +134,11 @@ exports.getArtworkIGDB = function (id) { return __awaiter(void 0, void 0, void 0
     });
 }); };
 exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_4;
+    var response, e_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/covers",
                         method: 'POST',
@@ -162,7 +148,7 @@ exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, 
                         },
                         data: "fields: game, width, height, url; where game = " + id + ";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
                     })];
-            case 2:
+            case 1:
                 response = (_a.sent()).data;
                 return [2 /*return*/, response.map(function (rawData) { return ({
                         id: rawData.id,
@@ -171,10 +157,10 @@ exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, 
                         height: rawData.height,
                         url: rawData.url.substring(2).replace("t_thumb", "t_original")
                     }); })];
-            case 3:
+            case 2:
                 e_4 = _a.sent();
                 return [2 /*return*/, e_4];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -373,309 +359,8 @@ exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, 
         }
     });
 }); };
-//Steam
-exports.getPriceSteam = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_12;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://store.steampowered.com/api/appdetails?appids=" + id + "&currency=eur")];
-            case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2:
-                e_12 = _a.sent();
-                console.error(e_12);
-                return [2 /*return*/, {
-                        error: e_12,
-                    }];
-            case 3:
-                ;
-                return [2 /*return*/];
-        }
-    });
-}); };
-exports.getActivePlayersSteam = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_13;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=" + id)];
-            case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2:
-                e_13 = _a.sent();
-                console.error(e_13);
-                return [2 /*return*/, {
-                        error: e_13,
-                    }];
-            case 3:
-                ;
-                return [2 /*return*/];
-        }
-    });
-}); };
-//Is there any deal
-exports.itadGetPlain = function (IDSteam) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_14;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get('https://api.isthereanydeal.com/v01/game/plain/id/', { params: {
-                            key: secrets_1.default.ITAD_KEY,
-                            shop: "steam",
-                            ids: "app/" + IDSteam
-                        } })];
-            case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2:
-                e_14 = _a.sent();
-                console.error(e_14);
-                return [2 /*return*/, {
-                        error: e_14,
-                    }];
-            case 3:
-                ;
-                return [2 /*return*/];
-        }
-    });
-}); };
-exports.itadStoreLow = function (plain, store) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_15;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get('https://api.isthereanydeal.com/v01/game/storelow/', { params: {
-                            key: secrets_1.default.ITAD_KEY,
-                            plains: plain,
-                            region: "eu2",
-                            country: "IT",
-                            shops: store,
-                        } })];
-            case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2:
-                e_15 = _a.sent();
-                console.error(e_15);
-                return [2 /*return*/, {
-                        error: e_15,
-                    }];
-            case 3:
-                ;
-                return [2 /*return*/];
-        }
-    });
-}); };
-//TWITCH
-exports.getTwitchGameById = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_16;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                gameID = id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/games", {
-                        responseType: "json",
-                        headers: {
-                            "Authorization": secrets_1.default.AUTHORIZATION,
-                            "Client-Id": secrets_1.default.CLIENT_ID
-                        },
-                        params: {
-                            id: gameID,
-                        },
-                    })];
-            case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 3:
-                e_16 = _a.sent();
-                console.log("e");
-                return [2 /*return*/, {
-                        error: e_16,
-                    }];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getTwitchGameByName = function (name) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_17;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/games", {
-                        responseType: "json",
-                        headers: {
-                            "Authorization": secrets_1.default.AUTHORIZATION,
-                            "Client-Id": secrets_1.default.CLIENT_ID
-                        },
-                        params: {
-                            name: name,
-                        },
-                    })];
-            case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2:
-                e_17 = _a.sent();
-                console.log("e");
-                return [2 /*return*/, {
-                        error: e_17,
-                    }];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getTopGamesTwitch = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_18;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/games/top", {
-                        responseType: "json",
-                        headers: {
-                            "Authorization": secrets_1.default.AUTHORIZATION,
-                            "Client-Id": secrets_1.default.CLIENT_ID
-                        }
-                    })];
-            case 1:
-                response = (_a.sent()).data.data;
-                return [2 /*return*/, response
-                        .map(function (rawdata) { return ({
-                        id: rawdata.id,
-                        name: rawdata.name,
-                        box_art_url: rawdata.box_art_url
-                    }); })];
-            case 2:
-                e_18 = _a.sent();
-                console.log("e");
-                return [2 /*return*/, {
-                        error: e_18,
-                    }];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getSearchTwitch = function (query) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_19;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/search/categories", {
-                        responseType: "json",
-                        headers: {
-                            "Authorization": secrets_1.default.AUTHORIZATION,
-                            "Client-Id": secrets_1.default.CLIENT_ID
-                        },
-                        params: {
-                            query: query,
-                        },
-                    })];
-            case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 2:
-                e_19 = _a.sent();
-                console.log("e");
-                return [2 /*return*/, {
-                        error: e_19,
-                    }];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getStreamsTwitch = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_20;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/streams", {
-                        responseType: "json",
-                        headers: {
-                            "Authorization": secrets_1.default.AUTHORIZATION,
-                            "Client-Id": secrets_1.default.CLIENT_ID
-                        },
-                        params: {
-                            game_id: gameID,
-                        },
-                    })];
-            case 1:
-                response = (_a.sent()).data.data;
-                return [2 /*return*/, response
-                        .map(function (rawData) { return ({
-                        user_name: rawData.user_name,
-                        viewer_count: rawData.viewer_count,
-                        game_name: rawData.game_name,
-                        game_id: rawData.game_id,
-                        title: rawData.title,
-                        language: rawData.language
-                    }); })];
-            case 2:
-                e_20 = _a.sent();
-                console.log(e_20);
-                return [2 /*return*/, {
-                        error: e_20,
-                    }];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getVideosTwitch = function (gameID, period, sort, type) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_21;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, axios_1.default.get("https://api.twitch.tv/helix/videos", {
-                        responseType: "json",
-                        headers: {
-                            "Authorization": secrets_1.default.AUTHORIZATION,
-                            "Client-Id": secrets_1.default.CLIENT_ID
-                        },
-                        params: {
-                            game_id: gameID,
-                            period: period,
-                            sort: sort,
-                            type: type
-                        },
-                    })];
-            case 1:
-                response = (_a.sent()).data.data;
-                return [2 /*return*/, response
-                        .map(function (rawData) { return ({
-                        game_id: gameID,
-                        user_name: rawData.user_name,
-                        view_count: rawData.view_count,
-                        title: rawData.title,
-                        language: rawData.language,
-                        duration: rawData.duration,
-                        url: rawData.url,
-                        type: rawData.type
-                    }); })];
-            case 2:
-                e_21 = _a.sent();
-                console.log(e_21);
-                return [2 /*return*/, {
-                        error: e_21,
-                    }];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
 exports.getSpeedrunGameByName = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_22;
+    var response, e_12;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -694,10 +379,10 @@ exports.getSpeedrunGameByName = function (gameID) { return __awaiter(void 0, voi
                 response = _a.sent();
                 return [2 /*return*/, response.data];
             case 2:
-                e_22 = _a.sent();
-                console.log(e_22);
+                e_12 = _a.sent();
+                console.log(e_12);
                 return [2 /*return*/, {
-                        error: e_22,
+                        error: e_12,
                     }];
             case 3: return [2 /*return*/];
         }
