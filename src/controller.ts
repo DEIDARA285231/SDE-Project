@@ -62,19 +62,21 @@ export const gameIGDB = async (req: Request, res: Response) => {
         }
 
         const game = await getGameIGDBbyID(gameInDB.gameId);
-
-        for(let i=0;i<game.genres.length; i++){
-          const responseGenre = await axios({
-            url: "http://localhost:3000/api/game/genres",
-            method: 'GET',
-            headers: {
-              "Accept": "application/json",
-            },
-            params: {
-              id: game.genres[i]
-            }
-          })
-          game.genres[i]=responseGenre.data["name"]
+        if (game.genres !== undefined){
+          for(let i=0;i<game.genres.length; i++){
+            const responseGenre = await axios({
+              url: "http://localhost:3000/api/game/genres",
+              method: 'GET',
+              headers: {
+                "Accept": "application/json",
+              },
+              params: {
+                id: game.genres[i]
+              }
+            })
+            game.genres[i]=responseGenre.data["name"]
+          }
+          res.send(game);
         }
         res.send(game);
       }else {
@@ -91,21 +93,22 @@ export const gameIGDB = async (req: Request, res: Response) => {
               id: game.id
             }
           });
-
-          for(let i=0;i<game.genres.length; i++){
-            const responseGenre = await axios({
-              url: "http://localhost:3000/api/game/genres",
-              method: 'GET',
-              headers: {
-                "Accept": "application/json",
-              },
-              params: {
-                id: game.genres[i]
-              }
-            })
-            game.genres[i]=responseGenre.data["name"]
+          if (game.genres !== undefined){
+            for(let i=0;i<game.genres.length; i++){
+              const responseGenre = await axios({
+                url: "http://localhost:3000/api/game/genres",
+                method: 'GET',
+                headers: {
+                  "Accept": "application/json",
+                },
+                params: {
+                  id: game.genres[i]
+                }
+              })
+              game.genres[i]=responseGenre.data["name"]
+            }
+            res.send(game);
           }
-          res.send(game);
         }else{
           res.status(404);
           res.send({error: "Game not found"})
@@ -122,19 +125,21 @@ export const gameIGDB = async (req: Request, res: Response) => {
       if (!isError(game)) {
         res.contentType('json');
       }
-
-      for(let i=0;i<game.genres.length; i++){
-        const responseGenre = await axios({
-          url: "http://localhost:3000/api/game/genres",
-          method: 'GET',
-          headers: {
-            "Accept": "application/json",
-          },
-          params: {
-            id: game.genres[i]
-          }
-        })
-        game.genres[i]=responseGenre.data["name"]
+      if (game.genres !== undefined){
+        for(let i=0;i<game.genres.length; i++){
+          const responseGenre = await axios({
+            url: "http://localhost:3000/api/game/genres",
+            method: 'GET',
+            headers: {
+              "Accept": "application/json",
+            },
+            params: {
+              id: game.genres[i]
+            }
+          })
+          game.genres[i]=responseGenre.data["name"]
+        }
+        res.send(game);
       }
       res.send(game);
     }else{
@@ -266,6 +271,24 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
 
 export const topRatedIGDB = async (req: Request, res: Response) => {
   const topRated = await getTopRatedIGDB();
+  for (let entry=0; entry < topRated.length; entry++){
+    if (topRated[entry].genres !== undefined){
+      for(let i=0;i<topRated[entry].genres.length; i++){
+        const responseGenre = await axios({
+          url: "http://localhost:3000/api/game/genres",
+          method: 'GET',
+          headers: {
+            "Accept": "application/json",
+          },
+          params: {
+            id: topRated[entry].genres[i]
+          }
+        })
+        topRated[entry].genres[i]=responseGenre.data["name"]
+      }
+    }
+  }
+  
   if(!isError(topRated)){
     res.contentType("json");
   }

@@ -35,7 +35,7 @@ export const getGameIGDB: (name: string) => Promise<any> = async (name) => {
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit 1`
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit 1`
     });
     return response.data[0];
   } catch (e) {
@@ -53,7 +53,7 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = ${id};`
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = ${id};`
     })
     return response.data[0];
   } catch (e) {
@@ -147,7 +147,7 @@ export const getExternalsIGDB: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields game, name, category, uid; where game = ${gameID};`
+      data: `fields: game, name, category, uid; where game = ${gameID};`
     });
     return response.data;
   } catch (e) {
@@ -167,7 +167,7 @@ export const getExternalsIGDBbyName: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields game, name, category, uid; where name = "${gameName}";`
+      data: `fields: game, name, category, uid; where name = "${gameName}";`
     });
     return response.data;
   } catch (e) {
@@ -185,7 +185,7 @@ export const getTopRatedIGDB: () => Promise<any> = async () => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: name, rating";` //Missing the sort
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null;`
     });
     return response.data;
   } catch (e) {

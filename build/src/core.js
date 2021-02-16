@@ -75,7 +75,7 @@ exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0,
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\"; limit 1"
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\"; limit 1"
                     })];
             case 2:
                 response = _a.sent();
@@ -101,7 +101,7 @@ exports.getGameIGDBbyID = function (id) { return __awaiter(void 0, void 0, void 
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = " + id + ";"
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = " + id + ";"
                     })];
             case 1:
                 response = _a.sent();
@@ -222,7 +222,7 @@ exports.getExternalsIGDB = function (id) { return __awaiter(void 0, void 0, void
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields game, name, category, uid; where game = " + gameID + ";"
+                        data: "fields: game, name, category, uid; where game = " + gameID + ";"
                     })];
             case 2:
                 response = _a.sent();
@@ -248,7 +248,7 @@ exports.getExternalsIGDBbyName = function (gameName) { return __awaiter(void 0, 
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields game, name, category, uid; where name = \"" + gameName + "\";"
+                        data: "fields: game, name, category, uid; where name = \"" + gameName + "\";"
                     })];
             case 1:
                 response = _a.sent();
@@ -274,7 +274,7 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: name, rating\";" //Missing the sort
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null;"
                     })];
             case 1:
                 response = _a.sent();

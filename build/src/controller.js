@@ -62,14 +62,14 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
         switch (_a.label) {
             case 0:
                 nameGameInserted = helper_1.getGameNameFromRequest(req);
-                if (!(nameGameInserted !== false)) return [3 /*break*/, 19];
+                if (!(nameGameInserted !== false)) return [3 /*break*/, 21];
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 17, , 18]);
+                _a.trys.push([1, 19, , 20]);
                 return [4 /*yield*/, ExternalDB.findOne({ gameName: nameGameInserted })];
             case 2:
                 gameInDB = _a.sent();
-                if (!gameInDB) return [3 /*break*/, 8];
+                if (!gameInDB) return [3 /*break*/, 9];
                 //c'è il gioco nel DB
                 if (!types_1.isError(gameInDB)) {
                     res.contentType('json');
@@ -77,6 +77,7 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                 return [4 /*yield*/, core_1.getGameIGDBbyID(gameInDB.gameId)];
             case 3:
                 game = _a.sent();
+                if (!(game.genres !== undefined)) return [3 /*break*/, 8];
                 i = 0;
                 _a.label = 4;
             case 4:
@@ -100,11 +101,14 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                 return [3 /*break*/, 4];
             case 7:
                 res.send(game);
-                return [3 /*break*/, 16];
-            case 8: return [4 /*yield*/, core_1.getGameIGDB(nameGameInserted)];
-            case 9:
+                _a.label = 8;
+            case 8:
+                res.send(game);
+                return [3 /*break*/, 18];
+            case 9: return [4 /*yield*/, core_1.getGameIGDB(nameGameInserted)];
+            case 10:
                 game = _a.sent();
-                if (!(game !== (undefined))) return [3 /*break*/, 15];
+                if (!(game !== (undefined))) return [3 /*break*/, 17];
                 return [4 /*yield*/, axios_1.default({
                         url: "http://localhost:3000/api/game/externalGame",
                         method: 'GET',
@@ -115,12 +119,13 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                             id: game.id
                         }
                     })];
-            case 10:
-                _a.sent();
-                i = 0;
-                _a.label = 11;
             case 11:
-                if (!(i < game.genres.length)) return [3 /*break*/, 14];
+                _a.sent();
+                if (!(game.genres !== undefined)) return [3 /*break*/, 16];
+                i = 0;
+                _a.label = 12;
+            case 12:
+                if (!(i < game.genres.length)) return [3 /*break*/, 15];
                 return [4 /*yield*/, axios_1.default({
                         url: "http://localhost:3000/api/game/genres",
                         method: 'GET',
@@ -131,39 +136,41 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                             id: game.genres[i]
                         }
                     })];
-            case 12:
+            case 13:
                 responseGenre = _a.sent();
                 game.genres[i] = responseGenre.data["name"];
-                _a.label = 13;
-            case 13:
-                i++;
-                return [3 /*break*/, 11];
+                _a.label = 14;
             case 14:
-                res.send(game);
-                return [3 /*break*/, 16];
+                i++;
+                return [3 /*break*/, 12];
             case 15:
-                res.status(404);
-                res.send({ error: "Game not found" });
+                res.send(game);
                 _a.label = 16;
             case 16: return [3 /*break*/, 18];
             case 17:
+                res.status(404);
+                res.send({ error: "Game not found" });
+                _a.label = 18;
+            case 18: return [3 /*break*/, 20];
+            case 19:
                 err_1 = _a.sent();
                 console.error(err_1);
-                return [3 /*break*/, 18];
-            case 18: return [3 /*break*/, 26];
-            case 19:
+                return [3 /*break*/, 20];
+            case 20: return [3 /*break*/, 29];
+            case 21:
                 gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 25];
+                if (!(gameID !== false)) return [3 /*break*/, 28];
                 return [4 /*yield*/, core_1.getGameIGDBbyID(gameID)];
-            case 20:
+            case 22:
                 game = _a.sent();
                 if (!types_1.isError(game)) {
                     res.contentType('json');
                 }
+                if (!(game.genres !== undefined)) return [3 /*break*/, 27];
                 i = 0;
-                _a.label = 21;
-            case 21:
-                if (!(i < game.genres.length)) return [3 /*break*/, 24];
+                _a.label = 23;
+            case 23:
+                if (!(i < game.genres.length)) return [3 /*break*/, 26];
                 return [4 /*yield*/, axios_1.default({
                         url: "http://localhost:3000/api/game/genres",
                         method: 'GET',
@@ -174,21 +181,24 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                             id: game.genres[i]
                         }
                     })];
-            case 22:
+            case 24:
                 responseGenre = _a.sent();
                 game.genres[i] = responseGenre.data["name"];
-                _a.label = 23;
-            case 23:
-                i++;
-                return [3 /*break*/, 21];
-            case 24:
-                res.send(game);
-                return [3 /*break*/, 26];
+                _a.label = 25;
             case 25:
+                i++;
+                return [3 /*break*/, 23];
+            case 26:
+                res.send(game);
+                _a.label = 27;
+            case 27:
+                res.send(game);
+                return [3 /*break*/, 29];
+            case 28:
                 res.status(400);
                 res.send({ error: "Invalid name or ID format" });
-                _a.label = 26;
-            case 26: return [2 /*return*/];
+                _a.label = 29;
+            case 29: return [2 /*return*/];
         }
     });
 }); };
@@ -366,12 +376,42 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
     });
 }); };
 exports.topRatedIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var topRated;
+    var topRated, entry, i, responseGenre;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, core_1.getTopRatedIGDB()];
             case 1:
                 topRated = _a.sent();
+                entry = 0;
+                _a.label = 2;
+            case 2:
+                if (!(entry < topRated.length)) return [3 /*break*/, 7];
+                if (!(topRated[entry].genres !== undefined)) return [3 /*break*/, 6];
+                i = 0;
+                _a.label = 3;
+            case 3:
+                if (!(i < topRated[entry].genres.length)) return [3 /*break*/, 6];
+                return [4 /*yield*/, axios_1.default({
+                        url: "http://localhost:3000/api/game/genres",
+                        method: 'GET',
+                        headers: {
+                            "Accept": "application/json",
+                        },
+                        params: {
+                            id: topRated[entry].genres[i]
+                        }
+                    })];
+            case 4:
+                responseGenre = _a.sent();
+                topRated[entry].genres[i] = responseGenre.data["name"];
+                _a.label = 5;
+            case 5:
+                i++;
+                return [3 /*break*/, 3];
+            case 6:
+                entry++;
+                return [3 /*break*/, 2];
+            case 7:
                 if (!types_1.isError(topRated)) {
                     res.contentType("json");
                 }
