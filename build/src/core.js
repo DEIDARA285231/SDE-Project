@@ -50,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSpeedrunGameByName = exports.getVideosTwitch = exports.getStreamsTwitch = exports.getSearchTwitch = exports.getTopGamesTwitch = exports.getTwitchGameByName = exports.getTwitchGameById = exports.itadStoreLow = exports.itadGetPlain = exports.getActivePlayersSteam = exports.getPriceSteam = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDBbyName = exports.getExternalsIGDB = exports.getGamesFromGenreIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDBbyID = exports.getGameIGDB = void 0;
+exports.getSpeedrunGameByName = exports.getVideosTwitch = exports.getStreamsTwitch = exports.getSearchTwitch = exports.getTopGamesTwitch = exports.getTwitchGameByName = exports.getTwitchGameById = exports.itadStoreLow = exports.itadGetPlain = exports.getActivePlayersSteam = exports.getPriceSteam = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDBbyName = exports.getExternalsIGDB = exports.getGenreFromIdIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDBbyID = exports.getGameIGDB = void 0;
 var qs_1 = __importDefault(require("qs"));
 var axios_1 = __importDefault(require("axios"));
 var secrets_1 = __importDefault(require("../secrets"));
@@ -75,7 +75,7 @@ exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0,
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields id, aggregated_rating, first_release_date, name, rating, storyline, summary; search \"" + gameName + "\"; limit 1"
+                        data: "fields id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\"; limit 1"
                     })];
             case 2:
                 response = _a.sent();
@@ -101,7 +101,7 @@ exports.getGameIGDBbyID = function (id) { return __awaiter(void 0, void 0, void 
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields id, aggregated_rating, first_release_date, name, rating, storyline, summary; where id = " + id + ";"
+                        data: "fields id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = " + id + ";"
                     })];
             case 1:
                 response = _a.sent();
@@ -154,18 +154,23 @@ exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, 
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, axios_1.default({
-                        url: 'https://api.igdb.com/v4/covers',
-                        responseType: 'arraybuffer',
+                        url: "https://api.igdb.com/v4/covers",
                         method: 'POST',
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "game: \"" + gameID + "\";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
+                        data: "fields: game, width, height, url; where game = " + id + ";" //We need to define if we want more parameters to be process, for example eliminating the  repetitions
                     })];
             case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
+                response = (_a.sent()).data;
+                return [2 /*return*/, response.map(function (rawData) { return ({
+                        id: rawData.id,
+                        game: rawData.game,
+                        width: rawData.width,
+                        height: rawData.height,
+                        url: rawData.url.substring(2).replace("t_thumb", "t_original")
+                    }); })];
             case 3:
                 e_4 = _a.sent();
                 return [2 /*return*/, e_4];
@@ -173,15 +178,12 @@ exports.getCoverIGDB = function (id) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
-exports.getGamesFromGenreIGDB = function (genre) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameGenres, response, e_5;
+exports.getGenreFromIdIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, e_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameGenres = genre;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/genres",
                         method: 'POST',
@@ -190,16 +192,16 @@ exports.getGamesFromGenreIGDB = function (genre) { return __awaiter(void 0, void
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: *; where name = \"" + gameGenres + "\";"
+                        data: "fields: id, name; where id = " + id + ";"
                     })];
-            case 2:
+            case 1:
                 response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 3:
+                return [2 /*return*/, response.data[0]];
+            case 2:
                 e_5 = _a.sent();
                 console.log(e_5);
                 return [2 /*return*/, e_5];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -272,7 +274,7 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: \"name, rating\";" //Missing the sort
+                        data: "fields: name, rating\";" //Missing the sort
                     })];
             case 1:
                 response = _a.sent();

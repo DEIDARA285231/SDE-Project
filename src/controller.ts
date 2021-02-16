@@ -15,7 +15,7 @@ import { isError, Externals } from './types';
 import {
   getGameIGDB,
   getGameIGDBbyID,
-  getGamesFromGenreIGDB,
+  getGenreFromIdIGDB,
   getArtworkIGDB,
   getCoverIGDB,
   getExternalsIGDB,
@@ -62,6 +62,20 @@ export const gameIGDB = async (req: Request, res: Response) => {
         }
 
         const game = await getGameIGDBbyID(gameInDB.gameId);
+
+        for(let i=0;i<game.genres.length; i++){
+          const responseGenre = await axios({
+            url: "http://localhost:3000/api/game/genres",
+            method: 'GET',
+            headers: {
+              "Accept": "application/json",
+            },
+            params: {
+              id: game.genres[i]
+            }
+          })
+          game.genres[i]=responseGenre.data["name"]
+        }
         res.send(game);
       }else {
         //non c'è il gioco nel DB
@@ -77,6 +91,20 @@ export const gameIGDB = async (req: Request, res: Response) => {
               id: game.id
             }
           });
+
+          for(let i=0;i<game.genres.length; i++){
+            const responseGenre = await axios({
+              url: "http://localhost:3000/api/game/genres",
+              method: 'GET',
+              headers: {
+                "Accept": "application/json",
+              },
+              params: {
+                id: game.genres[i]
+              }
+            })
+            game.genres[i]=responseGenre.data["name"]
+          }
           res.send(game);
         }else{
           res.status(404);
@@ -94,6 +122,20 @@ export const gameIGDB = async (req: Request, res: Response) => {
       if (!isError(game)) {
         res.contentType('json');
       }
+
+      for(let i=0;i<game.genres.length; i++){
+        const responseGenre = await axios({
+          url: "http://localhost:3000/api/game/genres",
+          method: 'GET',
+          headers: {
+            "Accept": "application/json",
+          },
+          params: {
+            id: game.genres[i]
+          }
+        })
+        game.genres[i]=responseGenre.data["name"]
+      }
       res.send(game);
     }else{
       res.status(400);
@@ -104,13 +146,13 @@ export const gameIGDB = async (req: Request, res: Response) => {
 }
 
 export const genresIGDB = async (req: Request, res: Response) => {
-  const genre = getStringFromRequest(req, "gameGenre");
-  if(genre !== false){
-    const games = await getGamesFromGenreIGDB(genre);
-    if(!isError(games)){
+  const genreID = getIdFromRequest(req)
+  if(genreID !== false){
+    const genre = await getGenreFromIdIGDB(genreID);
+    if(!isError(genre)){
       res.contentType("json");
     }
-    res.send(games);
+    res.send(genre);
   }else{
     res.status(400);
     res.send({error: "Invalid genre"})

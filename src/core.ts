@@ -35,7 +35,7 @@ export const getGameIGDB: (name: string) => Promise<any> = async (name) => {
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields id, aggregated_rating, first_release_date, name, rating, storyline, summary; search "${gameName}"; limit 1`
+      data: `fields id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit 1`
     });
     return response.data[0];
   } catch (e) {
@@ -53,7 +53,7 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields id, aggregated_rating, first_release_date, name, rating, storyline, summary; where id = ${id};`
+      data: `fields id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = ${id};`
     })
     return response.data[0];
   } catch (e) {
@@ -113,10 +113,9 @@ export const getCoverIGDB: (
   }
 }
 
-export const getGamesFromGenreIGDB: (
-  genre: string
-) => Promise<any> = async (genre) => {
-  const gameGenres = genre;
+export const getGenreFromIdIGDB: (
+  id: number
+) => Promise<any> = async (id) => {
   try {
     const response = await axios({
       url: "https://api.igdb.com/v4/genres",
@@ -126,9 +125,9 @@ export const getGamesFromGenreIGDB: (
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: *; where name = "${gameGenres}";`
+      data: `fields: id, name; where id = ${id};`
     });
-    return response.data;
+    return response.data[0];
   } catch (e) {
     console.log(e)
     return e;
@@ -186,7 +185,7 @@ export const getTopRatedIGDB: () => Promise<any> = async () => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: "name, rating";` //Missing the sort
+      data: `fields: name, rating";` //Missing the sort
     });
     return response.data;
   } catch (e) {
