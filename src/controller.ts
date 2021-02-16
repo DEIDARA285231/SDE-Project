@@ -406,7 +406,7 @@ export const priceSteam = async (req: Request, res: Response) => {
             id: appID
           }
         });
-        console.log(responseExt)
+        
         if (responseExt.data.steamId !== undefined){
           const steamPrice = await getPriceSteam(responseExt.data.steamId);
           const response = {
