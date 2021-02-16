@@ -164,7 +164,6 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
   if(gameID !== false){
     const externalIds=await getExternalsIGDB(gameID);
     let indexTwitch=-1, indexSteam=-1, indexGog=-1;
-    console.log(externalIds)
     if (externalIds.length > 0){
       for (let i=0; i<externalIds.length; i++){
         if (externalIds[i].category===14){
