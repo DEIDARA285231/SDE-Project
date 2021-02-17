@@ -6,7 +6,7 @@ import {
 
 const router = express.Router();
 
-router.get('/getPlain', plainITAD);
-router.get('/getStoreLow', getStoreLow);
+router.get('/getPlain', plainITAD);       //STEAM ID
+router.get('/getStoreLow', getStoreLow);  //STEAM ID
 
 export default router;
