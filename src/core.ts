@@ -9,6 +9,7 @@ axios.defaults.paramsSerializer = (params) => {
 
 //IGDB
 
+//fix returned fields, storyline may be undefined
 export const getGameIGDB: (name: string) => Promise<any> = async (name) => {
   const gameName = name;
   try {
