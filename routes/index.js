@@ -43,9 +43,9 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
     });
 
     //convert the box_art_url to a url that can be accepted by html
-    for(var i=0; i<topGames.data.data.length; i++) {
-      var tmp = (topGames.data.data[i]["box_art_url"]).split("-{");
-      topGames.data.data[i]["box_art_url"] = tmp[0] + ".jpg"
+    for(var i=0; i<topGames.data.length; i++) {
+      var tmp = (topGames.data[i]["box_art_url"]).split("-{");
+      topGames.data[i]["box_art_url"] = tmp[0] + ".jpg"
     }
 
     //converti unix timestamp to date and rate to only two decimals
@@ -56,6 +56,7 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
       var month = months[dat.getMonth()];
       var day = dat.getDate();
       topRated.data[i].first_release_date = ''+day+' '+month+' '+year;
+
       var rat = ''+topRated.data[i].rating+'';
       topRated.data[i].rating = rat.substring(0,4);
     }
@@ -63,26 +64,26 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
     res.render('dashboard', {
       name: req.user.firstName,
       twitchTop: {
-        entry0: topGames.data.data[0],
-        entry1: topGames.data.data[1],
-        entry2: topGames.data.data[2],
-        entry3: topGames.data.data[3],
-        entry4: topGames.data.data[4],
-        entry5: topGames.data.data[5],
-        entry6: topGames.data.data[6],
-        entry7: topGames.data.data[7],
-        entry8: topGames.data.data[8],
-        entry9: topGames.data.data[9],
-        entry10: topGames.data.data[10],
-        entry11: topGames.data.data[11],
-        entry12: topGames.data.data[12],
-        entry13: topGames.data.data[13],
-        entry14: topGames.data.data[14],
-        entry15: topGames.data.data[15],
-        entry16: topGames.data.data[16],
-        entry17: topGames.data.data[17],
-        entry18: topGames.data.data[18],
-        entry19: topGames.data.data[19]
+        entry0: topGames.data[0],
+        entry1: topGames.data[1],
+        entry2: topGames.data[2],
+        entry3: topGames.data[3],
+        entry4: topGames.data[4],
+        entry5: topGames.data[5],
+        entry6: topGames.data[6],
+        entry7: topGames.data[7],
+        entry8: topGames.data[8],
+        entry9: topGames.data[9],
+        entry10: topGames.data[10],
+        entry11: topGames.data[11],
+        entry12: topGames.data[12],
+        entry13: topGames.data[13],
+        entry14: topGames.data[14],
+        entry15: topGames.data[15],
+        entry16: topGames.data[16],
+        entry17: topGames.data[17],
+        entry18: topGames.data[18],
+        entry19: topGames.data[19]
       },
       IGDBtop: {
         entry0: topRated.data[0],
@@ -97,9 +98,9 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
         entry9: topRated.data[9],
       },
       twitchStreams: {
-        entry0: topStreams.data.data[0].user_login,
-        entry1: topStreams.data.data[1].user_login,
-        entry2: topStreams.data.data[2].user_login,
+        entry0: topStreams.data[0].user_name,
+        entry1: topStreams.data[1].user_name,
+        entry2: topStreams.data[2].user_name,
       }
     })
   } catch(err) {
@@ -131,18 +132,26 @@ router.get('/game', ensureAuth, async (req,res) => {
         },
       });
 
-      var url = "https:"+cover.data[0].url
+      var url = "https://"+cover.data[0].url
 
-      console.log(game)
+      var rat = ''+game.data.rating+'';
+      game.data.rating = rat.substring(0,4);
 
-      console.log(url)
+      var dat = new Date(game.data.first_release_date * 1000);
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var year = dat.getFullYear();
+      var month = months[dat.getMonth()];
+      var day = dat.getDate();
+      game.data.first_release_date = ''+day+' '+month+' '+year;
+
       res.render('game', {
-        id: game.data[0].id,
-        name: game.data[0].name,
-        storyline: game.data[0].storyline,
-        summary: game.data[0].summary,
+        id: game.data.id,
+        name: game.data.name,
+        storyline: game.data.storyline,
+        summary: game.data.summary,
         cover: url,
-        rating: game.data[0].total_rating
+        rating: game.data.rating,
+        release: game.data.first_release_date
       });
 
     } else if(name !== false) {

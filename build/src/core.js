@@ -47,6 +47,7 @@ axios_1.default.defaults.paramsSerializer = function (params) {
     return qs_1.default.stringify(params, { indices: false });
 };
 //IGDB
+//fix returned fields, storyline may be undefined
 exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0, function () {
     var gameName, response, e_1;
     return __generator(this, function (_a) {
