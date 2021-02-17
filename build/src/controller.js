@@ -58,55 +58,22 @@ var Externals_1 = __importDefault(require("../models/Externals"));
 var axios_1 = __importDefault(require("axios"));
 //IGDB
 exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var nameGameInserted, gameInDB, game, genreStructure, i, games, genreStructure, i, j, err_1, gameID, gameInDB, game, genreStructure, i;
+    var nameGameInserted, limit, offset, games, genreStructure, i, j, gameID, gameInDB, game, genreStructure, i;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 nameGameInserted = helper_1.getGameNameFromRequest(req);
-                if (!(nameGameInserted !== false)) return [3 /*break*/, 9];
-                _a.label = 1;
+                if (!(nameGameInserted !== false)) return [3 /*break*/, 2];
+                limit = helper_1.getNumberFromRequest(req, "limit");
+                offset = helper_1.getNumberFromRequest(req, "offset");
+                limit = (limit !== false) ? limit : 20;
+                offset = (offset !== false) ? offset : 0;
+                return [4 /*yield*/, core_1.getGameIGDB(nameGameInserted, limit, offset)];
             case 1:
-                _a.trys.push([1, 7, , 8]);
-                return [4 /*yield*/, Externals_1.default.findOne({ gameName: nameGameInserted })];
-            case 2:
-                gameInDB = _a.sent();
-                if (!gameInDB) return [3 /*break*/, 4];
-                return [4 /*yield*/, core_1.getGameIGDBbyID(gameInDB.gameId)];
-            case 3:
-                game = _a.sent();
-                if (!types_1.isError(game)) {
-                    if (game.genres !== undefined) {
-                        genreStructure = helper_1.getGenres();
-                        for (i = 0; i < game.genres.length; i++) {
-                            game.genres[i] = genreStructure[game.genres[i]].name;
-                        }
-                        res.send(game);
-                    }
-                    else {
-                        res.send(game);
-                    }
-                }
-                else {
-                    res.status(400);
-                    res.send({ error: "Error" });
-                }
-                return [3 /*break*/, 6];
-            case 4: return [4 /*yield*/, core_1.getGameIGDB(nameGameInserted)];
-            case 5:
                 games = _a.sent();
                 if (!types_1.isError(games) && games !== (undefined)) {
                     genreStructure = helper_1.getGenres();
                     for (i = 0; i < games.length; i++) {
-                        /*await axios({
-                          url: "http://localhost:3000/api/game/externalGame",
-                          method: 'GET',
-                          headers: {
-                            "Accept": "application/json",
-                          },
-                          params: {
-                            id: games[i].id
-                          }
-                        });*/
                         if (games[i].genres !== undefined) {
                             for (j = 0; j < games[i].genres.length; j++) {
                                 games[i].genres[j] = genreStructure[games[i].genres[j]].name;
@@ -117,22 +84,16 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                 }
                 else {
                     res.status(404);
-                    res.send({ error: "No Games found" });
+                    res.send({ error: "No Games with the name found" });
                 }
-                _a.label = 6;
-            case 6: return [3 /*break*/, 8];
-            case 7:
-                err_1 = _a.sent();
-                console.error(err_1);
                 return [3 /*break*/, 8];
-            case 8: return [3 /*break*/, 15];
-            case 9:
+            case 2:
                 gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 14];
+                if (!(gameID !== false)) return [3 /*break*/, 7];
                 return [4 /*yield*/, Externals_1.default.findOne({ gameId: gameID })];
-            case 10:
+            case 3:
                 gameInDB = _a.sent();
-                if (!!(gameInDB)) return [3 /*break*/, 12];
+                if (!!(gameInDB)) return [3 /*break*/, 5];
                 return [4 /*yield*/, axios_1.default({
                         url: "http://localhost:3000/api/game/externalGame",
                         method: 'GET',
@@ -143,11 +104,11 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                             id: gameID
                         }
                     })];
-            case 11:
+            case 4:
                 _a.sent();
-                _a.label = 12;
-            case 12: return [4 /*yield*/, core_1.getGameIGDBbyID(gameID)];
-            case 13:
+                _a.label = 5;
+            case 5: return [4 /*yield*/, core_1.getGameIGDBbyID(gameID)];
+            case 6:
                 game = _a.sent();
                 if (!types_1.isError(game)) {
                     if (game.genres !== undefined) {
@@ -161,12 +122,12 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                         res.send(game);
                     }
                 }
-                return [3 /*break*/, 15];
-            case 14:
+                return [3 /*break*/, 8];
+            case 7:
                 res.status(400);
                 res.send({ error: "Invalid name or ID format" });
-                _a.label = 15;
-            case 15: return [2 /*return*/];
+                _a.label = 8;
+            case 8: return [2 /*return*/];
         }
     });
 }); };

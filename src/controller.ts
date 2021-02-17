@@ -31,7 +31,8 @@ import {
   getGameNameFromRequest,
   getIdFromRequest,
   getStringFromRequest,
-  getGenres
+  getGenres,
+  getNumberFromRequest
 } from './helper';
 
 import ExternalDB from '../models/Externals';
@@ -42,51 +43,26 @@ import axios from 'axios';
 export const gameIGDB = async (req: Request, res: Response) => {
   const nameGameInserted = getGameNameFromRequest(req);
   if(nameGameInserted !== false){
-    try{
-      let gameInDB = await ExternalDB.findOne({ gameName: nameGameInserted });
-
-      if (gameInDB) {
-        //c'è il gioco nel DB
-
-        const game = await getGameIGDBbyID(gameInDB.gameId);
-        if (!isError(game)){
-          if (game.genres !== undefined){
-            let genreStructure=getGenres();
-            for(let i=0;i<game.genres.length; i++){
-              game.genres[i]=genreStructure[game.genres[i]].name;
-            }
-            res.send(game);
-          }else{
-            res.send(game);
+    let limit = getNumberFromRequest(req, "limit");
+    let offset = getNumberFromRequest(req, "offset")
+    limit = (limit !== false)? limit : 20;
+    offset = (offset !== false)? offset : 0;
+    //non c'è il gioco nel DB
+    const games = await getGameIGDB(nameGameInserted, limit, offset);
+    if (!isError(games) && games !==(undefined)){
+      let genreStructure=getGenres();
+      for (let i=0; i< games.length; i++){
+        if (games[i].genres !== undefined){
+          for(let j=0;j<games[i].genres.length; j++){
+            games[i].genres[j]=genreStructure[games[i].genres[j]].name;
           }
-        }else{
-          res.status(400);
-          res.send({error: "Error"})
-        }
-        
-      }else {
-        //non c'è il gioco nel DB
-        const games = await getGameIGDB(nameGameInserted);
-        
-        if (!isError(games) && games !==(undefined)){
-          let genreStructure=getGenres();
-          for (let i=0; i< games.length; i++){
-            if (games[i].genres !== undefined){
-              for(let j=0;j<games[i].genres.length; j++){
-                games[i].genres[j]=genreStructure[games[i].genres[j]].name;
-              }
-            }
-          }
-          res.send(games)
-        }else{
-          res.status(404);
-          res.send({error: "No Games found"})
         }
       }
-    }catch (err) {
-      console.error(err)
+      res.send(games)
+    }else{
+      res.status(404);
+      res.send({error: "No Games with the name found"})
     }
-
   }else{
     const gameID = getIdFromRequest(req);
     if(gameID !== false){

@@ -48,7 +48,7 @@ axios_1.default.defaults.paramsSerializer = function (params) {
 };
 //IGDB
 //fix returned fields, storyline may be undefined
-exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getGameIGDB = function (name, limit, offset) { return __awaiter(void 0, void 0, void 0, function () {
     var gameName, response, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -65,7 +65,7 @@ exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0,
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\";"
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\"; limit " + limit + "; offset " + offset + ";"
                     })];
             case 2:
                 response = (_a.sent()).data;

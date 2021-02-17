@@ -11,7 +11,7 @@ axios.defaults.paramsSerializer = (params) => {
 //IGDB
 
 //fix returned fields, storyline may be undefined
-export const getGameIGDB: (name: string) => Promise<IGDBGame[]|Error> = async (name) => {
+export const getGameIGDB: (name: string, limit: number, offset: number) => Promise<IGDBGame[]|Error> = async (name, limit, offset) => {
   const gameName = name;
   try {
     const response = (await axios({
@@ -22,7 +22,7 @@ export const getGameIGDB: (name: string) => Promise<IGDBGame[]|Error> = async (n
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}";`
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit ${limit}; offset ${offset};`
     })).data;
     return response.map((rawData: any) => ({
       id: rawData.id,
