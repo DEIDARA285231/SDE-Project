@@ -156,13 +156,19 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           indexGog=i;
         }
       }
+      
       const newExternal: Externals = {
-        gameName: externalIds[indexTwitch]["name"],
-        gameId: gameID,
-        twitchId: externalIds[indexTwitch]["uid"]
+        gameName: "Not Inserted",
+        gameId: gameID
+      }
+      if (indexTwitch!==-1){
+        newExternal.twitchId=externalIds[indexTwitch]["uid"];
+        newExternal.gameName=externalIds[indexTwitch]["name"];
       }
       if (indexSteam!==-1){
         newExternal.steamId=externalIds[indexSteam]["uid"];
+        if (newExternal.gameName === "Not Inserted")
+          newExternal.gameName = externalIds[indexSteam]["name"]
         if (newExternal.steamId !==undefined){
           const responseItad = await itadGetPlain(newExternal.steamId);
           newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
@@ -170,6 +176,8 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
       if (indexGog!==-1){
         newExternal.gogId=externalIds[indexGog]["uid"];
+        if (newExternal.gameName === "Not Inserted")
+          newExternal.gameName = externalIds[indexGog]["name"]
       }
       await ExternalDB.create(newExternal);
       res.send(newExternal);
@@ -192,11 +200,16 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
       const newExternal: Externals = {
         gameName: name,
-        gameId: externalIds[indexTwitch]["game"],
-        twitchId: externalIds[indexTwitch]["uid"]
+        gameId: -1
+      }
+      if (indexTwitch!==-1){
+        newExternal.twitchId=externalIds[indexTwitch]["uid"];
+        newExternal.gameId=externalIds[indexTwitch]["game"];
       }
       if (indexSteam!==-1){
         newExternal.steamId=externalIds[indexSteam]["uid"];
+        if (newExternal.gameId === -1)
+          newExternal.gameId = externalIds[indexSteam]["game"]
         if (newExternal.steamId !==undefined){
           const responseItad = await itadGetPlain(newExternal.steamId);
           newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
@@ -204,16 +217,18 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
       if (indexGog!==-1){
         newExternal.gogId=externalIds[indexGog]["uid"];
+        if (newExternal.gameId === -1)
+          newExternal.gameId = externalIds[indexGog]["game"]
       }
       await ExternalDB.create(newExternal);
       res.send(newExternal);
     }else{
-      res.status(400);
-      res.send({error: "Invalid ID"})
+      res.status(404);
+      res.send({error: "No Externals for the game with the name Specified"})
     }
   }else{
     res.status(400);
-    res.send({error: "Invalid ID"})
+    res.send({error: "No parameters specified"})
   }
 }
 

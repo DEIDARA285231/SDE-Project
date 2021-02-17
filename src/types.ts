@@ -27,7 +27,7 @@ export interface Externals{
   gameId: number;
   steamId?: number;
   gogId?: number;
-  twitchId: number;
+  twitchId?: number;
   itad_plain?: string;
 }
 

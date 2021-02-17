@@ -225,12 +225,17 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                     }
                 }
                 newExternal = {
-                    gameName: externalIds[indexTwitch]["name"],
-                    gameId: gameID,
-                    twitchId: externalIds[indexTwitch]["uid"]
+                    gameName: "Not Inserted",
+                    gameId: gameID
                 };
+                if (indexTwitch !== -1) {
+                    newExternal.twitchId = externalIds[indexTwitch]["uid"];
+                    newExternal.gameName = externalIds[indexTwitch]["name"];
+                }
                 if (!(indexSteam !== -1)) return [3 /*break*/, 3];
                 newExternal.steamId = externalIds[indexSteam]["uid"];
+                if (newExternal.gameName === "Not Inserted")
+                    newExternal.gameName = externalIds[indexSteam]["name"];
                 if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 3];
                 return [4 /*yield*/, core_2.itadGetPlain(newExternal.steamId)];
             case 2:
@@ -240,6 +245,8 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
             case 3:
                 if (indexGog !== -1) {
                     newExternal.gogId = externalIds[indexGog]["uid"];
+                    if (newExternal.gameName === "Not Inserted")
+                        newExternal.gameName = externalIds[indexGog]["name"];
                 }
                 return [4 /*yield*/, Externals_1.default.create(newExternal)];
             case 4:
@@ -271,11 +278,16 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                 }
                 newExternal = {
                     gameName: name,
-                    gameId: externalIds[indexTwitch]["game"],
-                    twitchId: externalIds[indexTwitch]["uid"]
+                    gameId: -1
                 };
+                if (indexTwitch !== -1) {
+                    newExternal.twitchId = externalIds[indexTwitch]["uid"];
+                    newExternal.gameId = externalIds[indexTwitch]["game"];
+                }
                 if (!(indexSteam !== -1)) return [3 /*break*/, 10];
                 newExternal.steamId = externalIds[indexSteam]["uid"];
+                if (newExternal.gameId === -1)
+                    newExternal.gameId = externalIds[indexSteam]["game"];
                 if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 10];
                 return [4 /*yield*/, core_2.itadGetPlain(newExternal.steamId)];
             case 9:
@@ -285,6 +297,8 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
             case 10:
                 if (indexGog !== -1) {
                     newExternal.gogId = externalIds[indexGog]["uid"];
+                    if (newExternal.gameId === -1)
+                        newExternal.gameId = externalIds[indexGog]["game"];
                 }
                 return [4 /*yield*/, Externals_1.default.create(newExternal)];
             case 11:
@@ -292,13 +306,13 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                 res.send(newExternal);
                 return [3 /*break*/, 13];
             case 12:
-                res.status(400);
-                res.send({ error: "Invalid ID" });
+                res.status(404);
+                res.send({ error: "No Externals for the game with the name Specified" });
                 _a.label = 13;
             case 13: return [3 /*break*/, 15];
             case 14:
                 res.status(400);
-                res.send({ error: "Invalid ID" });
+                res.send({ error: "No parameters specified" });
                 _a.label = 15;
             case 15: return [2 /*return*/];
         }

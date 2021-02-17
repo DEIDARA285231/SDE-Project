@@ -116,7 +116,7 @@ export const getGenreFromIdIGDB: (id: number) => Promise<any> = async (id) => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: id, name; where id = ${id};`
+      data: `fields: id, name, url; where id = ${id};`
     });
     return response.data[0];
   } catch (e) {
@@ -172,7 +172,7 @@ export const getTopRatedIGDB: () => Promise<any> = async () => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null;`
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null & category = 0;`
     });
     return response.data;
   } catch (e) {

@@ -190,7 +190,7 @@ exports.getGenreFromIdIGDB = function (id) { return __awaiter(void 0, void 0, vo
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: id, name; where id = " + id + ";"
+                        data: "fields: id, name, url; where id = " + id + ";"
                     })];
             case 1:
                 response = _a.sent();
@@ -272,7 +272,7 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null;"
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null & category = 0;"
                     })];
             case 1:
                 response = _a.sent();
