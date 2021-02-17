@@ -70,3 +70,14 @@ export interface TwitchTopGame{
   name: string;
   box_art_url: string;
 }
+
+export interface IGDBGame{
+  id: number;
+  first_release_date: string;
+  aggregated_rating: number;
+  name: string;
+  rating: number;
+  storyline: string;
+  summary: string;
+  genres: number[];
+}

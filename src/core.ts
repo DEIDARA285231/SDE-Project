@@ -1,7 +1,8 @@
-import { ArtworkCoverIGDB, Error } from './types';
+import { ArtworkCoverIGDB, Error, IGDBGame } from './types';
 import qs from 'qs';
 import axios from 'axios';
 import secrets from '../secrets';
+import { raw } from 'body-parser';
 
 axios.defaults.paramsSerializer = (params) => {
   return qs.stringify(params, { indices: false });
@@ -10,10 +11,10 @@ axios.defaults.paramsSerializer = (params) => {
 //IGDB
 
 //fix returned fields, storyline may be undefined
-export const getGameIGDB: (name: string) => Promise<any> = async (name) => {
+export const getGameIGDB: (name: string) => Promise<IGDBGame[]|Error> = async (name) => {
   const gameName = name;
   try {
-    const response = await axios({
+    const response = (await axios({
       url: "https://api.igdb.com/v4/games",
       method: 'POST',
       headers: {
@@ -21,15 +22,24 @@ export const getGameIGDB: (name: string) => Promise<any> = async (name) => {
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit 1;`
-    });
-    return response.data[0];
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}";`
+    })).data;
+    return response.map((rawData: any) => ({
+      id: rawData.id,
+      first_release_date: new Date(rawData.first_release_date *1000).toUTCString(),
+      aggregated_rating: rawData.aggregated_rating,
+      name: rawData.name,
+      rating: rawData.rating,
+      storyline: rawData.storyline,
+      summary: rawData.summary,
+      genres: rawData.genres
+    }))
   } catch (e) {
     return e;
   }
 }
 
-export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
+export const getGameIGDBbyID: (id: number) => Promise<IGDBGame | Error> = async (id) => {
   try {
     const response = await axios({
       url: "https://api.igdb.com/v4/games",
@@ -41,7 +51,9 @@ export const getGameIGDBbyID: (id: number) => Promise<any> = async (id) => {
       },
       data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; where id = ${id};`
     })
-    return response.data[0];
+    let risposta = response.data[0]
+    risposta.first_release_date = new Date(risposta.first_release_date *1000).toUTCString()
+    return <IGDBGame> risposta;
   } catch (e) {
     return e;
   }

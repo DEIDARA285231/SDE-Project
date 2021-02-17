@@ -31,6 +31,7 @@ import {
   getGameNameFromRequest,
   getIdFromRequest,
   getStringFromRequest,
+  getGenres
 } from './helper';
 
 import ExternalDB from '../models/Externals';
@@ -46,62 +47,40 @@ export const gameIGDB = async (req: Request, res: Response) => {
 
       if (gameInDB) {
         //c'è il gioco nel DB
-        if (!isError(gameInDB)) {
-          res.contentType('json');
-        }
 
         const game = await getGameIGDBbyID(gameInDB.gameId);
-        if (game.genres !== undefined){
-          for(let i=0;i<game.genres.length; i++){
-            const responseGenre = await axios({
-              url: "http://localhost:3000/api/game/genres",
-              method: 'GET',
-              headers: {
-                "Accept": "application/json",
-              },
-              params: {
-                id: game.genres[i]
-              }
-            })
-            game.genres[i]=responseGenre.data["name"]
-          }
-          res.send(game);
-        }
-        res.send(game);
-      }else {
-        //non c'è il gioco nel DB
-        const game = await getGameIGDB(nameGameInserted);
-        
-        if (game !==(undefined)){
-          await axios({
-            url: "http://localhost:3000/api/game/externalGame",
-            method: 'GET',
-            headers: {
-              "Accept": "application/json",
-            },
-            params: {
-              id: game.id
-            }
-          });
+        if (!isError(game)){
           if (game.genres !== undefined){
+            let genreStructure=getGenres();
             for(let i=0;i<game.genres.length; i++){
-              const responseGenre = await axios({
-                url: "http://localhost:3000/api/game/genres",
-                method: 'GET',
-                headers: {
-                  "Accept": "application/json",
-                },
-                params: {
-                  id: game.genres[i]
-                }
-              })
-              game.genres[i]=responseGenre.data["name"]
+              game.genres[i]=genreStructure[game.genres[i]].name;
             }
+            res.send(game);
+          }else{
             res.send(game);
           }
         }else{
+          res.status(400);
+          res.send({error: "Error"})
+        }
+        
+      }else {
+        //non c'è il gioco nel DB
+        const games = await getGameIGDB(nameGameInserted);
+        
+        if (!isError(games) && games !==(undefined)){
+          let genreStructure=getGenres();
+          for (let i=0; i< games.length; i++){
+            if (games[i].genres !== undefined){
+              for(let j=0;j<games[i].genres.length; j++){
+                games[i].genres[j]=genreStructure[games[i].genres[j]].name;
+              }
+            }
+          }
+          res.send(games)
+        }else{
           res.status(404);
-          res.send({error: "Game not found"})
+          res.send({error: "No Games found"})
         }
       }
     }catch (err) {
@@ -111,32 +90,35 @@ export const gameIGDB = async (req: Request, res: Response) => {
   }else{
     const gameID = getIdFromRequest(req);
     if(gameID !== false){
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+      if (!(gameInDB)){
+        await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          headers: {
+            "Accept": "application/json",
+          },
+          params: {
+            id: gameID
+          }
+        });
+      }
       const game = await getGameIGDBbyID(gameID);
       if (!isError(game)) {
-        res.contentType('json');
+        if (game.genres !== undefined){
+          let genreStructure=getGenres();
+          for(let i=0;i<game.genres.length; i++){
+            game.genres[i]=genreStructure[game.genres[i]].name;
+          }
+          res.send(game);
+        }else{
+          res.send(game);
+        }  
       }
-      if (game.genres !== undefined){
-        for(let i=0;i<game.genres.length; i++){
-          const responseGenre = await axios({
-            url: "http://localhost:3000/api/game/genres",
-            method: 'GET',
-            headers: {
-              "Accept": "application/json",
-            },
-            params: {
-              id: game.genres[i]
-            }
-          })
-          game.genres[i]=responseGenre.data["name"]
-        }
-        res.send(game);
-      }
-      res.send(game);
     }else{
       res.status(400);
       res.send({error: "Invalid name or ID format"})
     }
-
   }
 }
 
