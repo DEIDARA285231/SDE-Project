@@ -71,6 +71,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
       }else {
         //non c'è il gioco nel DB
         const game = await getGameIGDB(nameGameInserted);
+        
         if (game !==(undefined)){
           await axios({
             url: "http://localhost:3000/api/game/externalGame",
@@ -260,23 +261,6 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
 
 export const topRatedIGDB = async (req: Request, res: Response) => {
   const topRated = await getTopRatedIGDB();
-  /*for (let entry=0; entry < topRated.length; entry++){
-    if (topRated[entry].genres !== undefined){
-      for(let i=0;i<topRated[entry].genres.length; i++){
-        const responseGenre = await axios({
-          url: "http://localhost:3000/api/game/genres",
-          method: 'GET',
-          headers: {
-            "Accept": "application/json",
-          },
-          params: {
-            id: topRated[entry].genres[i]
-          }
-        })
-        topRated[entry].genres[i]=responseGenre.data["name"]
-      }
-    }
-  }*/
 
   if(!isError(topRated)){
     res.contentType("json");

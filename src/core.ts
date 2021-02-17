@@ -21,7 +21,7 @@ export const getGameIGDB: (name: string) => Promise<any> = async (name) => {
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit 1`
+      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit 1;`
     });
     return response.data[0];
   } catch (e) {

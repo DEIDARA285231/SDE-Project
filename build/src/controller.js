@@ -383,23 +383,6 @@ exports.topRatedIGDB = function (req, res) { return __awaiter(void 0, void 0, vo
             case 0: return [4 /*yield*/, core_1.getTopRatedIGDB()];
             case 1:
                 topRated = _a.sent();
-                /*for (let entry=0; entry < topRated.length; entry++){
-                  if (topRated[entry].genres !== undefined){
-                    for(let i=0;i<topRated[entry].genres.length; i++){
-                      const responseGenre = await axios({
-                        url: "http://localhost:3000/api/game/genres",
-                        method: 'GET',
-                        headers: {
-                          "Accept": "application/json",
-                        },
-                        params: {
-                          id: topRated[entry].genres[i]
-                        }
-                      })
-                      topRated[entry].genres[i]=responseGenre.data["name"]
-                    }
-                  }
-                }*/
                 if (!types_1.isError(topRated)) {
                     res.contentType("json");
                 }
