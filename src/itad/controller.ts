@@ -72,14 +72,14 @@ export const getStoreLow = async (req: Request, res: Response) => {
   let store = getStringFromRequest(req, "store");
   store = (storeSet.has(String(store))) ? String(store) : "steam";
 
-
   if(gameID !== false){
     try{
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
       if (gameInDB) {
         if (gameInDB.itad_plain !== undefined){
           const storeLow = await itadStoreLow(gameInDB.itad_plain, store);
-          if (storeLow["data"].length >0){
+          console.log(storeLow["data"][gameInDB.itad_plain].length);
+          if (storeLow["data"][gameInDB.itad_plain].length >0){
             const response = {
               id: gameID,
               plain: gameInDB.itad_plain,
