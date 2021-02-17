@@ -27,7 +27,7 @@ export interface Externals{
   gameId: number;
   steamId?: number;
   gogId?: number;
-  twitchId: number;
+  twitchId?: number;
   itad_plain?: string;
 }
 
@@ -69,4 +69,15 @@ export interface TwitchTopGame{
   id: string;
   name: string;
   box_art_url: string;
+}
+
+export interface IGDBGame{
+  id: number;
+  first_release_date: string;
+  aggregated_rating: number;
+  name: string;
+  rating: number;
+  storyline: string;
+  summary: string;
+  genres: number[];
 }

@@ -48,7 +48,7 @@ axios_1.default.defaults.paramsSerializer = function (params) {
 };
 //IGDB
 //fix returned fields, storyline may be undefined
-exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getGameIGDB = function (name, limit, offset) { return __awaiter(void 0, void 0, void 0, function () {
     var gameName, response, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -65,11 +65,20 @@ exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0,
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\"; limit 1;"
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\"; limit " + limit + "; offset " + offset + ";"
                     })];
             case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data[0]];
+                response = (_a.sent()).data;
+                return [2 /*return*/, response.map(function (rawData) { return ({
+                        id: rawData.id,
+                        first_release_date: new Date(rawData.first_release_date * 1000).toUTCString(),
+                        aggregated_rating: rawData.aggregated_rating,
+                        name: rawData.name,
+                        rating: rawData.rating,
+                        storyline: rawData.storyline,
+                        summary: rawData.summary,
+                        genres: rawData.genres
+                    }); })];
             case 3:
                 e_1 = _a.sent();
                 return [2 /*return*/, e_1];
@@ -78,7 +87,7 @@ exports.getGameIGDB = function (name) { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.getGameIGDBbyID = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, e_2;
+    var response, risposta, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -95,7 +104,9 @@ exports.getGameIGDBbyID = function (id) { return __awaiter(void 0, void 0, void 
                     })];
             case 1:
                 response = _a.sent();
-                return [2 /*return*/, response.data[0]];
+                risposta = response.data[0];
+                risposta.first_release_date = new Date(risposta.first_release_date * 1000).toUTCString();
+                return [2 /*return*/, risposta];
             case 2:
                 e_2 = _a.sent();
                 return [2 /*return*/, e_2];
@@ -179,7 +190,7 @@ exports.getGenreFromIdIGDB = function (id) { return __awaiter(void 0, void 0, vo
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: id, name; where id = " + id + ";"
+                        data: "fields: id, name, url; where id = " + id + ";"
                     })];
             case 1:
                 response = _a.sent();
@@ -261,7 +272,7 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null;"
+                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null & category = 0;"
                     })];
             case 1:
                 response = _a.sent();

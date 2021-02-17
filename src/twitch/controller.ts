@@ -6,6 +6,7 @@ import {
   getTopGamesTwitch,
   getSearchTwitch,
   getStreamsTwitch,
+  getTwitchGameByName,
   getVideosTwitch} from './core';
 import {
   getGameNameFromRequest,
@@ -74,28 +75,42 @@ export const gameTwitch = async (req: Request, res: Response) => {
               res.send({error: "Game not broadcasted on Twitch"})
             }
           }else {
-            const responseExt = await axios({
-              url: "http://localhost:3000/api/game/externalGame",
-              method: 'GET',
-              params: {
-                name: gameName
+            try{
+              const responseExt = await axios({
+                url: "http://localhost:3000/api/game/externalGame",
+                method: 'GET',
+                params: {
+                  name: gameName
+                }
+              });
+              if (responseExt.data.twitchId !== undefined){
+                const game = await getTwitchGameById(String(responseExt.data.twitchId));
+                res.send(game);
+              }else{
+                res.status(404);
+                res.send({error: "Game not broadcasted on Twitch"})
               }
-            });
-            if (responseExt.data.twitchId !== undefined){
-              const game = await getTwitchGameById(String(responseExt.data.twitchId));
-              res.send(game);
-            }else{
-              res.status(404);
-              res.send({error: "Game not broadcasted on Twitch"})
-            }
+            }catch(e){
+              //gameName non negli externals
+              const game = await getTwitchGameByName(gameName)
+              if (!isError(game)) {
+                res.contentType('json');
+                if (game.data.length > 0){
+                  res.send(game.data)
+                }else{
+                  res.status(404);
+                  res.send({error: "Game not broadcasted on Twitch"})
+                }
+              }              
+            }    
           }
         }catch(e){
           res.status(400);
-          res.send({ error: 'Invalid!' });
+          res.send({ error: 'Something wrong in calling the DB' });
         }
       } else {
         res.status(400);
-        res.send({error: "Invalid parameter"})
+        res.send({error: "No correct parameter specified"})
       }
     }
   }

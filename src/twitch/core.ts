@@ -31,7 +31,7 @@ export const getTwitchGameById: (id: string) => Promise<File | Error> = async (i
   }
 }
 
-export const getTwitchGameByName: (name: string) => Promise<File | Error> = async (name) => {
+export const getTwitchGameByName: (name: string) => Promise<any | Error> = async (name) => {
 
   try{
     const response = await axios.get<File>("https://api.twitch.tv/helix/games",{
@@ -46,7 +46,6 @@ export const getTwitchGameByName: (name: string) => Promise<File | Error> = asyn
     });
     return response.data;
   } catch (e) {
-    console.log("e");
     return {
       error: e,
     };

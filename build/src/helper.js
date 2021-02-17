@@ -6,7 +6,7 @@
  *   of the other files.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCurrentDate = exports.getGameNameFromRequest = exports.getDateFromRequest = exports.getIdFromRequest = exports.getStringFromRequest = exports.getNumberFromRequest = void 0;
+exports.getGenres = exports.getCurrentDate = exports.getGameNameFromRequest = exports.getDateFromRequest = exports.getIdFromRequest = exports.getStringFromRequest = exports.getNumberFromRequest = void 0;
 /**
  * Extract a specific parameter from the query-string
  * @param req The request (as given in the controller)
@@ -92,5 +92,101 @@ exports.getCurrentDate = function () {
         day: date.getDate(),
         month: date.getMonth() + 1,
         year: date.getFullYear(),
+    };
+};
+exports.getGenres = function () {
+    return {
+        2: {
+            "name": "Point-and-click",
+            "url": "https://www.igdb.com/genres/point-and-click"
+        },
+        4: {
+            "name": "Fighting",
+            "url": "https://www.igdb.com/genres/fighting"
+        },
+        5: {
+            "name": "Shooter",
+            "url": "https://www.igdb.com/genres/shooter"
+        },
+        7: {
+            "name": "Music",
+            "url": "https://www.igdb.com/genres/music"
+        },
+        8: {
+            "name": "Platform",
+            "url": "https://www.igdb.com/genres/platform"
+        },
+        9: {
+            "name": "Puzzle",
+            "url": "https://www.igdb.com/genres/puzzle"
+        },
+        10: {
+            "name": "Racing",
+            "url": "https://www.igdb.com/genres/racing"
+        },
+        11: {
+            "name": "Real Time Strategy (RTS)",
+            "url": "https://www.igdb.com/genres/real-time-strategy-rts"
+        },
+        12: {
+            "name": "Role-playing (RPG)",
+            "url": "https://www.igdb.com/genres/role-playing-rpg"
+        },
+        13: {
+            "name": "Simulator",
+            "url": "https://www.igdb.com/genres/simulator"
+        },
+        14: {
+            "name": "Sport",
+            "url": "https://www.igdb.com/genres/sport"
+        },
+        15: {
+            "name": "Strategy",
+            "url": "https://www.igdb.com/genres/strategy"
+        },
+        16: {
+            "name": "Turn-based strategy (TBS)",
+            "url": "https://www.igdb.com/genres/turn-based-strategy-tbs"
+        },
+        24: {
+            "name": "Tactical",
+            "url": "https://www.igdb.com/genres/tactical"
+        },
+        25: {
+            "name": "Hack and slash/Beat 'em up",
+            "url": "https://www.igdb.com/genres/hack-and-slash-beat-em-up"
+        },
+        26: {
+            "name": "Quiz/Trivia",
+            "url": "https://www.igdb.com/genres/quiz-trivia"
+        },
+        30: {
+            "name": "Pinball",
+            "url": "https://www.igdb.com/genres/pinball"
+        },
+        31: {
+            "name": "Adventure",
+            "url": "https://www.igdb.com/genres/adventure"
+        },
+        32: {
+            "name": "Indie",
+            "url": "https://www.igdb.com/genres/indie"
+        },
+        33: {
+            "name": "Arcade",
+            "url": "https://www.igdb.com/genres/arcade"
+        },
+        34: {
+            "name": "Visual Novel",
+            "url": "https://www.igdb.com/genres/visual-novel"
+        },
+        35: {
+            "name": "Card & Board Game",
+            "url": "https://www.igdb.com/genres/card-and-board-game"
+        },
+        36: {
+            "name": "MOBA",
+            "url": "https://www.igdb.com/genres/moba"
+        }
     };
 };

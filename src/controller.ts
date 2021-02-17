@@ -31,6 +31,8 @@ import {
   getGameNameFromRequest,
   getIdFromRequest,
   getStringFromRequest,
+  getGenres,
+  getNumberFromRequest
 } from './helper';
 
 import ExternalDB from '../models/Externals';
@@ -41,102 +43,58 @@ import axios from 'axios';
 export const gameIGDB = async (req: Request, res: Response) => {
   const nameGameInserted = getGameNameFromRequest(req);
   if(nameGameInserted !== false){
-    try{
-      let gameInDB = await ExternalDB.findOne({ gameName: nameGameInserted });
-
-      if (gameInDB) {
-        //c'è il gioco nel DB
-        if (!isError(gameInDB)) {
-          res.contentType('json');
-        }
-
-        const game = await getGameIGDBbyID(gameInDB.gameId);
-        if (game.genres !== undefined){
-          for(let i=0;i<game.genres.length; i++){
-            const responseGenre = await axios({
-              url: "http://localhost:3000/api/game/genres",
-              method: 'GET',
-              headers: {
-                "Accept": "application/json",
-              },
-              params: {
-                id: game.genres[i]
-              }
-            })
-            game.genres[i]=responseGenre.data["name"]
+    let limit = getNumberFromRequest(req, "limit");
+    let offset = getNumberFromRequest(req, "offset")
+    limit = (limit !== false)? limit : 20;
+    offset = (offset !== false)? offset : 0;
+    //non c'è il gioco nel DB
+    const games = await getGameIGDB(nameGameInserted, limit, offset);
+    if (!isError(games) && games !==(undefined)){
+      let genreStructure=getGenres();
+      for (let i=0; i< games.length; i++){
+        if (games[i].genres !== undefined){
+          for(let j=0;j<games[i].genres.length; j++){
+            games[i].genres[j]=genreStructure[games[i].genres[j]].name;
           }
-          res.send(game);
-        }
-        res.send(game);
-      }else {
-        //non c'è il gioco nel DB
-        const game = await getGameIGDB(nameGameInserted);
-        
-        if (game !==(undefined)){
-          await axios({
-            url: "http://localhost:3000/api/game/externalGame",
-            method: 'GET',
-            headers: {
-              "Accept": "application/json",
-            },
-            params: {
-              id: game.id
-            }
-          });
-          if (game.genres !== undefined){
-            for(let i=0;i<game.genres.length; i++){
-              const responseGenre = await axios({
-                url: "http://localhost:3000/api/game/genres",
-                method: 'GET',
-                headers: {
-                  "Accept": "application/json",
-                },
-                params: {
-                  id: game.genres[i]
-                }
-              })
-              game.genres[i]=responseGenre.data["name"]
-            }
-            res.send(game);
-          }
-        }else{
-          res.status(404);
-          res.send({error: "Game not found"})
         }
       }
-    }catch (err) {
-      console.error(err)
+      res.send(games)
+    }else{
+      res.status(404);
+      res.send({error: "No Games with the name found"})
     }
-
   }else{
     const gameID = getIdFromRequest(req);
     if(gameID !== false){
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+      if (!(gameInDB)){
+        await axios({
+          url: "http://localhost:3000/api/game/externalGame",
+          method: 'GET',
+          headers: {
+            "Accept": "application/json",
+          },
+          params: {
+            id: gameID
+          }
+        });
+      }
       const game = await getGameIGDBbyID(gameID);
       if (!isError(game)) {
-        res.contentType('json');
+        if (game.genres !== undefined){
+          let genreStructure=getGenres();
+          for(let i=0;i<game.genres.length; i++){
+            game.genres[i]=genreStructure[game.genres[i]].name;
+          }
+          res.send(game);
+        }else{
+          res.send(game);
+        }  
       }
-      if (game.genres !== undefined){
-        for(let i=0;i<game.genres.length; i++){
-          const responseGenre = await axios({
-            url: "http://localhost:3000/api/game/genres",
-            method: 'GET',
-            headers: {
-              "Accept": "application/json",
-            },
-            params: {
-              id: game.genres[i]
-            }
-          })
-          game.genres[i]=responseGenre.data["name"]
-        }
-        res.send(game);
-      }
-      res.send(game);
     }else{
       res.status(400);
       res.send({error: "Invalid name or ID format"})
     }
-
   }
 }
 
@@ -198,13 +156,19 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           indexGog=i;
         }
       }
+      
       const newExternal: Externals = {
-        gameName: externalIds[indexTwitch]["name"],
-        gameId: gameID,
-        twitchId: externalIds[indexTwitch]["uid"]
+        gameName: "Not Inserted",
+        gameId: gameID
+      }
+      if (indexTwitch!==-1){
+        newExternal.twitchId=externalIds[indexTwitch]["uid"];
+        newExternal.gameName=externalIds[indexTwitch]["name"];
       }
       if (indexSteam!==-1){
         newExternal.steamId=externalIds[indexSteam]["uid"];
+        if (newExternal.gameName === "Not Inserted")
+          newExternal.gameName = externalIds[indexSteam]["name"]
         if (newExternal.steamId !==undefined){
           const responseItad = await itadGetPlain(newExternal.steamId);
           newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
@@ -212,6 +176,8 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
       if (indexGog!==-1){
         newExternal.gogId=externalIds[indexGog]["uid"];
+        if (newExternal.gameName === "Not Inserted")
+          newExternal.gameName = externalIds[indexGog]["name"]
       }
       await ExternalDB.create(newExternal);
       res.send(newExternal);
@@ -234,11 +200,16 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
       const newExternal: Externals = {
         gameName: name,
-        gameId: externalIds[indexTwitch]["game"],
-        twitchId: externalIds[indexTwitch]["uid"]
+        gameId: -1
+      }
+      if (indexTwitch!==-1){
+        newExternal.twitchId=externalIds[indexTwitch]["uid"];
+        newExternal.gameId=externalIds[indexTwitch]["game"];
       }
       if (indexSteam!==-1){
         newExternal.steamId=externalIds[indexSteam]["uid"];
+        if (newExternal.gameId === -1)
+          newExternal.gameId = externalIds[indexSteam]["game"]
         if (newExternal.steamId !==undefined){
           const responseItad = await itadGetPlain(newExternal.steamId);
           newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
@@ -246,16 +217,18 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
       if (indexGog!==-1){
         newExternal.gogId=externalIds[indexGog]["uid"];
+        if (newExternal.gameId === -1)
+          newExternal.gameId = externalIds[indexGog]["game"]
       }
       await ExternalDB.create(newExternal);
       res.send(newExternal);
     }else{
-      res.status(400);
-      res.send({error: "Invalid ID"})
+      res.status(404);
+      res.send({error: "No Externals for the game with the name Specified"})
     }
   }else{
     res.status(400);
-    res.send({error: "Invalid ID"})
+    res.send({error: "No parameters specified"})
   }
 }
 
