@@ -48,14 +48,10 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
       topGames.data[i]["box_art_url"] = tmp[0] + ".jpg"
     }
 
-    //converti unix timestamp to date and rate to only two decimals
+    //convert unix timestamp to date and rate to only two decimals
     for(var i=0; i<topRated.data.length; i++) {
-      var dat = new Date(topRated.data[i].first_release_date * 1000);
-      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      var year = dat.getFullYear();
-      var month = months[dat.getMonth()];
-      var day = dat.getDate();
-      topRated.data[i].first_release_date = ''+day+' '+month+' '+year;
+      var dat = ''+topRated.data[i].first_release_date+'';
+      topRated.data[i].first_release_date = dat.substring(5,16)
 
       var rat = ''+topRated.data[i].rating+'';
       topRated.data[i].rating = rat.substring(0,4);
@@ -137,12 +133,8 @@ router.get('/game', ensureAuth, async (req,res) => {
       var rat = ''+game.data.rating+'';
       game.data.rating = rat.substring(0,4);
 
-      var dat = new Date(game.data.first_release_date * 1000);
-      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      var year = dat.getFullYear();
-      var month = months[dat.getMonth()];
-      var day = dat.getDate();
-      game.data.first_release_date = ''+day+' '+month+' '+year;
+      var dat = ''+game.data.first_release_date+'';
+      game.data.first_release_date = dat.substring(5,16)
 
       res.render('game', {
         id: game.data.id,

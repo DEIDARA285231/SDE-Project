@@ -16,8 +16,7 @@ const ExternalsSchema = new mongoose.Schema({
     type: Number
   },
   twitchId: {
-    type: Number,
-    required: true
+    type: Number
   },
   itad_plain: {
     type: String
