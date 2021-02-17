@@ -1,0 +1,63 @@
+p {
+  margin: 10px 0 !important;
+}
+
+.login-container {
+  width: 400px;
+  margin-top: 50px;
+  text-align: center;
+}
+
+#scrolly{
+  width: 1000px;
+  height: 230px;
+  overflow: auto;
+  overflow-y: hidden;
+  margin: 0 auto;
+  white-space: nowrap
+}
+
+img{
+  width: 150px;
+  height: 200px;
+  margin: 20px 10px;
+  display: inline;
+}
+
+th {
+  text-align: center;
+}
+
+td {
+  text-align: center;
+}
+
+.content  {
+  display: flex;
+}
+.right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.box {
+  padding: 0px;
+  margin-left: 12px;
+  margin-bottom: 12px;
+}
+.left {
+  flex: 2;
+}
+.column {
+  flex: 20%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+.column2 {
+  flex: 80%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+.row {
+  display: flex;
+}
