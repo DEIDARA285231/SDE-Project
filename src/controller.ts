@@ -89,7 +89,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
           res.send(game);
         }else{
           res.send(game);
-        }  
+        }
       }
     }else{
       res.status(400);
@@ -156,7 +156,7 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           indexGog=i;
         }
       }
-      
+
       const newExternal: Externals = {
         gameName: "Not Inserted",
         gameId: gameID
@@ -182,8 +182,9 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       await ExternalDB.create(newExternal);
       res.send(newExternal);
     }else{
-      res.status(400);
-      res.send({error: "Invalid ID"})
+      //CHANGE
+      res.status(200);
+      res.send({error: "ID does not appear in external sources"})
     }
   }else if(name !== false) {
     const externalIds=await getExternalsIGDBbyName(name);

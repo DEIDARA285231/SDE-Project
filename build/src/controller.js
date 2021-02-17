@@ -254,8 +254,9 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                 res.send(newExternal);
                 return [3 /*break*/, 6];
             case 5:
-                res.status(400);
-                res.send({ error: "Invalid ID" });
+                //CHANGE
+                res.status(200);
+                res.send({ error: "ID does not appear in external sources" });
                 _a.label = 6;
             case 6: return [3 /*break*/, 15];
             case 7:

@@ -162,9 +162,9 @@ export const getExternalsIGDBbyName: (gameName: string) => Promise<any> = async 
   }
 }
 
-export const getTopRatedIGDB: () => Promise<any> = async () => {
+export const getTopRatedIGDB: () => Promise<IGDBGame[]|Error> = async () => {
   try{
-    const response = await axios({
+    const response = (await axios({
       url: "https://api.igdb.com/v4/games/",
       method: 'POST',
       headers: {
@@ -173,8 +173,17 @@ export const getTopRatedIGDB: () => Promise<any> = async () => {
         "Client-ID": `${secrets.CLIENT_ID}`
       },
       data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null & category = 0;`
-    });
-    return response.data;
+    })).data;
+    return response.map((rawData: any) => ({
+      id: rawData.id,
+      first_release_date: new Date(rawData.first_release_date *1000).toUTCString(),
+      aggregated_rating: rawData.aggregated_rating,
+      name: rawData.name,
+      rating: rawData.rating,
+      storyline: rawData.storyline,
+      summary: rawData.summary,
+      genres: rawData.genres
+    }));
   } catch (e) {
     return e;
   }

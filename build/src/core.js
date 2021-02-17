@@ -275,8 +275,17 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
                         data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null & category = 0;"
                     })];
             case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
+                response = (_a.sent()).data;
+                return [2 /*return*/, response.map(function (rawData) { return ({
+                        id: rawData.id,
+                        first_release_date: new Date(rawData.first_release_date * 1000).toUTCString(),
+                        aggregated_rating: rawData.aggregated_rating,
+                        name: rawData.name,
+                        rating: rawData.rating,
+                        storyline: rawData.storyline,
+                        summary: rawData.summary,
+                        genres: rawData.genres
+                    }); })];
             case 2:
                 e_8 = _a.sent();
                 return [2 /*return*/, e_8];
