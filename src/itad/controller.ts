@@ -25,10 +25,11 @@ export const plainITAD = async (req: Request, res: Response) => {
         }
         if (gameInDB.steamId !== undefined){
           const plain = await itadGetPlain(gameInDB.steamId);
+          console.log(plain)
           const response = {
             id: gameID,
             steamId: gameInDB.steamId,
-            plain: plain["data"][`app/${gameID}`]
+            plain: plain["data"][`app/${gameInDB.steamId}`]
           }
           res.send(response);
         }else{
@@ -45,10 +46,11 @@ export const plainITAD = async (req: Request, res: Response) => {
         });
         if (responseExt.data.steamId !== undefined){
           const plain = await itadGetPlain(responseExt.data.steamId);
+          
           const response = {
             id: gameID,
             steamId: gameInDB.steamId,
-            plain: plain["data"][`app/${gameID}`]
+            plain: plain["data"][`app/${responseExt.data.steamId}`]
           }
           res.send(response);
         }else{
