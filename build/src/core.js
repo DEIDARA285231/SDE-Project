@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSpeedrunGameByName = exports.getGamePlatformsIGDB = exports.getGameReleasesIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDBbyName = exports.getExternalsIGDB = exports.getGenreFromIdIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDBbyID = exports.getGameIGDB = void 0;
+exports.getSpeedrunGameByName = exports.getGamePlatformsLogoIGDB = exports.getPlatformsIGDB = exports.getGameVideosIGDB = exports.getTopRatedIGDB = exports.getExternalsIGDBbyName = exports.getExternalsIGDB = exports.getGenreFromIdIGDB = exports.getCoverIGDB = exports.getArtworkIGDB = exports.getGameIGDBbyID = exports.getGameIGDB = void 0;
 var qs_1 = __importDefault(require("qs"));
 var axios_1 = __importDefault(require("axios"));
 var secrets_1 = __importDefault(require("../secrets"));
@@ -294,89 +294,93 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.getGameVideosIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_9;
+    var response, e_9;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/game_videos",
                         method: 'POST',
-                        responseType: "stream",
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID,
                         },
-                        data: "game: \"" + gameID + ";\""
+                        data: "fields: name, game, video_id; where game = " + id + ";"
                     })];
+            case 1:
+                response = (_a.sent()).data;
+                return [2 /*return*/, response.map(function (rawData) { return ({
+                        gameId: rawData.game,
+                        video_name: rawData.name,
+                        videoId: rawData.video_id
+                    }); })];
             case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 3:
                 e_9 = _a.sent();
                 return [2 /*return*/, e_9];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
-exports.getGameReleasesIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_10;
+exports.getPlatformsIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, returnObject, e_10;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, axios_1.default({
-                        url: "https://api.igdb.com/v4/release_dates",
-                        method: 'POST',
-                        responseType: "stream",
-                        headers: {
-                            "Authorization": "" + secrets_1.default.AUTHORIZATION,
-                            "Client-ID": "" + secrets_1.default.CLIENT_ID
-                        },
-                        data: "game: \"" + gameID + ";\""
-                    })];
-            case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 3:
-                e_10 = _a.sent();
-                return [2 /*return*/, e_10];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); };
-exports.getGamePlatformsIGDB = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, response, e_11;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                gameID = id;
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, axios_1.default({
                         url: "https://api.igdb.com/v4/platforms",
                         method: 'POST',
-                        responseType: "stream",
                         headers: {
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "game: \"" + gameID + ";\""
+                        data: "fields: id, alternative_name, name, platform_logo; where id=" + id + ";"
                     })];
+            case 1:
+                response = (_a.sent()).data[0];
+                returnObject = {
+                    id: response.id,
+                    name: response.name,
+                    alternative_name: response.alternative_name,
+                    platform_logo_url: response.platform_logo
+                };
+                return [2 /*return*/, returnObject];
             case 2:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
-            case 3:
+                e_10 = _a.sent();
+                return [2 /*return*/, e_10];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getGamePlatformsLogoIGDB = function (idLogo) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, returnObject, e_11;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, axios_1.default({
+                        url: "https://api.igdb.com/v4/platform_logos",
+                        method: 'POST',
+                        headers: {
+                            "Authorization": "" + secrets_1.default.AUTHORIZATION,
+                            "Client-ID": "" + secrets_1.default.CLIENT_ID
+                        },
+                        data: "fields: id, width, height, url; where id=" + idLogo + ";"
+                    })];
+            case 1:
+                response = (_a.sent()).data[0];
+                returnObject = {
+                    id: response.id,
+                    width: response.width,
+                    height: response.height,
+                    url: response.url.substring(2).replace("t_thumb", "t_original")
+                };
+                return [2 /*return*/, returnObject];
+            case 2:
                 e_11 = _a.sent();
                 return [2 /*return*/, e_11];
-            case 4: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };

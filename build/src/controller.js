@@ -49,7 +49,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gameSpeedrun = exports.platformsIGDB = exports.releaseIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
+exports.gameSpeedrun = exports.platformsIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
 var types_1 = require("./types");
 var core_1 = require("./core");
 var core_2 = require("./itad/core");
@@ -346,31 +346,11 @@ exports.gameVideosIGDB = function (req, res) { return __awaiter(void 0, void 0, 
                 gameVideos = _a.sent();
                 if (!types_1.isError(gameVideos)) {
                     res.contentType('json'); //Need a way to use mp4
+                    res.send(gameVideos);
                 }
-                res.send(gameVideos);
-                return [3 /*break*/, 3];
-            case 2:
-                res.status(400);
-                res.send({ error: "Invalid ID" });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.releaseIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, gameReleases;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getGameReleasesIGDB(gameID)];
-            case 1:
-                gameReleases = _a.sent();
-                if (!types_1.isError(gameReleases)) {
-                    res.contentType("json");
+                else {
+                    res.send(gameVideos);
                 }
-                res.send(gameReleases);
                 return [3 /*break*/, 3];
             case 2:
                 res.status(400);
@@ -381,25 +361,39 @@ exports.releaseIGDB = function (req, res) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, gamePlatforms;
+    var platformID, gamePlatforms, platLogo;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 2];
-                return [4 /*yield*/, core_1.getGamePlatformsIGDB(gameID)];
+                platformID = helper_1.getIdFromRequest(req);
+                if (!(platformID !== false)) return [3 /*break*/, 5];
+                return [4 /*yield*/, core_1.getPlatformsIGDB(platformID)];
             case 1:
                 gamePlatforms = _a.sent();
-                if (!types_1.isError(gamePlatforms)) {
-                    res.contentType("json");
-                }
-                res.send(gamePlatforms);
-                return [3 /*break*/, 3];
+                if (!!types_1.isError(gamePlatforms)) return [3 /*break*/, 3];
+                res.contentType("json");
+                return [4 /*yield*/, core_1.getGamePlatformsLogoIGDB(parseInt(gamePlatforms.platform_logo_url))];
             case 2:
+                platLogo = _a.sent();
+                if (!types_1.isError(platLogo)) {
+                    gamePlatforms.platform_logo_url = platLogo["url"];
+                    res.send(gamePlatforms);
+                }
+                else {
+                    gamePlatforms.platform_logo_url = "Not found";
+                    res.send(gamePlatforms);
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                res.status(400);
+                res.send(gamePlatforms);
+                _a.label = 4;
+            case 4: return [3 /*break*/, 6];
+            case 5:
                 res.status(400);
                 res.send({ error: "Invalid ID" });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                _a.label = 6;
+            case 6: return [2 /*return*/];
         }
     });
 }); };
