@@ -1,21 +1,41 @@
-<h3 style="text-align: center;">{{name}}</h3>
+<h3 style="text-align: center;">{{data.name}}</h3>
 <hr>
-<div class="row">
-  <div class="column" style="text-align: center">
-    <img src="{{{cover}}}" alt="img" style="width: 200px; height: 250px;"/>
-    <span style="font-size: 20px"><b>User score</b> {{rating}}</span>
-  </div>
-  <div class="column2">
-    <br>
-    <b>Released on</b> {{release}}
-    <hr>
-    {{summary}}
-    {{#if storyline}}
+<div style="height: fit-content;">
+  <div class="row" style="margin-bottom: 0px">
+    <div class="column" style="text-align: center; height: fit-content;">
+      <img src="{{{cover}}}" alt="img" style="width: 200px; height: 250px; margin-bottom: 5px;"/>
+      <div style="font-size: 20px">
+        <b>Rating</b>
+        {{#if data.aggregated_rating}}
+          {{data.aggregated_rating}}
+        {{else}}
+          N/A
+        {{/if}}
+      </div>
+      <div style="font-size: 20px">
+        <b>User score</b>
+        {{#if data.rating}}
+          {{data.rating}}
+        {{else}}
+          N/A
+        {{/if}}
+      </div>
+    </div>
+    <div class="column2" style="height: fit-content;">
+      <br>
+      <b>Released on</b> {{data.first_release_date}}
       <hr>
-      {{storyline}}
-    {{/if}}
-    <br><br>
+      {{data.summary}}
+      {{#if data.storyline}}
+        <hr>
+        {{data.storyline}}
+      {{/if}}
+      <br><br>
 
+    </div>
   </div>
 </div>
 <br>
+<div style="display: inline-block;">
+  PLACEHOLDER TEXT
+</div>

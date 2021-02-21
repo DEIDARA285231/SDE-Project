@@ -4,6 +4,7 @@ const { ensureAuth, ensureGuest } = require('../middleware/auth')
 const { getTopGamesTwitch } = require('../src/twitch/core')
 import axios from 'axios';
 import { getIdFromRequest, getGameNameFromRequest} from '../src/helper';
+import { isError } from '../src/types';
 
 
 // @desc Login/Landing Page
@@ -111,7 +112,9 @@ router.get('/game', ensureAuth, async (req,res) => {
   try {
     const id = getIdFromRequest(req);
     const name = getGameNameFromRequest(req);
+
     if(id !== false) {
+      //get the game informations given the ID
       const game = await axios({
         url: `http://localhost:3000/api/games?id=${id}`,
         method: 'GET',
@@ -119,7 +122,7 @@ router.get('/game', ensureAuth, async (req,res) => {
           'Accept': 'application/json',
         },
       });
-
+      //get the cover for the game
       const cover = await axios({
         url: `http://localhost:3000/api/game/covers?id=${id}`,
         method: 'GET',
@@ -127,26 +130,33 @@ router.get('/game', ensureAuth, async (req,res) => {
           'Accept': 'application/json',
         },
       });
-
-      var url = "https://"+cover.data[0].url
-
-      var rat = ''+game.data.rating+'';
-      game.data.rating = rat.substring(0,4);
+      //format the cover URL
+      var url = "";
+      if(!isError(cover) && cover !==(undefined) && cover.data.length!=0) {
+        url = "https://"+cover.data[0].url
+      } else {
+        url = "https://static-cdn.jtvnw.net/ttv-static/404_boxart.jpg"
+      }
+      //rating check and format
+      if(typeof game.data.rating === 'undefined') {
+        game.data.rating = 'N/A'
+      } else {
+        var rat = ''+game.data.rating+'';
+        game.data.rating = rat.substring(0,4);
+      }
 
       var dat = ''+game.data.first_release_date+'';
-      game.data.first_release_date = dat.substring(5,16)
-
+      if(dat != "Invalid Date") {
+        game.data.first_release_date = dat.substring(5,16)
+      }
+      //render views/game with these params
       res.render('game', {
-        id: game.data.id,
-        name: game.data.name,
-        storyline: game.data.storyline,
-        summary: game.data.summary,
-        cover: url,
-        rating: game.data.rating,
-        release: game.data.first_release_date
+        data: game.data,
+        cover: url
       });
 
     } else if(name !== false) {
+      //get the game informations given the name
       const game = await axios({
         url: `http://localhost:3000/api/games?name=${name}`,
         method: 'GET',
@@ -154,7 +164,40 @@ router.get('/game', ensureAuth, async (req,res) => {
           'Accept': 'application/json',
         },
       });
-      res.render('error/420')
+
+      for(var i=0; i<game.data.length; i++) {
+        var dat = ''+game.data[i].first_release_date+'';
+        if(dat != "Invalid Date") {
+          game.data[i].first_release_date = dat.substring(5,16)
+        }
+      }
+
+      res.render('gameList', {
+        query: name,
+        length: game.data.length,
+        search: {
+          entry0: 0<game.data.length ? game.data[0] : '',
+          entry1: 1<game.data.length ? game.data[1] : '',
+          entry2: 2<game.data.length ? game.data[2] : '',
+          entry3: 3<game.data.length ? game.data[3] : '',
+          entry4: 4<game.data.length ? game.data[4] : '',
+          entry5: 5<game.data.length ? game.data[5] : '',
+          entry6: 6<game.data.length ? game.data[6] : '',
+          entry7: 7<game.data.length ? game.data[7] : '',
+          entry8: 8<game.data.length ? game.data[8] : '',
+          entry9: 9<game.data.length ? game.data[9] : '',
+          entry10: 10<game.data.length ? game.data[10] : '',
+          entry11: 11<game.data.length ? game.data[11] : '',
+          entry12: 12<game.data.length ? game.data[12] : '',
+          entry13: 13<game.data.length ? game.data[13] : '',
+          entry14: 14<game.data.length ? game.data[14] : '',
+          entry15: 15<game.data.length ? game.data[15] : '',
+          entry16: 16<game.data.length ? game.data[16] : '',
+          entry17: 17<game.data.length ? game.data[17] : '',
+          entry18: 18<game.data.length ? game.data[18] : '',
+          entry19: 19<game.data.length ? game.data[19] : '',
+        }
+      });
     } else {
       throw err;
     }
