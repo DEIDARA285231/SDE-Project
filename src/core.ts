@@ -1,4 +1,4 @@
-import { ArtworkCoverIGDB, Error, IGDBGame } from './types';
+import { ArtworkCoverIGDB, Error, IGDBGame, IGDBPlatform, IGDBVideo, IGDBPlatformLogo } from './types';
 import qs from 'qs';
 import axios from 'axios';
 import secrets from '../secrets';
@@ -189,58 +189,69 @@ export const getTopRatedIGDB: () => Promise<IGDBGame[]|Error> = async () => {
   }
 }
 
-export const getGameVideosIGDB: (id: number) => Promise<any> = async (id) => {
-  const gameID = id;
+export const getGameVideosIGDB: (id: number) => Promise<IGDBVideo[] | Error> = async (id) => {
   try{
-    const response = await axios({
+    const response : IGDBVideo[] = (await axios({
       url: "https://api.igdb.com/v4/game_videos",
       method: 'POST',
-      responseType: "stream",
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`,
       },
-      data: `game: "${gameID};"`
-    });
-    return response.data;
+      data: `fields: name, game, video_id; where game = ${id};`
+    })).data
+    return response.map((rawData: any) => ({
+      gameId: rawData.game,
+      video_name: rawData.name,
+      videoId: rawData.video_id
+    }));
   } catch (e) {
     return e;
   }
 }
 
-export const getGameReleasesIGDB: (id: number) => Promise<any> = async (id) => {
-  const gameID = id;
+export const getPlatformsIGDB: (id: number) => Promise<IGDBPlatform | Error> = async (id) => {
   try{
-    const response = await axios({
-      url: "https://api.igdb.com/v4/release_dates",
-      method: 'POST',
-      responseType: "stream",
-      headers: {
-        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
-        "Client-ID": `${secrets.CLIENT_ID}`
-      },
-      data: `game: "${gameID};"`
-    });
-    return response.data;
-  } catch (e) {
-    return e;
-  }
-}
-
-export const getGamePlatformsIGDB: (id: number) => Promise<any> = async (id) => {
-  const gameID = id;
-  try{
-    const response = await axios({
+    const response = (await axios({
       url: "https://api.igdb.com/v4/platforms",
       method: 'POST',
-      responseType: "stream",
       headers: {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `game: "${gameID};"`
-    });
-    return response.data;
+      data: `fields: id, alternative_name, name, platform_logo; where id=${id};`
+    })).data[0];
+    const returnObject : IGDBPlatform = {
+      id: response.id,
+      name: response.name,
+      alternative_name: response.alternative_name,
+      platform_logo_url: response.platform_logo
+    }
+    return returnObject
+  } catch (e) {
+    return e;
+  }
+}
+
+export const getGamePlatformsLogoIGDB: (idLogo: number) => Promise<IGDBPlatformLogo | Error> = async (idLogo) => {
+  try{
+    const response = (await axios({
+      url: "https://api.igdb.com/v4/platform_logos",
+      method: 'POST',
+      headers: {
+        "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
+        "Client-ID": `${secrets.CLIENT_ID}`
+      },
+      data: `fields: id, width, height, url; where id=${idLogo};`
+    })).data[0];
+    
+    const returnObject : IGDBPlatformLogo = {
+      id: response.id,
+      width: response.width,
+      height: response.height,
+      url: response.url.substring(2).replace("t_thumb", "t_original")
+    }
+    return returnObject
   } catch (e) {
     return e;
   }

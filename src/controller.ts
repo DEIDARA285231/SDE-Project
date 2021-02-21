@@ -21,10 +21,10 @@ import {
   getExternalsIGDB,
   getTopRatedIGDB,
   getGameVideosIGDB,
-  getGameReleasesIGDB,
-  getGamePlatformsIGDB,
+  getPlatformsIGDB,
   getSpeedrunGameByName,
-  getExternalsIGDBbyName
+  getExternalsIGDBbyName,
+  getGamePlatformsLogoIGDB
 } from './core';
 import { itadGetPlain } from './itad/core';
 import {
@@ -47,7 +47,6 @@ export const gameIGDB = async (req: Request, res: Response) => {
     let offset = getNumberFromRequest(req, "offset")
     limit = (limit !== false)? limit : 20;
     offset = (offset !== false)? offset : 0;
-    //non c'è il gioco nel DB
     const games = await getGameIGDB(nameGameInserted, limit, offset);
     if (!isError(games) && games !==(undefined)){
       let genreStructure=getGenres();
@@ -248,22 +247,10 @@ export const gameVideosIGDB = async (req: Request, res: Response) => {
     const gameVideos = await getGameVideosIGDB(gameID);
     if(!isError(gameVideos)){
       res.contentType('json') //Need a way to use mp4
+      res.send(gameVideos);
+    }else{
+      res.send(gameVideos)
     }
-    res.send(gameVideos);
-  }else{
-    res.status(400);
-    res.send({error: "Invalid ID"})
-  }
-}
-
-export const releaseIGDB = async (req: Request, res: Response) => {
-  const gameID = getIdFromRequest(req);
-  if(gameID !== false){
-    const gameReleases = await getGameReleasesIGDB(gameID);
-    if(!isError(gameReleases)){
-      res.contentType("json");
-    }
-    res.send(gameReleases);
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
@@ -271,13 +258,23 @@ export const releaseIGDB = async (req: Request, res: Response) => {
 }
 
 export const platformsIGDB = async (req: Request, res: Response) => {
-  const gameID = getIdFromRequest(req);
-  if(gameID !== false){
-    const gamePlatforms = await getGamePlatformsIGDB(gameID);
+  const platformID = getIdFromRequest(req);
+  if(platformID !== false){
+    const gamePlatforms = await getPlatformsIGDB(platformID);
     if(!isError(gamePlatforms)){
       res.contentType("json");
+      const platLogo=await getGamePlatformsLogoIGDB(parseInt(gamePlatforms.platform_logo_url));
+      if(!isError(platLogo)){
+        gamePlatforms.platform_logo_url=platLogo["url"]
+        res.send(gamePlatforms)
+      }else{
+        gamePlatforms.platform_logo_url="Not found"
+        res.send(gamePlatforms)
+      }
+    }else{
+      res.status(400)
+      res.send(gamePlatforms)
     }
-    res.send(gamePlatforms);
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})

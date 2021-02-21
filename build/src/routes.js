@@ -10,15 +10,14 @@ var router = express_1.default.Router();
 // To add URL parameters (Doable for any method! Not only for GET):
 // router.get('/:parameter1/:parameter2', f);
 //IGDB
-router.get("/games", controller_1.gameIGDB); //ID -> limit 1, NAME -> limit 20
-router.get("/game/genres", controller_1.genresIGDB); //ID del genere -> return ID nome e url
+router.get("/games", controller_1.gameIGDB); //OK
+router.get("/game/genres", controller_1.genresIGDB); //OK
 router.get("/game/artworks", controller_1.artworkIGDB); //OK
 router.get("/game/covers", controller_1.coverIGDB); //OK
-router.get("/game/externalGame", controller_1.externalGameIGDB); //ID o NAME -> lista external games
+router.get("/game/externalGame", controller_1.externalGameIGDB); //OK
 router.get("/games/topRated", controller_1.topRatedIGDB); //OK
-router.get("/game/gameVideos", controller_1.gameVideosIGDB); //ID -> url dei video
-router.get("/game/releaseDates", controller_1.releaseIGDB); //rimuovere
-router.get("/game/platforms", controller_1.platformsIGDB); //ID piattaforma -> nome della piattaforma
+router.get("/game/gameVideos", controller_1.gameVideosIGDB); //OK
+router.get("/game/platforms", controller_1.platformsIGDB); //OK
 //speedrun
 router.get('/speedrun', controller_1.gameSpeedrun); //search game(s) by param id or name
 exports.default = router;

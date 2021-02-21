@@ -236,6 +236,6 @@ export const videosTwitch = async (req: Request, res: Response) => {
     }
   } else {
     res.status(400);
-    res.send({error: "Invalid parameter"});
+    res.send({error: "ID of a game is needed"});
   }
 };

@@ -81,3 +81,23 @@ export interface IGDBGame{
   summary: string;
   genres: number[];
 }
+
+export interface IGDBVideo{
+  gameId: number;
+  video_name: String;
+  videoId: String;
+}
+
+export interface IGDBPlatform{
+  id: number;
+  name: string;
+  alternative_name: string;
+  platform_logo_url: string;
+}
+
+export interface IGDBPlatformLogo{
+  id: number;
+  width: number;
+  height: number;
+  url: string;
+}

@@ -6,7 +6,7 @@ import {
 
 const router = express.Router();
 
-router.get('/price', priceSteam);                   //SOLO ID
-router.get('/activePlayers', activePlayersSteam);   //SOLO ID
+router.get('/price', priceSteam);                   //SOLO ID DI IGDB -> OK
+router.get('/activePlayers', activePlayersSteam);   //SOLO ID DI IGDB -> OK
 
 export default router;
