@@ -165,11 +165,25 @@ router.get('/game', ensureAuth, async (req,res) => {
         },
       });
 
+      const twitchSearch = await axios({
+        url: `http://localhost:3000/api/twitch/search?query=${name}`,
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
       for(var i=0; i<game.data.length; i++) {
         var dat = ''+game.data[i].first_release_date+'';
         if(dat != "Invalid Date") {
           game.data[i].first_release_date = dat.substring(5,16)
         }
+      }
+
+      for(var i=0; i<twitchSearch.data.data.length; i++) {
+        var img = twitchSearch.data.data[i].box_art_url;
+        img = img.split("52x72.jpg")
+        twitchSearch.data.data[i].box_art_url = img[0]+"520x720.jpg"
       }
 
       res.render('gameList', {
@@ -196,6 +210,28 @@ router.get('/game', ensureAuth, async (req,res) => {
           entry17: 17<game.data.length ? game.data[17] : '',
           entry18: 18<game.data.length ? game.data[18] : '',
           entry19: 19<game.data.length ? game.data[19] : '',
+        },
+        twitch: {
+          entry0: 0<twitchSearch.data.data.length ? twitchSearch.data.data[0] : '',
+          entry1: 1<twitchSearch.data.data.length ? twitchSearch.data.data[1] : '',
+          entry2: 2<twitchSearch.data.data.length ? twitchSearch.data.data[2] : '',
+          entry3: 3<twitchSearch.data.data.length ? twitchSearch.data.data[3] : '',
+          entry4: 4<twitchSearch.data.data.length ? twitchSearch.data.data[4] : '',
+          entry5: 5<twitchSearch.data.data.length ? twitchSearch.data.data[5] : '',
+          entry6: 6<twitchSearch.data.data.length ? twitchSearch.data.data[6] : '',
+          entry7: 7<twitchSearch.data.data.length ? twitchSearch.data.data[7] : '',
+          entry8: 8<twitchSearch.data.data.length ? twitchSearch.data.data[8] : '',
+          entry9: 9<twitchSearch.data.data.length ? twitchSearch.data.data[9] : '',
+          entry10: 10<twitchSearch.data.data.length ? twitchSearch.data.data[10] : '',
+          entry11: 11<twitchSearch.data.data.length ? twitchSearch.data.data[11] : '',
+          entry12: 12<twitchSearch.data.data.length ? twitchSearch.data.data[12] : '',
+          entry13: 13<twitchSearch.data.data.length ? twitchSearch.data.data[13] : '',
+          entry14: 14<twitchSearch.data.data.length ? twitchSearch.data.data[14] : '',
+          entry15: 15<twitchSearch.data.data.length ? twitchSearch.data.data[15] : '',
+          entry16: 16<twitchSearch.data.data.length ? twitchSearch.data.data[16] : '',
+          entry17: 17<twitchSearch.data.data.length ? twitchSearch.data.data[17] : '',
+          entry18: 18<twitchSearch.data.data.length ? twitchSearch.data.data[18] : '',
+          entry19: 19<twitchSearch.data.data.length ? twitchSearch.data.data[19] : '',
         }
       });
     } else {
