@@ -12,20 +12,23 @@ import {
   getGameNameFromRequest,
   getIdFromRequest,
   getStringFromRequest,
+  getNumberFromRequest,
 } from '../helper';
 
 import ExternalDB from '../../models/Externals';
 import axios from 'axios';
 
 //Ok, already returns exactly id, name and box_art_url
+//now accepts also twitch_id
 export const gameTwitch = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   const gameName = getGameNameFromRequest(req);
-  if(gameID !== false && gameName !== false) {
+  const twitchID = getNumberFromRequest(req,"twitch_id");
+
+  if((gameID && gameName) || (gameID && twitchID) || (gameName && twitchID)) {
     res.status(400);
-    res.send({error: "Provide only game id OR game name"})
-  } else {
-    if(gameID !== false){
+    res.send({error: "Provide only game id, game name, or twitch id"})
+  } else if(gameID !== false) {
       try{
         let gameInDB = await ExternalDB.findOne({ gameId: gameID });
 
@@ -61,8 +64,7 @@ export const gameTwitch = async (req: Request, res: Response) => {
         res.status(400);
         res.send({ error: 'Invalid!' });
       }
-    } else {
-      if(gameName !== false) {
+  } else if(gameName !== false) {
         try{
           let gameInDB = await ExternalDB.findOne({ gameName: gameName });
           if (gameInDB) {
@@ -101,18 +103,24 @@ export const gameTwitch = async (req: Request, res: Response) => {
                   res.status(404);
                   res.send({error: "Game not broadcasted on Twitch"})
                 }
-              }              
-            }    
+              }
+            }
           }
         }catch(e){
           res.status(400);
           res.send({ error: 'Something wrong in calling the DB' });
         }
-      } else {
-        res.status(400);
-        res.send({error: "No correct parameter specified"})
-      }
+  } else if (twitchID !== false) {
+    try {
+      const game = await getTwitchGameById(twitchID.toString());
+      res.send(game);
+    } catch(e) {
+      res.status(400);
+      res.send({error: "Something wrong happened"})
     }
+  } else {
+    res.status(400);
+    res.send({error: "No correct parameter specified"})
   }
 };
 
@@ -138,10 +146,15 @@ export const searchTwitch = async (req: Request, res: Response) => {
 };
 
 //OK
+//now accepts also twitch_id
 export const streamsTwitch = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
+  const twitchID = getNumberFromRequest(req,"twitch_id");
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
-  if(gameID!==false) {
+  if(gameID && twitchID) {
+    res.status(400);
+    res.send({error: "Provide only game id, game name, or twitch id"})
+  }else if(gameID) {
     try{
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
 
@@ -177,16 +190,21 @@ export const streamsTwitch = async (req: Request, res: Response) => {
       res.status(400);
       res.send({ error: 'Invalid!' });
     }
-  } else {
-
-    const streams1 = await getStreamsTwitch(false,"");
+  } else if(twitchID) {
+    const streams1 = await getStreamsTwitch(true,String(twitchID));
     res.send(streams1);
+  } else{
+    const streams2 = await getStreamsTwitch(false,"");
+    res.send(streams2);
   }
 };
 
 //OK
+//now accepts also twitch_id
 export const videosTwitch = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
+  const twitchID = getNumberFromRequest(req,"twitch_id");
+
   let periodSet = new Set(["all", "day", "week", "month"])
   let period = getStringFromRequest(req, "period");
   period = (periodSet.has(String(period))) ? String(period) : "month";
@@ -200,7 +218,10 @@ export const videosTwitch = async (req: Request, res: Response) => {
   type = (typeSet.has(String(type))) ? String(type) : "all";
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
 
-  if(gameID!==false) {
+  if(gameID && twitchID) {
+    res.status(400);
+    res.send({error: "Provide only game id OR twitch id"})
+  } else if(gameID) {
     try{
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
 
@@ -209,7 +230,7 @@ export const videosTwitch = async (req: Request, res: Response) => {
         if (!isError(gameInDB)) {
           res.contentType('json');
         }
-        if (gameInDB.twitchId !== undefined){
+        if (gameInDB.twitchId !== undefined) {
           res.send(await getVideosTwitch(String(gameInDB.twitchId), period, sort, type));
         }else{
           res.status(404);
@@ -234,6 +255,8 @@ export const videosTwitch = async (req: Request, res: Response) => {
       res.status(400);
       res.send({ error: 'Error!' });
     }
+  } else if(twitchID) {
+    res.send(await getVideosTwitch(String(twitchID), period, sort, type));
   } else {
     res.status(400);
     res.send({error: "ID of a game is needed"});
