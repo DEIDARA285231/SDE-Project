@@ -20,7 +20,12 @@ exports.getNumberFromRequest = function (req, param) {
         return false;
     }
     try {
-        return parseInt(value);
+        if (!Number.isNaN(parseInt(value))) {
+            return parseInt(value);
+        }
+        else {
+            return false;
+        }
     }
     catch (e) {
         console.error("Error extracting parameter " + param + ":", e);

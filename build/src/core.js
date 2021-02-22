@@ -65,19 +65,14 @@ exports.getGameIGDB = function (name, limit, offset) { return __awaiter(void 0, 
                             'Client-ID': "" + secrets_1.default.CLIENT_ID,
                             'Authorization': "" + secrets_1.default.AUTHORIZATION,
                         },
-                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search \"" + gameName + "\"; limit " + limit + "; offset " + offset + ";"
+                        data: "fields: id, first_release_date, name; search \"" + gameName + "\"; limit " + limit + "; offset " + offset + ";"
                     })];
             case 2:
                 response = (_a.sent()).data;
                 return [2 /*return*/, response.map(function (rawData) { return ({
                         id: rawData.id,
                         first_release_date: new Date(rawData.first_release_date * 1000).toUTCString(),
-                        aggregated_rating: rawData.aggregated_rating,
-                        name: rawData.name,
-                        rating: rawData.rating,
-                        storyline: rawData.storyline,
-                        summary: rawData.summary,
-                        genres: rawData.genres
+                        name: rawData.name
                     }); })];
             case 3:
                 e_1 = _a.sent();
@@ -272,19 +267,15 @@ exports.getTopRatedIGDB = function () { return __awaiter(void 0, void 0, void 0,
                             "Authorization": "" + secrets_1.default.AUTHORIZATION,
                             "Client-ID": "" + secrets_1.default.CLIENT_ID
                         },
-                        data: "fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null & category = 0;"
+                        data: "fields: id, first_release_date, name, rating; sort rating desc; where rating != null & category = 0;"
                     })];
             case 1:
                 response = (_a.sent()).data;
                 return [2 /*return*/, response.map(function (rawData) { return ({
                         id: rawData.id,
                         first_release_date: new Date(rawData.first_release_date * 1000).toUTCString(),
-                        aggregated_rating: rawData.aggregated_rating,
                         name: rawData.name,
-                        rating: rawData.rating,
-                        storyline: rawData.storyline,
-                        summary: rawData.summary,
-                        genres: rawData.genres
+                        rating: rawData.rating
                     }); })];
             case 2:
                 e_8 = _a.sent();

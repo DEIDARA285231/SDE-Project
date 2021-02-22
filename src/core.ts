@@ -22,17 +22,12 @@ export const getGameIGDB: (name: string, limit: number, offset: number) => Promi
           'Client-ID': `${secrets.CLIENT_ID}`,
           'Authorization': `${secrets.AUTHORIZATION}`,
       },
-      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; search "${gameName}"; limit ${limit}; offset ${offset};`
+      data: `fields: id, first_release_date, name; search "${gameName}"; limit ${limit}; offset ${offset};`
     })).data;
     return response.map((rawData: any) => ({
       id: rawData.id,
       first_release_date: new Date(rawData.first_release_date *1000).toUTCString(),
-      aggregated_rating: rawData.aggregated_rating,
-      name: rawData.name,
-      rating: rawData.rating,
-      storyline: rawData.storyline,
-      summary: rawData.summary,
-      genres: rawData.genres
+      name: rawData.name
     }))
   } catch (e) {
     return e;
@@ -59,7 +54,7 @@ export const getGameIGDBbyID: (id: number) => Promise<IGDBGame | Error> = async 
   }
 }
 
-export const getArtworkIGDB: (id: number) => Promise<any> = async (id) => {
+export const getArtworkIGDB: (id: number) => Promise<ArtworkCoverIGDB[] | Error> = async (id) => {
 
   try {
     const response : ArtworkCoverIGDB[] = (await axios({
@@ -83,7 +78,7 @@ export const getArtworkIGDB: (id: number) => Promise<any> = async (id) => {
   }
 }
 
-export const getCoverIGDB: (id: number) => Promise<any> = async (id) => {
+export const getCoverIGDB: (id: number) => Promise<ArtworkCoverIGDB[] | Error> = async (id) => {
   try {
     const response : ArtworkCoverIGDB[] = (await axios({
       url: "https://api.igdb.com/v4/covers",
@@ -172,17 +167,13 @@ export const getTopRatedIGDB: () => Promise<IGDBGame[]|Error> = async () => {
         "Authorization": `${secrets.AUTHORIZATION}`, //Still need to obtain it, we need to ideate a way to get it
         "Client-ID": `${secrets.CLIENT_ID}`
       },
-      data: `fields: id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres; sort rating desc; where rating != null & category = 0;`
+      data: `fields: id, first_release_date, name, rating; sort rating desc; where rating != null & category = 0;`
     })).data;
     return response.map((rawData: any) => ({
       id: rawData.id,
       first_release_date: new Date(rawData.first_release_date *1000).toUTCString(),
-      aggregated_rating: rawData.aggregated_rating,
       name: rawData.name,
-      rating: rawData.rating,
-      storyline: rawData.storyline,
-      summary: rawData.summary,
-      genres: rawData.genres
+      rating: rawData.rating
     }));
   } catch (e) {
     return e;
@@ -244,7 +235,7 @@ export const getGamePlatformsLogoIGDB: (idLogo: number) => Promise<IGDBPlatformL
       },
       data: `fields: id, width, height, url; where id=${idLogo};`
     })).data[0];
-    
+
     const returnObject : IGDBPlatformLogo = {
       id: response.id,
       width: response.width,

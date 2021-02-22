@@ -6,6 +6,38 @@ import axios from 'axios';
 import { getIdFromRequest, getGameNameFromRequest} from '../src/helper';
 import { isError } from '../src/types';
 
+const app = express();
+const expressSwagger = require('express-swagger-generator')(app);
+
+let options = {
+  swaggerDefinition: {
+    info: {
+      description: 'RESTful API documentation for SDE final project.',
+      title: 'Swagger',
+      version: '1.0.0',
+    },
+    host: 'localhost:3000',
+    basePath: '/api/',
+    produces: [
+      "application/json",
+      "application/xml"
+    ],
+    schemes: ['http', 'https'],
+    securityDefinitions: {
+      JWT: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'Authorization',
+        description: "",
+      }
+    }
+  },
+  basedir: __dirname, //app absolute path
+  files: ['../src/itad/routes.js', "../src/steam/routes.js", "../src/twitch/routes.js", "../src/routes.js"] //Path to the API handle folder
+};
+
+expressSwagger(options)
+app.listen(3001);
 
 // @desc Login/Landing Page
 // @route GET /
