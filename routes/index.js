@@ -130,6 +130,18 @@ router.get('/game', ensureAuth, async (req,res) => {
           'Accept': 'application/json',
         },
       });
+      //get the price on steam
+      try {
+        const steam = await axios({
+          url: `http://localhost:3000/api/steam/price?id=${id}`,
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+      } catch(e) {
+        const steam = undefined;
+      }
       //format the cover URL
       var url = "";
       if(!isError(cover) && cover !==(undefined) && cover.data.length!=0) {
@@ -144,15 +156,24 @@ router.get('/game', ensureAuth, async (req,res) => {
         var rat = ''+game.data.rating+'';
         game.data.rating = rat.substring(0,4);
       }
-
+      //date format
       var dat = ''+game.data.first_release_date+'';
       if(dat != "Invalid Date") {
         game.data.first_release_date = dat.substring(5,16)
       }
+
+      var price = ""
+      if(!isError(steam) && steam !==(undefined)) {
+        price = ""+steam.data.price+" $"
+      } else {
+        price = "Not on Steam"
+      }
+
       //render views/game with these params
       res.render('game', {
         data: game.data,
-        cover: url
+        cover: url,
+        price: price
       });
 
     } else if(name !== false) {
@@ -212,7 +233,7 @@ router.get('/game', ensureAuth, async (req,res) => {
           entry19: 19<game.data.length ? game.data[19] : '',
         },
         twitch: {
-          entry0: 0<twitchSearch.data.data.length ? twitchSearch.data.data[0] : '',
+          entry0: 0<twitchSearch.data.data.length ? twitchSearch.data.data[0] : undefined,
           entry1: 1<twitchSearch.data.data.length ? twitchSearch.data.data[1] : '',
           entry2: 2<twitchSearch.data.data.length ? twitchSearch.data.data[2] : '',
           entry3: 3<twitchSearch.data.data.length ? twitchSearch.data.data[3] : '',
@@ -222,7 +243,7 @@ router.get('/game', ensureAuth, async (req,res) => {
           entry7: 7<twitchSearch.data.data.length ? twitchSearch.data.data[7] : '',
           entry8: 8<twitchSearch.data.data.length ? twitchSearch.data.data[8] : '',
           entry9: 9<twitchSearch.data.data.length ? twitchSearch.data.data[9] : '',
-          entry10: 10<twitchSearch.data.data.length ? twitchSearch.data.data[10] : '',
+          entry10: 10<twitchSearch.data.data.length ? twitchSearch.data.data[10] : undefined,
           entry11: 11<twitchSearch.data.data.length ? twitchSearch.data.data[11] : '',
           entry12: 12<twitchSearch.data.data.length ? twitchSearch.data.data[12] : '',
           entry13: 13<twitchSearch.data.data.length ? twitchSearch.data.data[13] : '',
