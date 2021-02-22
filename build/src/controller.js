@@ -56,44 +56,18 @@ var core_2 = require("./itad/core");
 var helper_1 = require("./helper");
 var Externals_1 = __importDefault(require("../models/Externals"));
 var axios_1 = __importDefault(require("axios"));
-//IGDB
+//error handling OK
 exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var nameGameInserted, limit, offset, games, genreStructure, i, j, gameID, gameInDB, game, genreStructure, i;
+    var gameID, gameInDB, game, genreStructure, i, nameGameInserted, limit, offset, games;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                nameGameInserted = helper_1.getGameNameFromRequest(req);
-                if (!(nameGameInserted !== false)) return [3 /*break*/, 2];
-                limit = helper_1.getNumberFromRequest(req, "limit");
-                offset = helper_1.getNumberFromRequest(req, "offset");
-                limit = (limit !== false) ? limit : 20;
-                offset = (offset !== false) ? offset : 0;
-                return [4 /*yield*/, core_1.getGameIGDB(nameGameInserted, limit, offset)];
-            case 1:
-                games = _a.sent();
-                if (!types_1.isError(games) && games !== (undefined)) {
-                    genreStructure = helper_1.getGenres();
-                    for (i = 0; i < games.length; i++) {
-                        if (games[i].genres !== undefined) {
-                            for (j = 0; j < games[i].genres.length; j++) {
-                                games[i].genres[j] = genreStructure[games[i].genres[j]].name;
-                            }
-                        }
-                    }
-                    res.send(games);
-                }
-                else {
-                    res.status(404);
-                    res.send({ error: "No Games with the name found" });
-                }
-                return [3 /*break*/, 8];
-            case 2:
                 gameID = helper_1.getIdFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 7];
+                if (!(gameID !== false)) return [3 /*break*/, 5];
                 return [4 /*yield*/, Externals_1.default.findOne({ gameId: gameID })];
-            case 3:
+            case 1:
                 gameInDB = _a.sent();
-                if (!!(gameInDB)) return [3 /*break*/, 5];
+                if (!!(gameInDB)) return [3 /*break*/, 3];
                 return [4 /*yield*/, axios_1.default({
                         url: "http://localhost:3000/api/game/externalGame",
                         method: 'GET',
@@ -104,33 +78,58 @@ exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0
                             id: gameID
                         }
                     })];
-            case 4:
+            case 2:
                 _a.sent();
-                _a.label = 5;
-            case 5: return [4 /*yield*/, core_1.getGameIGDBbyID(gameID)];
-            case 6:
+                _a.label = 3;
+            case 3: return [4 /*yield*/, core_1.getGameIGDBbyID(gameID)];
+            case 4:
                 game = _a.sent();
                 if (!types_1.isError(game)) {
-                    if (game.genres !== undefined) {
-                        genreStructure = helper_1.getGenres();
-                        for (i = 0; i < game.genres.length; i++) {
-                            game.genres[i] = genreStructure[game.genres[i]].name;
+                    if (Object.keys(game).length > 0) {
+                        if (game.genres !== undefined) {
+                            genreStructure = helper_1.getGenres();
+                            for (i = 0; i < game.genres.length; i++) {
+                                game.genres[i] = genreStructure[game.genres[i]].name;
+                            }
+                            res.send(game);
                         }
-                        res.send(game);
+                        else {
+                            res.send(game);
+                        }
                     }
                     else {
-                        res.send(game);
+                        res.status(404);
+                        res.send({ error: "No Games with the id found" });
                     }
+                }
+                return [3 /*break*/, 8];
+            case 5:
+                nameGameInserted = helper_1.getGameNameFromRequest(req);
+                if (!(nameGameInserted !== false)) return [3 /*break*/, 7];
+                limit = helper_1.getNumberFromRequest(req, "limit");
+                offset = helper_1.getNumberFromRequest(req, "offset");
+                limit = (limit !== false) ? limit : 20;
+                offset = (offset !== false) ? offset : 0;
+                return [4 /*yield*/, core_1.getGameIGDB(nameGameInserted, limit, offset)];
+            case 6:
+                games = _a.sent();
+                if (!types_1.isError(games) && games.length > 0) {
+                    res.send(games);
+                }
+                else {
+                    res.status(404);
+                    res.send({ error: "No Games with the name found" });
                 }
                 return [3 /*break*/, 8];
             case 7:
                 res.status(400);
-                res.send({ error: "Invalid name or ID format" });
+                res.send({ error: "Numerical id or name param is needed" });
                 _a.label = 8;
             case 8: return [2 /*return*/];
         }
     });
 }); };
+//error handling OK
 exports.genresIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var genreID, genre;
     return __generator(this, function (_a) {
@@ -141,10 +140,13 @@ exports.genresIGDB = function (req, res) { return __awaiter(void 0, void 0, void
                 return [4 /*yield*/, core_1.getGenreFromIdIGDB(genreID)];
             case 1:
                 genre = _a.sent();
-                if (!types_1.isError(genre)) {
-                    res.contentType("json");
+                if (genre !== undefined) {
+                    res.send(genre);
                 }
-                res.send(genre);
+                else {
+                    res.status(404);
+                    res.send({ error: "Genre with id not found" });
+                }
                 return [3 /*break*/, 3];
             case 2:
                 res.status(400);
@@ -154,6 +156,7 @@ exports.genresIGDB = function (req, res) { return __awaiter(void 0, void 0, void
         }
     });
 }); };
+//error handling OK
 exports.artworkIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, gameArtwork;
     return __generator(this, function (_a) {
@@ -165,9 +168,18 @@ exports.artworkIGDB = function (req, res) { return __awaiter(void 0, void 0, voi
             case 1:
                 gameArtwork = _a.sent();
                 if (!types_1.isError(gameArtwork)) {
-                    res.contentType("json");
+                    if (gameArtwork.length > 0) {
+                        res.send(gameArtwork);
+                    }
+                    else {
+                        res.status(404);
+                        res.send({ error: "No Artwork was found" });
+                    }
                 }
-                res.send(gameArtwork);
+                else {
+                    res.status(503);
+                    res.send({ error: "Something bad happened" });
+                }
                 return [3 /*break*/, 3];
             case 2:
                 res.status(400);
@@ -177,6 +189,7 @@ exports.artworkIGDB = function (req, res) { return __awaiter(void 0, void 0, voi
         }
     });
 }); };
+//error handling OK
 exports.coverIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, gameCover;
     return __generator(this, function (_a) {
@@ -188,9 +201,18 @@ exports.coverIGDB = function (req, res) { return __awaiter(void 0, void 0, void 
             case 1:
                 gameCover = _a.sent();
                 if (!types_1.isError(gameCover)) {
-                    res.contentType("json");
+                    if (gameCover.length > 0) {
+                        res.send(gameCover);
+                    }
+                    else {
+                        res.status(404);
+                        res.send({ error: "No Cover was found" });
+                    }
                 }
-                res.send(gameCover);
+                else {
+                    res.status(503);
+                    res.send({ error: "Something bad happened" });
+                }
                 return [3 /*break*/, 3];
             case 2:
                 res.status(400);
@@ -200,19 +222,20 @@ exports.coverIGDB = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
+//error handling OK
 exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, name, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad;
+    var gameID, name, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, options, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, options;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 gameID = helper_1.getIdFromRequest(req);
                 name = helper_1.getGameNameFromRequest(req);
-                if (!(gameID !== false)) return [3 /*break*/, 7];
+                if (!(gameID !== false)) return [3 /*break*/, 9];
                 return [4 /*yield*/, core_1.getExternalsIGDB(gameID)];
             case 1:
                 externalIds = _a.sent();
                 indexTwitch = -1, indexSteam = -1, indexGog = -1;
-                if (!(externalIds.length > 0)) return [3 /*break*/, 5];
+                if (!(externalIds.length > 0)) return [3 /*break*/, 7];
                 for (i = 0; i < externalIds.length; i++) {
                     if (externalIds[i].category === 14) {
                         indexTwitch = i;
@@ -248,24 +271,29 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                     if (newExternal.gameName === "Not Inserted")
                         newExternal.gameName = externalIds[indexGog]["name"];
                 }
-                return [4 /*yield*/, Externals_1.default.create(newExternal)];
+                if (!(newExternal.gameName !== "Not Inserted")) return [3 /*break*/, 5];
+                options = { upsert: true, new: true, setDefaultsOnInsert: true };
+                return [4 /*yield*/, Externals_1.default.findOneAndUpdate({ gameId: newExternal.gameId }, newExternal, options)];
             case 4:
                 _a.sent();
                 res.send(newExternal);
                 return [3 /*break*/, 6];
             case 5:
-                //CHANGE
-                res.status(200);
-                res.send({ error: "ID does not appear in external sources" });
+                res.status(404);
+                res.send({ error: "The game does not appear on any external platform" });
                 _a.label = 6;
-            case 6: return [3 /*break*/, 15];
+            case 6: return [3 /*break*/, 8];
             case 7:
-                if (!(name !== false)) return [3 /*break*/, 14];
+                res.sendStatus(204);
+                _a.label = 8;
+            case 8: return [3 /*break*/, 19];
+            case 9:
+                if (!(name !== false)) return [3 /*break*/, 18];
                 return [4 /*yield*/, core_1.getExternalsIGDBbyName(name)];
-            case 8:
+            case 10:
                 externalIds = _a.sent();
                 indexTwitch = -1, indexSteam = -1, indexGog = -1;
-                if (!(externalIds.length > 0)) return [3 /*break*/, 12];
+                if (!(externalIds.length > 0)) return [3 /*break*/, 16];
                 for (i = 0; i < externalIds.length; i++) {
                     if (externalIds[i].category === 14) {
                         indexTwitch = i;
@@ -285,40 +313,47 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                     newExternal.twitchId = externalIds[indexTwitch]["uid"];
                     newExternal.gameId = externalIds[indexTwitch]["game"];
                 }
-                if (!(indexSteam !== -1)) return [3 /*break*/, 10];
+                if (!(indexSteam !== -1)) return [3 /*break*/, 12];
                 newExternal.steamId = externalIds[indexSteam]["uid"];
                 if (newExternal.gameId === -1)
                     newExternal.gameId = externalIds[indexSteam]["game"];
-                if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 10];
+                if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 12];
                 return [4 /*yield*/, core_2.itadGetPlain(newExternal.steamId)];
-            case 9:
+            case 11:
                 responseItad = _a.sent();
                 newExternal.itad_plain = responseItad["data"]["app/" + newExternal.steamId];
-                _a.label = 10;
-            case 10:
+                _a.label = 12;
+            case 12:
                 if (indexGog !== -1) {
                     newExternal.gogId = externalIds[indexGog]["uid"];
                     if (newExternal.gameId === -1)
                         newExternal.gameId = externalIds[indexGog]["game"];
                 }
-                return [4 /*yield*/, Externals_1.default.create(newExternal)];
-            case 11:
+                if (!(newExternal.gameId !== -1)) return [3 /*break*/, 14];
+                options = { upsert: true, new: true, setDefaultsOnInsert: true };
+                return [4 /*yield*/, Externals_1.default.findOneAndUpdate({ gameId: newExternal.gameId }, newExternal, options)];
+            case 13:
                 _a.sent();
                 res.send(newExternal);
-                return [3 /*break*/, 13];
-            case 12:
-                res.status(404);
-                res.send({ error: "No Externals for the game with the name Specified" });
-                _a.label = 13;
-            case 13: return [3 /*break*/, 15];
+                return [3 /*break*/, 15];
             case 14:
-                res.status(400);
-                res.send({ error: "No parameters specified" });
+                res.status(404);
+                res.send({ error: "The game does not appear on any external platform" });
                 _a.label = 15;
-            case 15: return [2 /*return*/];
+            case 15: return [3 /*break*/, 17];
+            case 16:
+                res.sendStatus(204);
+                _a.label = 17;
+            case 17: return [3 /*break*/, 19];
+            case 18:
+                res.status(400);
+                res.send({ error: "No parameters specified. Numerical id or name is needed" });
+                _a.label = 19;
+            case 19: return [2 /*return*/];
         }
     });
 }); };
+//error handling OK
 exports.topRatedIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var topRated;
     return __generator(this, function (_a) {
@@ -327,13 +362,17 @@ exports.topRatedIGDB = function (req, res) { return __awaiter(void 0, void 0, vo
             case 1:
                 topRated = _a.sent();
                 if (!types_1.isError(topRated)) {
-                    res.contentType("json");
+                    res.send(topRated);
                 }
-                res.send(topRated);
+                else {
+                    res.status(503);
+                    res.send({ error: "Something bad happened" });
+                }
                 return [2 /*return*/];
         }
     });
 }); };
+//error handling OK
 exports.gameVideosIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, gameVideos;
     return __generator(this, function (_a) {
@@ -345,11 +384,17 @@ exports.gameVideosIGDB = function (req, res) { return __awaiter(void 0, void 0, 
             case 1:
                 gameVideos = _a.sent();
                 if (!types_1.isError(gameVideos)) {
-                    res.contentType('json'); //Need a way to use mp4
-                    res.send(gameVideos);
+                    if (gameVideos.length > 0) {
+                        res.send(gameVideos);
+                    }
+                    else {
+                        res.status(404);
+                        res.send({ error: "No video was found" });
+                    }
                 }
                 else {
-                    res.send(gameVideos);
+                    res.status(503);
+                    res.send({ error: "Something bad happened" });
                 }
                 return [3 /*break*/, 3];
             case 2:
@@ -360,22 +405,23 @@ exports.gameVideosIGDB = function (req, res) { return __awaiter(void 0, void 0, 
         }
     });
 }); };
+//error handling OK
 exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var platformID, gamePlatforms, platLogo;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 platformID = helper_1.getIdFromRequest(req);
-                if (!(platformID !== false)) return [3 /*break*/, 5];
+                if (!(platformID !== false)) return [3 /*break*/, 7];
                 return [4 /*yield*/, core_1.getPlatformsIGDB(platformID)];
             case 1:
                 gamePlatforms = _a.sent();
-                if (!!types_1.isError(gamePlatforms)) return [3 /*break*/, 3];
-                res.contentType("json");
+                if (!!types_1.isError(gamePlatforms)) return [3 /*break*/, 5];
+                if (!(Object.keys(gamePlatforms).length > 0)) return [3 /*break*/, 3];
                 return [4 /*yield*/, core_1.getGamePlatformsLogoIGDB(parseInt(gamePlatforms.platform_logo_url))];
             case 2:
                 platLogo = _a.sent();
-                if (!types_1.isError(platLogo)) {
+                if (!types_1.isError(platLogo) && platLogo["url"] !== undefined) {
                     gamePlatforms.platform_logo_url = platLogo["url"];
                     res.send(gamePlatforms);
                 }
@@ -385,15 +431,20 @@ exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, v
                 }
                 return [3 /*break*/, 4];
             case 3:
-                res.status(400);
-                res.send(gamePlatforms);
+                res.status(404);
+                res.send({ error: "No platform found" });
                 _a.label = 4;
             case 4: return [3 /*break*/, 6];
             case 5:
+                res.status(503);
+                res.send({ error: "Something bad happened" });
+                _a.label = 6;
+            case 6: return [3 /*break*/, 8];
+            case 7:
                 res.status(400);
                 res.send({ error: "Invalid ID" });
-                _a.label = 6;
-            case 6: return [2 /*return*/];
+                _a.label = 8;
+            case 8: return [2 /*return*/];
         }
     });
 }); };

@@ -38,48 +38,26 @@ import {
 import ExternalDB from '../models/Externals';
 import axios from 'axios';
 
-//IGDB
-
+//error handling OK
 export const gameIGDB = async (req: Request, res: Response) => {
-  const nameGameInserted = getGameNameFromRequest(req);
-  if(nameGameInserted !== false){
-    let limit = getNumberFromRequest(req, "limit");
-    let offset = getNumberFromRequest(req, "offset")
-    limit = (limit !== false)? limit : 20;
-    offset = (offset !== false)? offset : 0;
-    const games = await getGameIGDB(nameGameInserted, limit, offset);
-    if (!isError(games) && games !==(undefined)){
-      let genreStructure=getGenres();
-      for (let i=0; i< games.length; i++){
-        if (games[i].genres !== undefined){
-          for(let j=0;j<games[i].genres.length; j++){
-            games[i].genres[j]=genreStructure[games[i].genres[j]].name;
-          }
+  const gameID = getIdFromRequest(req);
+  if(gameID !== false){
+    let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+    if (!(gameInDB)){
+      await axios({
+        url: "http://localhost:3000/api/game/externalGame",
+        method: 'GET',
+        headers: {
+          "Accept": "application/json",
+        },
+        params: {
+          id: gameID
         }
-      }
-      res.send(games)
-    }else{
-      res.status(404);
-      res.send({error: "No Games with the name found"})
+      });
     }
-  }else{
-    const gameID = getIdFromRequest(req);
-    if(gameID !== false){
-      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
-      if (!(gameInDB)){
-        await axios({
-          url: "http://localhost:3000/api/game/externalGame",
-          method: 'GET',
-          headers: {
-            "Accept": "application/json",
-          },
-          params: {
-            id: gameID
-          }
-        });
-      }
-      const game = await getGameIGDBbyID(gameID);
-      if (!isError(game)) {
+    const game = await getGameIGDBbyID(gameID);
+    if (!isError(game)) {
+      if(Object.keys(game).length > 0) {
         if (game.genres !== undefined){
           let genreStructure=getGenres();
           for(let i=0;i<game.genres.length; i++){
@@ -89,56 +67,91 @@ export const gameIGDB = async (req: Request, res: Response) => {
         }else{
           res.send(game);
         }
+      } else {
+        res.status(404);
+        res.send({error: "No Games with the id found"})
       }
-    }else{
+    }
+  } else {
+    const nameGameInserted = getGameNameFromRequest(req);
+    if(nameGameInserted !== false){
+      let limit = getNumberFromRequest(req, "limit");
+      let offset = getNumberFromRequest(req, "offset")
+      limit = (limit !== false)? limit : 20;
+      offset = (offset !== false)? offset : 0;
+      const games = await getGameIGDB(nameGameInserted, limit, offset);
+      if (!isError(games) && games.length > 0){
+        res.send(games)
+      }else{
+        res.status(404);
+        res.send({error: "No Games with the name found"})
+      }
+    } else{
       res.status(400);
-      res.send({error: "Invalid name or ID format"})
+      res.send({error: "Numerical id or name param is needed"})
     }
   }
 }
-
+//error handling OK
 export const genresIGDB = async (req: Request, res: Response) => {
   const genreID = getIdFromRequest(req)
   if(genreID !== false){
     const genre = await getGenreFromIdIGDB(genreID);
-    if(!isError(genre)){
-      res.contentType("json");
+
+    if(genre !== undefined) {
+      res.send(genre);
+    } else {
+      res.status(404);
+      res.send({error: "Genre with id not found"})
     }
-    res.send(genre);
   }else{
     res.status(400);
     res.send({error: "Invalid genre"})
   }
 }
-
+//error handling OK
 export const artworkIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
     const gameArtwork = await getArtworkIGDB(gameID);
     if(!isError(gameArtwork)){
-      res.contentType("json");
+      if(gameArtwork.length > 0) {
+        res.send(gameArtwork);
+      } else {
+        res.status(404);
+        res.send({error: "No Artwork was found"})
+      }
+    } else {
+      res.status(503);
+      res.send({error: "Something bad happened"})
     }
-    res.send(gameArtwork);
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
   }
 }
-
+//error handling OK
 export const coverIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
     const gameCover = await getCoverIGDB(gameID);
     if(!isError(gameCover)){
-      res.contentType("json");
+      if(gameCover.length > 0) {
+        res.send(gameCover);
+      } else {
+        res.status(404);
+        res.send({error: "No Cover was found"})
+      }
+    } else {
+      res.status(503);
+      res.send({error: "Something bad happened"})
     }
-    res.send(gameCover);
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
   }
 }
-
+//error handling OK
 export const externalGameIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   const name = getGameNameFromRequest(req)
@@ -160,10 +173,12 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
         gameName: "Not Inserted",
         gameId: gameID
       }
+
       if (indexTwitch!==-1){
         newExternal.twitchId=externalIds[indexTwitch]["uid"];
         newExternal.gameName=externalIds[indexTwitch]["name"];
       }
+
       if (indexSteam!==-1){
         newExternal.steamId=externalIds[indexSteam]["uid"];
         if (newExternal.gameName === "Not Inserted")
@@ -173,17 +188,23 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
         }
       }
+
       if (indexGog!==-1){
         newExternal.gogId=externalIds[indexGog]["uid"];
         if (newExternal.gameName === "Not Inserted")
           newExternal.gameName = externalIds[indexGog]["name"]
       }
-      await ExternalDB.create(newExternal);
-      res.send(newExternal);
-    }else{
-      //CHANGE
-      res.status(200);
-      res.send({error: "ID does not appear in external sources"})
+
+      if(newExternal.gameName !== "Not Inserted") {
+        let options = {upsert: true, new: true, setDefaultsOnInsert: true};
+        await ExternalDB.findOneAndUpdate({gameId:newExternal.gameId},newExternal,options);
+        res.send(newExternal);
+      } else {
+        res.status(404);
+        res.send({error: "The game does not appear on any external platform"})
+      }
+    } else {
+      res.sendStatus(204);
     }
   }else if(name !== false) {
     const externalIds=await getExternalsIGDBbyName(name);
@@ -220,60 +241,77 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
         if (newExternal.gameId === -1)
           newExternal.gameId = externalIds[indexGog]["game"]
       }
-      await ExternalDB.create(newExternal);
-      res.send(newExternal);
+
+      if(newExternal.gameId !== -1) {
+        let options = {upsert: true, new: true, setDefaultsOnInsert: true};
+        await ExternalDB.findOneAndUpdate({gameId:newExternal.gameId},newExternal,options);
+        res.send(newExternal);
+      } else {
+        res.status(404);
+        res.send({error: "The game does not appear on any external platform"})
+      }
     }else{
-      res.status(404);
-      res.send({error: "No Externals for the game with the name Specified"})
+      res.sendStatus(204);
     }
   }else{
     res.status(400);
-    res.send({error: "No parameters specified"})
+    res.send({error: "No parameters specified. Numerical id or name is needed"})
   }
 }
-
+//error handling OK
 export const topRatedIGDB = async (req: Request, res: Response) => {
   const topRated = await getTopRatedIGDB();
 
   if(!isError(topRated)){
-    res.contentType("json");
+    res.send(topRated);
+  }else{
+    res.status(503);
+    res.send({error: "Something bad happened"})
   }
-  res.send(topRated);
 }
-
+//error handling OK
 export const gameVideosIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
     const gameVideos = await getGameVideosIGDB(gameID);
     if(!isError(gameVideos)){
-      res.contentType('json') //Need a way to use mp4
-      res.send(gameVideos);
+      if(gameVideos.length > 0) {
+        res.send(gameVideos);
+      } else {
+        res.status(404);
+        res.send({error: "No video was found"})
+      }
     }else{
-      res.send(gameVideos)
+      res.status(503);
+      res.send({error: "Something bad happened"})
     }
   }else{
     res.status(400);
     res.send({error: "Invalid ID"})
   }
 }
-
+//error handling OK
 export const platformsIGDB = async (req: Request, res: Response) => {
   const platformID = getIdFromRequest(req);
   if(platformID !== false){
     const gamePlatforms = await getPlatformsIGDB(platformID);
     if(!isError(gamePlatforms)){
-      res.contentType("json");
-      const platLogo=await getGamePlatformsLogoIGDB(parseInt(gamePlatforms.platform_logo_url));
-      if(!isError(platLogo)){
-        gamePlatforms.platform_logo_url=platLogo["url"]
-        res.send(gamePlatforms)
+      if(Object.keys(gamePlatforms).length > 0) {
+        const platLogo=await getGamePlatformsLogoIGDB(parseInt(gamePlatforms.platform_logo_url));
+        if(!isError(platLogo) && platLogo["url"] !== undefined){
+          gamePlatforms.platform_logo_url=platLogo["url"]
+          res.send(gamePlatforms)
+        }else{
+          gamePlatforms.platform_logo_url="Not found"
+          res.send(gamePlatforms)
+        }
       }else{
-        gamePlatforms.platform_logo_url="Not found"
-        res.send(gamePlatforms)
+        res.status(404);
+        res.send({error: "No platform found"})
       }
     }else{
-      res.status(400)
-      res.send(gamePlatforms)
+      res.status(503)
+      res.send({error: "Something bad happened"})
     }
   }else{
     res.status(400);

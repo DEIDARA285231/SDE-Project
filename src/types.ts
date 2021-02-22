@@ -73,13 +73,13 @@ export interface TwitchTopGame{
 
 export interface IGDBGame{
   id: number;
-  first_release_date: string;
-  aggregated_rating: number;
   name: string;
-  rating: number;
-  storyline: string;
-  summary: string;
-  genres: number[];
+  first_release_date: string;
+  aggregated_rating?: number;
+  rating?: number;
+  storyline?: string;
+  summary?: string;
+  genres?: number[];
 }
 
 export interface IGDBVideo{
