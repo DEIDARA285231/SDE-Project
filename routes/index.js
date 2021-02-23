@@ -33,7 +33,7 @@ let options = {
     }
   },
   basedir: __dirname, //app absolute path
-  files: ['../src/itad/routes.js', "../src/steam/routes.js", "../src/twitch/routes.js", "../src/routes.js"] //Path to the API handle folder
+  files: ['../src/itad/routes.js', "../src/steam/routes.js", "../src/twitch/routes.js", "../src/routes.js", "../src/types.js"] //Path to the API handle folder
 };
 
 expressSwagger(options)
