@@ -23,14 +23,14 @@ export const itadGetPlain: (IDSteam: number) => Promise<any | Error> = async (ID
   };
 };
 
-export const itadStoreLow: (plain: string, store: string) => Promise<any | Error> = async (plain, store) => {
+export const itadStoreLow: (plain: string) => Promise<any | Error> = async (plain) => {
   try{
     const response = await axios.get<any>('https://api.isthereanydeal.com/v01/game/storelow/',{ params: {
       key: secrets.ITAD_KEY,
       plains: plain,
       region: "eu2",
       country: "IT",
-      shops: store,
+      shops: "amazonus,steam,origin,epic,gog",
       }})
     return response.data;
   } catch(e) {

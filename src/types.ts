@@ -101,3 +101,8 @@ export interface IGDBPlatformLogo{
   height: number;
   url: string;
 }
+
+export interface storeLowestPrice{
+  storeName: String;
+  lowestPrice: Number;
+}
