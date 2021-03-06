@@ -52,7 +52,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.howLongToBeat = exports.gameSpeedrun = exports.platformsIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
 var types_1 = require("./types");
 var core_1 = require("./core");
-var core_2 = require("./itad/core");
 var helper_1 = require("./helper");
 var Externals_1 = __importDefault(require("../models/Externals"));
 var axios_1 = __importDefault(require("axios"));
@@ -225,7 +224,7 @@ exports.coverIGDB = function (req, res) { return __awaiter(void 0, void 0, void 
 }); };
 //error handling OK
 exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, name, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, fromItad, responseExt, options, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, options;
+    var gameID, name, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseExt, options, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseExt, options;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -261,13 +260,12 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                 if (newExternal.gameName === "Not Inserted")
                     newExternal.gameName = externalIds[indexSteam]["name"];
                 if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 3];
-                fromItad = Boolean(helper_1.getStringFromRequest(req, "fromItad"));
-                if (!!fromItad) return [3 /*break*/, 3];
                 return [4 /*yield*/, axios_1.default({
                         url: "http://localhost:3000/api/itad/plain",
                         method: 'GET',
                         params: {
-                            id: gameID
+                            id: gameID,
+                            steamId: newExternal.steamId
                         }
                     })];
             case 2:
@@ -329,10 +327,19 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                 if (newExternal.gameId === -1)
                     newExternal.gameId = externalIds[indexSteam]["game"];
                 if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 12];
-                return [4 /*yield*/, core_2.itadGetPlain(newExternal.steamId)];
+                return [4 /*yield*/, axios_1.default({
+                        url: "http://localhost:3000/api/itad/plain",
+                        method: 'GET',
+                        params: {
+                            id: gameID,
+                            steamId: newExternal.steamId
+                        }
+                    })];
             case 11:
-                responseItad = _a.sent();
-                newExternal.itad_plain = responseItad["data"]["app/" + newExternal.steamId];
+                responseExt = _a.sent();
+                if (responseExt.data.plain !== undefined) {
+                    newExternal.itad_plain = responseExt.data.plain;
+                }
                 _a.label = 12;
             case 12:
                 if (indexGog !== -1) {

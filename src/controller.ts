@@ -185,18 +185,16 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
         if (newExternal.gameName === "Not Inserted")
           newExternal.gameName = externalIds[indexSteam]["name"]
         if (newExternal.steamId !==undefined){
-          const fromItad = Boolean(getStringFromRequest(req, "fromItad"))
-          if (!fromItad){
-            const responseExt = await axios({
-              url: "http://localhost:3000/api/itad/plain",
-              method: 'GET',
-              params: {
-                id: gameID
-              }
-            });
-            if (responseExt.data.plain !== undefined){
-              newExternal.itad_plain=responseExt.data.plain;
+          const responseExt = await axios({
+            url: "http://localhost:3000/api/itad/plain",
+            method: 'GET',
+            params: {
+              id: gameID,
+              steamId: newExternal.steamId
             }
+          });
+          if (responseExt.data.plain !== undefined){
+            newExternal.itad_plain=responseExt.data.plain;
           }
         }
       }
@@ -244,8 +242,17 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
         if (newExternal.gameId === -1)
           newExternal.gameId = externalIds[indexSteam]["game"]
         if (newExternal.steamId !==undefined){
-          const responseItad = await itadGetPlain(newExternal.steamId);
-          newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
+          const responseExt = await axios({
+            url: "http://localhost:3000/api/itad/plain",
+            method: 'GET',
+            params: {
+              id: gameID,
+              steamId: newExternal.steamId
+            }
+          });
+          if (responseExt.data.plain !== undefined){
+            newExternal.itad_plain=responseExt.data.plain;
+          }
         }
       }
       if (indexGog!==-1){

@@ -196,4 +196,5 @@ export interface IGDBPlatformLogo{
 export interface storeLowestPrice{
   storeName: String;
   lowestPrice: Number;
+  hoursPerEuroRatio?: Number;
 }
