@@ -19,13 +19,35 @@ export const priceSteam = async (req: Request, res: Response) => {
     try{
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
       if (gameInDB) {
-        
+
         if (gameInDB.steamId !== undefined){
           const steamPrice = await getPriceSteam(gameInDB.steamId);
+
+          const hoursHLTB = await axios({
+            url: "http://localhost:3000/api/howlongtobeat",
+            method: 'GET',
+            params: {
+              name: gameInDB.gameName
+            }
+          });
+
+          let timeLabels = hoursHLTB.data[0].timeLabels
+          let simp = 0.0
+
+          for(let i=0; i<(timeLabels.length); i++) {
+            let currentLabel = timeLabels[i][0]
+            simp += hoursHLTB.data[0][currentLabel]
+          }
+
+          let price = steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+          let hoursPriceRatio = (simp/timeLabels.length)/price
+          let h = +(hoursPriceRatio.toFixed(2))
+
           const response = {
             id: gameID,
             game_name: gameInDB.gameName,
-            price: steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+            price: price,
+            hoursPrice: h
           }
           res.send(response);
         }else{
@@ -44,10 +66,32 @@ export const priceSteam = async (req: Request, res: Response) => {
 
         if (responseExt.data.steamId !== undefined){
           const steamPrice = await getPriceSteam(responseExt.data.steamId);
+
+          const hoursHLTB = await axios({
+            url: "http://localhost:3000/api/howlongtobeat",
+            method: 'GET',
+            params: {
+              name: responseExt.data.gameName
+            }
+          });
+
+          let timeLabels = hoursHLTB.data[0].timeLabels
+          let simp = 0.0
+
+          for(let i=0; i<(timeLabels.length); i++) {
+            let currentLabel = timeLabels[i][0]
+            simp += hoursHLTB.data[0][currentLabel]
+          }
+
+          let price = steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+          let hoursPriceRatio = (simp/timeLabels.length)/price
+          let h = +(hoursPriceRatio.toFixed(2))
+
           const response = {
             id: gameID,
             game_name: responseExt.data.gameName,
-            price: steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+            price: price,
+            hoursPrice: h
           }
           res.send(response);
         }else{
@@ -72,7 +116,7 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
 
       if (gameInDB) {
-        
+
         if (gameInDB.steamId !== undefined){
           const steamPlayers = await getActivePlayersSteam(gameInDB.steamId);
           const response = {
