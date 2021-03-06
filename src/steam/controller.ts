@@ -14,20 +14,16 @@ import axios from 'axios';
 //Steam
 
 export const priceSteam = async (req: Request, res: Response) => {
-  const appID = getIdFromRequest(req);
-  if (appID!==false) {
+  const gameID = getIdFromRequest(req);
+  if (gameID!==false) {
     try{
-      let gameInDB = await ExternalDB.findOne({ gameId: appID });
-
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
       if (gameInDB) {
-        //c'è il gioco nel DB
-        if (!isError(gameInDB)) {
-          res.contentType('json');
-        }
+        
         if (gameInDB.steamId !== undefined){
           const steamPrice = await getPriceSteam(gameInDB.steamId);
           const response = {
-            id: appID,
+            id: gameID,
             game_name: gameInDB.gameName,
             price: steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
           }
@@ -42,19 +38,16 @@ export const priceSteam = async (req: Request, res: Response) => {
           url: "http://localhost:3000/api/game/externalGame",
           method: 'GET',
           params: {
-            id: appID
+            id: gameID
           }
         });
 
         if (responseExt.data.steamId !== undefined){
           const steamPrice = await getPriceSteam(responseExt.data.steamId);
           const response = {
-            id: appID,
+            id: gameID,
             game_name: responseExt.data.gameName,
             price: steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
-          }
-          if (!isError(steamPrice)) {
-            res.contentType('json');
           }
           res.send(response);
         }else{
@@ -63,30 +56,27 @@ export const priceSteam = async (req: Request, res: Response) => {
         }
       }
     }catch(e){
-      res.status(400);
-      res.send({ error: 'Invalid!' });
+      res.status(503);
+      res.send({ error: 'Something bad happened' });
     }
   }else {
     res.status(400);
-    res.send({ error: 'Invalid parameter!' });
+    res.send({ error: 'Invalid ID' });
   }
 };
 
 export const activePlayersSteam = async (req: Request, res: Response) => {
-  const appID = getIdFromRequest(req);
-  if (appID!==false) {
+  const gameID = getIdFromRequest(req);
+  if (gameID!==false) {
     try{
-      let gameInDB = await ExternalDB.findOne({ gameId: appID });
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
 
       if (gameInDB) {
-        //c'è il gioco nel DB
-        if (!isError(gameInDB)) {
-          res.contentType('json');
-        }
+        
         if (gameInDB.steamId !== undefined){
           const steamPlayers = await getActivePlayersSteam(gameInDB.steamId);
           const response = {
-            id: appID,
+            id: gameID,
             game_name: gameInDB.gameName,
             activePlayers: steamPlayers["response"]["player_count"]
           }
@@ -100,18 +90,15 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
           url: "http://localhost:3000/api/game/externalGame",
           method: 'GET',
           params: {
-            id: appID
+            id: gameID
           }
         });
         if (responseExt.data.steamId !== undefined){
           const steamPlayers = await getActivePlayersSteam(responseExt.data.steamId);
           const response = {
-            id: appID,
+            id: gameID,
             game_name: responseExt.data.gameName,
             activePlayers: steamPlayers["response"]["player_count"]
-          }
-          if (!isError(steamPlayers)) {
-            res.contentType('json');
           }
           res.send(response);
         }else{
@@ -120,11 +107,11 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
         }
       }
     }catch(e){
-      res.status(400);
-      res.send({ error: 'Invalid!' });
+      res.status(503);
+      res.send({ error: 'Something bad happened' });
     }
   }else {
     res.status(400);
-    res.send({ error: 'Invalid parameter!' });
+    res.send({ error: 'Invalid ID' });
   }
 };

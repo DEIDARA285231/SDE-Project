@@ -224,7 +224,7 @@ exports.coverIGDB = function (req, res) { return __awaiter(void 0, void 0, void 
 }); };
 //error handling OK
 exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, name, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, options, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, options;
+    var gameID, name, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, fromItad, responseExt, options, externalIds, indexTwitch, indexSteam, indexGog, i, newExternal, responseItad, options;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -260,10 +260,20 @@ exports.externalGameIGDB = function (req, res) { return __awaiter(void 0, void 0
                 if (newExternal.gameName === "Not Inserted")
                     newExternal.gameName = externalIds[indexSteam]["name"];
                 if (!(newExternal.steamId !== undefined)) return [3 /*break*/, 3];
-                return [4 /*yield*/, core_2.itadGetPlain(newExternal.steamId)];
+                fromItad = Boolean(helper_1.getStringFromRequest(req, "fromItad"));
+                if (!!fromItad) return [3 /*break*/, 3];
+                return [4 /*yield*/, axios_1.default({
+                        url: "http://localhost:3000/api/itad/plain",
+                        method: 'GET',
+                        params: {
+                            id: gameID
+                        }
+                    })];
             case 2:
-                responseItad = _a.sent();
-                newExternal.itad_plain = responseItad["data"]["app/" + newExternal.steamId];
+                responseExt = _a.sent();
+                if (responseExt.data.plain !== undefined) {
+                    newExternal.itad_plain = responseExt.data.plain;
+                }
                 _a.label = 3;
             case 3:
                 if (indexGog !== -1) {

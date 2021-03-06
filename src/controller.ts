@@ -184,8 +184,19 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
         if (newExternal.gameName === "Not Inserted")
           newExternal.gameName = externalIds[indexSteam]["name"]
         if (newExternal.steamId !==undefined){
-          const responseItad = await itadGetPlain(newExternal.steamId);
-          newExternal.itad_plain=responseItad["data"][`app/${newExternal.steamId}`];
+          const fromItad = Boolean(getStringFromRequest(req, "fromItad"))
+          if (!fromItad){
+            const responseExt = await axios({
+              url: "http://localhost:3000/api/itad/plain",
+              method: 'GET',
+              params: {
+                id: gameID
+              }
+            });
+            if (responseExt.data.plain !== undefined){
+              newExternal.itad_plain=responseExt.data.plain;
+            }
+          }          
         }
       }
 
