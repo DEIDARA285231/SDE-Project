@@ -16,9 +16,9 @@ var router = express_1.default.Router();
  * @param {String} name.query - Name of the game we need to search, can also be a partial string
  * @param {BigInteger} limit.query - Number of results to keep, given the name
  * @param {BigInteger} offset.query - Number of results to skip, given the name
- * @returns {object} 200 - Returns a json containing the infos for a certain game on the IGDB Platform if id is provided, multiple games if name is provided
- * @returns {object} 400 - Numerical id or name param is needed
- * @returns {object} 404 - No Games with the name found
+ * @returns {object} 200 - Returns a json containing the infos for a certain game on the IGDB Platform if id is provided, multiple games if name is provided.
+ * @returns {object} 400 - Numerical id or name param is needed.
+ * @returns {object} 404 - No Games with the name found.
  */
 router.get("/games", controller_1.gameIGDB);
 /**
@@ -26,8 +26,8 @@ router.get("/games", controller_1.gameIGDB);
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the genre we need to search
  * @returns {object} 200 - Returns a json containing the corresponding infos for a genre given certain ID.
- * @returns {object} 400 - Invalid genre
- * @returns {object} 404 - Genre with id not found
+ * @returns {object} 400 - Invalid genre.
+ * @returns {object} 404 - Genre with id not found.
  */
 router.get("/game/genres", controller_1.genresIGDB);
 /**
@@ -45,9 +45,9 @@ router.get("/game/artworks", controller_1.artworkIGDB);
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the infos regarding the cover art for a certain game on the IGDB Platform.
- * @returns {object} 503 - Something bad happened. Error from IGDB itself.
  * @returns {object} 400 - Invalid ID.
  * @returns {object} 404 - No Cover was found.
+ * @returns {object} 503 - Something bad happened. Error from IGDB itself.
  */
 router.get("/game/covers", controller_1.coverIGDB);
 /**
@@ -72,9 +72,9 @@ router.get("/games/topRated", controller_1.topRatedIGDB);
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the infos (URLs) regarding a certain game on the IGDB Platform.
- * @returns {object} 503 - Something bad happened. Error from IGDB itself.
  * @returns {object} 400 - Invalid ID.
  * @returns {object} 404 - No video was found.
+ * @returns {object} 503 - Something bad happened. Error from IGDB itself.
  */
 router.get("/game/videos", controller_1.gameVideosIGDB);
 /**
@@ -82,9 +82,9 @@ router.get("/game/videos", controller_1.gameVideosIGDB);
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the hardware we need to search
  * @returns {object} 200 - Returns a json containing the list of hardwares able to run a certain game.
- * @returns {object} 503 - Something bad happened. Error from IGDB itself.
  * @returns {object} 400 - Invalid ID.
  * @returns {object} 404 - No platform found.
+ * @returns {object} 503 - Something bad happened. Error from IGDB itself.
  */
 router.get("/game/platforms", controller_1.platformsIGDB);
 //speedrun
