@@ -46,7 +46,7 @@ export const plainITAD = async (req: Request, res: Response) => {
         });
         if (responseExt.data.steamId !== undefined){
           const plain = await itadGetPlain(responseExt.data.steamId);
-          
+
           const response = {
             id: gameID,
             steamId: responseExt.data.steamId,
@@ -75,6 +75,23 @@ export const getStoreLow = async (req: Request, res: Response) => {
     try{
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
       if (gameInDB) {
+
+        const hoursHLTB = await axios({
+          url: "http://localhost:3000/api/howlongtobeat",
+          method: 'GET',
+          params: {
+            name: gameInDB.gameName
+          }
+        });
+
+        let timeLabels = hoursHLTB.data[0].timeLabels
+        let simp = 0.0
+
+        for(let i=0; i<(timeLabels.length); i++) {
+          let currentLabel = timeLabels[i][0]
+          simp += hoursHLTB.data[0][currentLabel]
+        }
+
         if (gameInDB.itad_plain !== undefined){
           const storeLow = await itadStoreLow(gameInDB.itad_plain);
           if (storeLow["data"][gameInDB.itad_plain].length >0){
@@ -82,7 +99,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
             storeLow["data"][gameInDB.itad_plain].forEach((elem : any) =>{
               stores.push({
                 storeName: String(elem.shop),
-                lowestPrice: Number(elem.price)
+                lowestPrice: +((+(elem.price)).toFixed(2))
               });
             })
             const response = {
@@ -106,7 +123,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
               storeLow["data"][plain].forEach((elem : any) =>{
                 stores.push({
                   storeName: String(elem.shop),
-                  lowestPrice: Number(elem.price)
+                  lowestPrice: +((+(elem.price)).toFixed(2))
                 });
               })
               const response = {
@@ -122,7 +139,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
           }else{
             res.status(404);
             res.send({error: "Game not on IsThereAnyDeal.com"})
-          }  
+          }
         }
       }else {
         const responseExt = await axios({
@@ -139,7 +156,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
             storeLow["data"][responseExt.data.itad_plain].forEach((elem : any) =>{
               stores.push({
                 storeName: String(elem.shop),
-                lowestPrice: Number(elem.price)
+                lowestPrice: +((+(elem.price)).toFixed(2))
               });
             })
             const response = {
@@ -163,7 +180,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
               storeLow["data"][plain].forEach((elem : any) =>{
                 stores.push({
                   storeName: String(elem.shop),
-                  lowestPrice: Number(elem.price)
+                  lowestPrice: +((+(elem.price)).toFixed(2))
                 });
               })
               const response = {

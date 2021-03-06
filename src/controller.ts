@@ -37,7 +37,7 @@ import {
 
 import ExternalDB from '../models/Externals';
 import axios from 'axios';
-import { HowLongToBeatService, HowLongToBeatEntry } from 'howlongtobeat';
+import { HowLongToBeatService } from 'howlongtobeat';
 
 //error handling OK
 export const gameIGDB = async (req: Request, res: Response) => {
