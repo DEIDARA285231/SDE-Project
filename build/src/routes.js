@@ -89,4 +89,5 @@ router.get("/game/videos", controller_1.gameVideosIGDB);
 router.get("/game/platforms", controller_1.platformsIGDB);
 //speedrun
 router.get('/speedrun', controller_1.gameSpeedrun); //search game(s) by param id or name
+router.get('/howlongtobeat', controller_1.howLongToBeat);
 exports.default = router;

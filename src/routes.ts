@@ -8,7 +8,8 @@ import {
   topRatedIGDB,
   gameVideosIGDB,
   platformsIGDB,
-  gameSpeedrun
+  gameSpeedrun,
+  howLongToBeat
 } from './controller';
 
 const router = express.Router();
@@ -106,5 +107,8 @@ router.get("/game/platforms", platformsIGDB);
 
 //speedrun
 router.get('/speedrun', gameSpeedrun);          //search game(s) by param id or name
+
+
+router.get('/howlongtobeat', howLongToBeat);
 
 export default router;
