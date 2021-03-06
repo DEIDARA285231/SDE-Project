@@ -32,22 +32,35 @@ export const priceSteam = async (req: Request, res: Response) => {
           });
 
           let timeLabels = hoursHLTB.data[0].timeLabels
-          let simp = 0.0
 
-          for(let i=0; i<(timeLabels.length); i++) {
-            let currentLabel = timeLabels[i][0]
-            simp += hoursHLTB.data[0][currentLabel]
-          }
+          let response = {}
 
-          let price = steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
-          let hoursPriceRatio = (simp/timeLabels.length)/price
-          let h = +(hoursPriceRatio.toFixed(2))
+          if (timeLabels !== undefined){
+            let simp = 0.0
 
-          const response = {
-            id: gameID,
-            game_name: gameInDB.gameName,
-            price: price,
-            hoursPrice: h
+            for(let i=0; i<(timeLabels.length); i++) {
+              let currentLabel = timeLabels[i][0]
+              simp += hoursHLTB.data[0][currentLabel]
+            }
+
+            let price = steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+            let hoursPriceRatio = (simp/timeLabels.length)/price
+            let h = +(hoursPriceRatio.toFixed(2))
+
+            response = {
+              id: gameID,
+              game_name: gameInDB.gameName,
+              price: price,
+              hoursPrice: h
+            }
+          }else{
+            let price = steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+
+            response = {
+              id: gameID,
+              game_name: gameInDB.gameName,
+              price: price
+            }
           }
           res.send(response);
         }else{

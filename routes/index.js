@@ -162,17 +162,17 @@ router.get('/game', ensureAuth, async (req,res) => {
           'Accept': 'application/json',
         },
       });
-      //get the price on steam
+      //get the prices
       try {
-        const steam = await axios({
-          url: `http://localhost:3000/api/steam/price?id=${id}`,
+        const prices = await axios({
+          url: `http://localhost:3000/api/itad/storeLow?id=${id}`,
           method: 'GET',
           headers: {
             'Accept': 'application/json',
           },
         });
       } catch(e) {
-        const steam = undefined;
+        const prices = undefined;
       }
       //format the cover URL
       var url = "";
@@ -182,6 +182,8 @@ router.get('/game', ensureAuth, async (req,res) => {
         url = "https://static-cdn.jtvnw.net/ttv-static/404_boxart.jpg"
       }
       //rating check and format
+      var rat2 = ''+game.data.aggregated_rating+'';
+      game.data.aggregated_rating = rat2.substring(0,4);
       if(typeof game.data.rating === 'undefined') {
         game.data.rating = 'N/A'
       } else {
@@ -195,17 +197,65 @@ router.get('/game', ensureAuth, async (req,res) => {
       }
 
       var price = ""
-      if(!isError(steam) && steam !==(undefined)) {
-        price = ""+steam.data.price+" $"
-      } else {
-        price = "Not on Steam"
+
+      var priceAmazon = "N/A"
+      var hoursAmazon = "N/A"
+      var priceSteam = "N/A"
+      var hoursSteam = "N/A"
+      var priceGog = "N/A"
+      var hoursGog = "N/A"
+      var priceOrigin = "N/A"
+      var hoursOrigin = "N/A"
+      var priceEpic = "N/A"
+      var hoursEpic = "N/A"
+
+      if(prices !== undefined) {
+        console.log(prices.data)
+        /*for(let i=0; i<prices.data.stores.length; i++) {
+          console.log(prices.data.stores[i])
+          switch(prices.data.stores[i].storeName){
+            case "amazonus":
+              priceAmazon = prices.data.stores[i].lowestPrice;
+              hoursAmazon = prices.data.stores[i].hoursPerEuroRatio;
+              break;
+            case "steam":
+              priceSteam = prices.data.stores[i].lowestPrice;
+              hoursSteam = prices.data.stores[i].hoursPerEuroRatio;
+              break;
+            case "amazonus":
+              priceAmazon = prices.data.stores[i].lowestPrice;
+              hoursAmazon = prices.data.stores[i].hoursPerEuroRatio;
+              break;
+          }
+        }*/
       }
+
+
 
       //render views/game with these params
       res.render('game', {
         data: game.data,
-        cover: url,
-        price: price
+        cover: url
+        /*priceAmazon: {
+          lowestPrice: prices.data.stores[0].lowestPrice,
+          hoursPerEuroRatio: prices.data.stores[0].hoursPerEuroRatio
+        },
+        priceSteam: {
+          lowestPrice: prices.data.stores[0].lowestPrice,
+          hoursPerEuroRatio: prices.data.stores[0].hoursPerEuroRatio
+        },
+        priceGog: {
+          lowestPrice: prices.data.stores[0].lowestPrice,
+          hoursPerEuroRatio: prices.data.stores[0].hoursPerEuroRatio
+        },
+        priceOrigin: {
+          lowestPrice: prices.data.stores[0].lowestPrice,
+          hoursPerEuroRatio: prices.data.stores[0].hoursPerEuroRatio
+        },
+        priceEpic: {
+          lowestPrice: prices.data.stores[0].lowestPrice,
+          hoursPerEuroRatio: prices.data.stores[0].hoursPerEuroRatio
+        }*/
       });
 
     } else if(name !== false) {
