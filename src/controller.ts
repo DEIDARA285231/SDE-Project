@@ -37,6 +37,7 @@ import {
 
 import ExternalDB from '../models/Externals';
 import axios from 'axios';
+import { HowLongToBeatService, HowLongToBeatEntry } from 'howlongtobeat';
 
 //error handling OK
 export const gameIGDB = async (req: Request, res: Response) => {
@@ -196,7 +197,7 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
             if (responseExt.data.plain !== undefined){
               newExternal.itad_plain=responseExt.data.plain;
             }
-          }          
+          }
         }
       }
 
@@ -340,5 +341,13 @@ export const gameSpeedrun = async (req: Request, res: Response) => {
   } else {
     res.status(400);
     res.send({error: "Invalid parameter"});
+  }
+};
+
+export const howLongToBeat = async (req: Request, res: Response) => {
+  let hltbService = new HowLongToBeatService();
+  const gameName = getGameNameFromRequest(req);
+  if(gameName !== false){
+    hltbService.search(gameName).then(result => res.send(result));
   }
 };

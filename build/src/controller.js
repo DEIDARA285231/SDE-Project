@@ -49,13 +49,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gameSpeedrun = exports.platformsIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
+exports.howLongToBeat = exports.gameSpeedrun = exports.platformsIGDB = exports.gameVideosIGDB = exports.topRatedIGDB = exports.externalGameIGDB = exports.coverIGDB = exports.artworkIGDB = exports.genresIGDB = exports.gameIGDB = void 0;
 var types_1 = require("./types");
 var core_1 = require("./core");
 var core_2 = require("./itad/core");
 var helper_1 = require("./helper");
 var Externals_1 = __importDefault(require("../models/Externals"));
 var axios_1 = __importDefault(require("axios"));
+var howlongtobeat_1 = require("howlongtobeat");
 //error handling OK
 exports.gameIGDB = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var gameID, gameInDB, game, genreStructure, i, nameGameInserted, limit, offset, games;
@@ -478,5 +479,16 @@ exports.gameSpeedrun = function (req, res) { return __awaiter(void 0, void 0, vo
                 _c.label = 3;
             case 3: return [2 /*return*/];
         }
+    });
+}); };
+exports.howLongToBeat = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var hltbService, gameName;
+    return __generator(this, function (_a) {
+        hltbService = new howlongtobeat_1.HowLongToBeatService();
+        gameName = helper_1.getGameNameFromRequest(req);
+        if (gameName !== false) {
+            hltbService.search(gameName).then(function (result) { return res.send(result); });
+        }
+        return [2 /*return*/];
     });
 }); };
