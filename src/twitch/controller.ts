@@ -153,7 +153,7 @@ export const streamsTwitch = async (req: Request, res: Response) => {
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
   if(gameID && twitchID) {
     res.status(400);
-    res.send({error: "Provide only game id, game name, or twitch id"})
+    res.send({error: "Provide only game id or twitch id"})
   }else if(gameID) {
     try{
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
@@ -187,8 +187,8 @@ export const streamsTwitch = async (req: Request, res: Response) => {
         }
       }
     }catch(e){
-      res.status(400);
-      res.send({ error: 'Invalid!' });
+      res.status(503);
+      res.send({ error: 'Something bad happened. Error from Twitch itself' });
     }
   } else if(twitchID) {
     const streams1 = await getStreamsTwitch(true,String(twitchID));
@@ -220,7 +220,7 @@ export const videosTwitch = async (req: Request, res: Response) => {
 
   if(gameID && twitchID) {
     res.status(400);
-    res.send({error: "Provide only game id OR twitch id"})
+    res.send({error: "Provide game id OR twitch id"})
   } else if(gameID) {
     try{
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
@@ -252,13 +252,13 @@ export const videosTwitch = async (req: Request, res: Response) => {
         }
       }
     }catch(e){
-      res.status(400);
-      res.send({ error: 'Error!' });
+      res.status(503);
+      res.send({ error: 'Something bad happened. Error from Twitch itself' });
     }
   } else if(twitchID) {
     res.send(await getVideosTwitch(String(twitchID), period, sort, type));
   } else {
     res.status(400);
-    res.send({error: "ID of a game is needed"});
+    res.send({error: "Provide game id OR twitch id"});
   }
 };
