@@ -12,9 +12,13 @@ const router = express.Router();
 /**
  * @route GET /twitch/ - Returns twitch's page for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
- * @param {BigInteger} id.query - Steam ID of the game we need to search
+ * @param {BigInteger} id.query - ID of the game we need to search
+ * @param {BigInteger} id.query - twitch ID of the game we need to search
  * @param {String} name.query - Correct name of the game we need to search
- * @returns {object} 200 - Returns a json containing the url for a certain game on the Twitch Platform.
+ * @returns {object} 200 - Returns a json containing the data url for a certain game on the Twitch Platform.
+ * @returns {object} 400 - Provide only game id, game name, or twitch id.
+ * @returns {object} 404 - Game not broadcasted on twitch.
+ * @returns {object} 503 - Something bad happened. Error from Twitch itself.
  *
  */
 router.get('/', gameTwitch);

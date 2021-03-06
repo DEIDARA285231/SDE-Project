@@ -61,8 +61,8 @@ export const gameTwitch = async (req: Request, res: Response) => {
           }
         }
       }catch(e){
-        res.status(400);
-        res.send({ error: 'Invalid!' });
+        res.status(503);
+        res.send({ error: 'Something bad happened. Error from Twitch itself!' });
       }
   } else if(gameName !== false) {
         try{
@@ -115,8 +115,8 @@ export const gameTwitch = async (req: Request, res: Response) => {
       const game = await getTwitchGameById(twitchID.toString());
       res.send(game);
     } catch(e) {
-      res.status(400);
-      res.send({error: "Something wrong happened"})
+      res.status(503);
+      res.send({error: "Something bad happened. Error from Twitch itself!"})
     }
   } else {
     res.status(400);
