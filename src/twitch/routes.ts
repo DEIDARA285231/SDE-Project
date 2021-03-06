@@ -36,6 +36,7 @@ router.get('/topGames', topGamesTwitch);
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {String} query.query - Name of the category to search on Twitch's platform
  * @returns {object} 200 - Returns a json containing the url for a certain category on the Twitch Platform.
+ * @returns {object} 400 - Invalid parameter.
  *
  */
 router.get('/search/', searchTwitch);
@@ -43,8 +44,12 @@ router.get('/search/', searchTwitch);
 /**
  * @route GET /twitch/streams - Returns twitch's steams page for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
- * @param {BigInteger} id.query - Steam ID of the game we need to search
+ * @param {BigInteger} id.query - ID of the game we need to search
+ * @param {BigInteger} id.query - Twitch ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the url for the streams of a certain game on the Twitch.
+ * @returns {object} 400 - Provide only game id or twitch id.
+ * @returns {object} 404 - Game not broadcasted on Twitch.
+ * @returns {object} 503 - Something bad happened. Error from Twitch itself.
  *
  */
 router.get('/streams/', streamsTwitch);
@@ -52,8 +57,12 @@ router.get('/streams/', streamsTwitch);
 /**
  * @route GET /twitch/videos - Returns twitch's videos for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
- * @param {BigInteger} id.query - Steam ID of the game we need to search
+ * @param {BigInteger} id.query - ID of the game we need to search
+ * @param {BigInteger} id.query - Twitch ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the url for the videos for a certain game on the Twitch.
+ * @returns {object} 400 - Provide game id OR twitch id.
+ * @returns {object} 404 - Game not broadcasted on Twitch.
+ * @returns {object} 503 - Something bad happened. Error from Twitch itself.
  *
  */
 router.get('/videos/', videosTwitch);
