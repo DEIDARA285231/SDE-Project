@@ -1,4 +1,5 @@
 import express from 'express';
+//import { ensureAuthAPI } from '../middleware/auth';
 import {
   gameIGDB,
   genresIGDB,

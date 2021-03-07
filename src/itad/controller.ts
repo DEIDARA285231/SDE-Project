@@ -92,12 +92,12 @@ export const getStoreLow = async (req: Request, res: Response) => {
               name: gameInDB.gameName
             }
           });
-          let timeLabels = hoursHLTB.data[0].timeLabels
 
           const storeLow = await itadStoreLow(gameInDB.itad_plain);
           if (storeLow["data"][gameInDB.itad_plain].length >0){
             let stores: storeLowestPrice[] = [];
-            if (timeLabels !== undefined){
+            if (hoursHLTB.data[0] !== undefined && hoursHLTB.data[0].timeLabels !== undefined){
+              let timeLabels = hoursHLTB.data[0].timeLabels
               let somma = 0.0
               for(let i=0; i<(timeLabels.length); i++) {
                 let currentLabel = timeLabels[i][0]
@@ -158,12 +158,12 @@ export const getStoreLow = async (req: Request, res: Response) => {
               name: responseExt.data.gameName
             }
           });
-          let timeLabels = hoursHLTB.data[0].timeLabels
 
           const storeLow = await itadStoreLow(responseExt.data.itad_plain);
           if (storeLow["data"][responseExt.data.itad_plain].length >0){
             let stores: storeLowestPrice[] = [];
-            if (timeLabels !== undefined){
+            if (hoursHLTB.data[0] !== undefined && hoursHLTB.data[0].timeLabels !== undefined){
+              let timeLabels = hoursHLTB.data[0].timeLabels
               let somma = 0.0
               for(let i=0; i<(timeLabels.length); i++) {
                 let currentLabel = timeLabels[i][0]
