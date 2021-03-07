@@ -10,23 +10,22 @@ module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (u
     callbackURL: '/auth/google/callback'
   },
     async (accessToken: any, refreshToken: any, profile: { id: any; displayName: any; name: { givenName: any; familyName: any }; photos: { value: any }[] }, done: (arg0: null, arg1: any) => void) => {
-      //console.log(profile)
+      console.log(accessToken)
       const newUser = {
         googleId: profile.id,
         displayName: profile.displayName,
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
-        image: profile.photos[0].value
+        image: profile.photos[0].value,
+        accessToken: accessToken
       }
 
       try {
-        let user = await User.findOne({ googleId: profile.id })
+        let user = await User.findOneAndUpdate({ googleId: profile.id },{accessToken: accessToken})
 
         if (user) {
-          //console.log("esiste")
           done(null, user)
         } else {
-          //console.log("creato")
           user = await User.create(newUser)
           done(null, user)
         }

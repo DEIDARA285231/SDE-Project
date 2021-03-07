@@ -14,8 +14,7 @@ const UserSchema = new mongoose.Schema({
     required: true
   },
   lastName: {
-    type: String,
-    required: true
+    type: String
   },
   image: {
     type: String
@@ -23,6 +22,10 @@ const UserSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  accessToken: {
+    type: String,
+    required: true
   }
 })
 
