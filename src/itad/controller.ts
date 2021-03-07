@@ -60,7 +60,7 @@ export const plainITAD = async (req: Request, res: Response) => {
         }
       }catch(e){
         res.status(503);
-        res.send({ error: 'Something bad happened' });
+        res.send({ error: 'Something bad happened. Error from the call to the Database' });
       }
     }else{
       const plain = await itadGetPlain(steamID);
@@ -84,8 +84,6 @@ export const getStoreLow = async (req: Request, res: Response) => {
     try{
       let gameInDB = await ExternalDB.findOne({ gameId: gameID });
       if (gameInDB) {
-
-        
         if (gameInDB.itad_plain !== undefined){
           const hoursHLTB = await axios({
             url: "http://localhost:3000/api/howlongtobeat",
@@ -116,6 +114,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
                   hoursPerEuroRatio: hoursPriceRatio
                 });
               })
+
             }else{
               storeLow["data"][gameInDB.itad_plain].forEach((elem : any) =>{
                 stores.push({
@@ -124,6 +123,11 @@ export const getStoreLow = async (req: Request, res: Response) => {
                 });
               })
             }
+
+            if(stores !== undefined) {
+              stores.sort((a,b)=>(a.lowestPrice>b.lowestPrice) ? 1 : ((b.lowestPrice>a.lowestPrice) ? -1 : 0))
+            }
+
             const response = {
               id: gameID,
               plain: gameInDB.itad_plain,

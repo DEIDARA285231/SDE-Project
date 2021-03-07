@@ -1,159 +1,24 @@
 <h3 style="text-align: center;">Risultati per <span style="color: red;">{{query}}</span></h3>
 <hr>
-{{#if twitch.entry10}}
-  AAAAAA
-{{else}}
-  BBBBBB
-{{/if}}
 <div style="margin-bottom: 50px; padding-left: 100px; padding-right: 100px;">
   <table style="text-align: center;">
     <tr>
       <th>Game</th>
       <th>Release</th>
     </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry0.id}}}">{{{search.entry0.name}}}</a></td>
-      <td>{{{search.entry0.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry1.id}}}">{{{search.entry1.name}}}</a></td>
-      <td>{{{search.entry1.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry2.id}}}">{{{search.entry2.name}}}</a></td>
-      <td>{{{search.entry2.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry3.id}}}">{{{search.entry3.name}}}</a></td>
-      <td>{{{search.entry3.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry4.id}}}">{{{search.entry4.name}}}</a></td>
-      <td>{{{search.entry4.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry5.id}}}">{{{search.entry5.name}}}</a></td>
-      <td>{{{search.entry5.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry6.id}}}">{{{search.entry6.name}}}</a></td>
-      <td>{{{search.entry6.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry7.id}}}">{{{search.entry7.name}}}</a></td>
-      <td>{{{search.entry7.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry8.id}}}">{{{search.entry8.name}}}</a></td>
-      <td>{{{search.entry8.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry9.id}}}">{{{search.entry9.name}}}</a></td>
-      <td>{{{search.entry9.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry10.id}}}">{{{search.entry10.name}}}</a></td>
-      <td>{{{search.entry10.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry11.id}}}">{{{search.entry11.name}}}</a></td>
-      <td>{{{search.entry11.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry12.id}}}">{{{search.entry12.name}}}</a></td>
-      <td>{{{search.entry12.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry13.id}}}">{{{search.entry13.name}}}</a></td>
-      <td>{{{search.entry13.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry14.id}}}">{{{search.entry14.name}}}</a></td>
-      <td>{{{search.entry14.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry15.id}}}">{{{search.entry15.name}}}</a></td>
-      <td>{{{search.entry15.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry16.id}}}">{{{search.entry16.name}}}</a></td>
-      <td>{{{search.entry16.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry17.id}}}">{{{search.entry17.name}}}</a></td>
-      <td>{{{search.entry17.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry18.id}}}">{{{search.entry18.name}}}</a></td>
-      <td>{{{search.entry18.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><a href="http://localhost:3000/game?id={{{search.entry19.id}}}">{{{search.entry19.name}}}</a></td>
-      <td>{{{search.entry19.first_release_date}}}</td>
-    </tr>
-
+      {{#each search}}
+        <tr>
+          <td><a href="http://localhost:3000/game?id={{{this.id}}}">{{{this.name}}}</a></td>
+          <td>{{{this.first_release_date}}}</td>
+        </tr>
+      {{/each}}
   </table>
 </div>
 <hr>
 <div id='scrolly' style='margin-bottom: 50px;'>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry0.name}}}">
-    <img src="{{{twitch.entry0.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry1.name}}}">
-    <img src="{{{twitch.entry1.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry2.name}}}">
-    <img src="{{{twitch.entry2.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry3.name}}}">
-    <img src="{{{twitch.entry3.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry4.name}}}">
-    <img src="{{{twitch.entry4.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry5.name}}}">
-    <img src="{{{twitch.entry5.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry6.name}}}">
-    <img src="{{{twitch.entry6.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry7.name}}}">
-    <img src="{{{twitch.entry7.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry8.name}}}">
-    <img src="{{{twitch.entry8.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry9.name}}}">
-    <img src="{{{twitch.entry9.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry10.name}}}">
-    <img src="{{{twitch.entry10.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry11.name}}}">
-    <img src="{{{twitch.entry11.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry12.name}}}">
-    <img src="{{{twitch.entry12.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry13.name}}}">
-    <img src="{{{twitch.entry13.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry14.name}}}">
-    <img src="{{{twitch.entry14.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry15.name}}}">
-    <img src="{{{twitch.entry15.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry16.name}}}">
-    <img src="{{{twitch.entry16.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry17.name}}}">
-    <img src="{{{twitch.entry17.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry18.name}}}">
-    <img src="{{{twitch.entry18.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitch.entry19.name}}}">
-    <img src="{{{twitch.entry19.box_art_url}}}" alt="img"/>
-  </a>
+  {{#each twitch}}
+    <a href="https://twitch.tv/directory/game/{{{this.name}}}">
+      <img src="{{{this.box_art_url}}}" alt="img"/>
+    </a>
+  {{/each}}
 </div>
