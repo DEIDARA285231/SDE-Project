@@ -6,19 +6,11 @@
       <img src="{{{cover}}}" alt="img" style="width: 200px; height: 250px; margin-bottom: 5px;"/>
       <div style="font-size: 20px">
         <b>Rating</b>
-        {{#if data.aggregated_rating}}
-          {{data.aggregated_rating}}
-        {{else}}
-          N/A
-        {{/if}}
+        {{data.aggregated_rating}}
       </div>
       <div style="font-size: 20px">
         <b>User score</b>
-        {{#if data.rating}}
-          {{data.rating}}
-        {{else}}
-          N/A
-        {{/if}}
+        {{data.rating}}
       </div>
     </div>
     <div class="column2" style="height: fit-content;">
@@ -36,6 +28,19 @@
   </div>
 </div>
 <br>
-<div style="display: inline-block; text-align: center;">
-  
+<div style="text-align: center;">
+  <table style="text-align: center;">
+    <tr>
+      <th>Store</th>
+      <th>Lowest Price</th>
+      <th>Value</th>
+    </tr>
+    {{#each prices}}
+      <tr>
+        <td>{{{this.storeName}}}</td>
+        <td>{{{this.lowestPrice}}} $</td>
+        <td>{{{this.hoursPerEuroRatio}}} h/$</td>
+      </tr>
+    {{/each}}
+  </table>
 </div>
