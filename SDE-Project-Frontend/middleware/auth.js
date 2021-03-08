@@ -1,4 +1,4 @@
-const User = require('../models/User')
+const User = require('../../SDE-Project-DB/models/User')
 
 module.exports = {
   ensureAuth: function (req, res, next) {

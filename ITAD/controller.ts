@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { isError, storeLowestPrice } from '../types';
+import { isError, storeLowestPrice } from './types';
 import {
   itadGetPlain,
   itadStoreLow
@@ -9,9 +9,9 @@ import {
   getIdFromRequest,
   getNumberFromRequest,
   getStringFromRequest,
-} from '../helper';
+} from './helper';
 
-import ExternalDB from '../../models/Externals';
+import ExternalDB from '../SDE-Project-DB/models/Externals';
 import axios from 'axios';
 
 export const plainITAD = async (req: Request, res: Response) => {

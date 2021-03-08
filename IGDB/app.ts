@@ -12,12 +12,9 @@ import session from 'express-session';
 import mongoose from 'mongoose';
 const MongoStore = require('connect-mongo')(session)
 
-import { connect } from './config/db';
-import config from './config/config';
-import router from './src/routes';
-import routerTwitch from './src/twitch/routes';
-import routerSteam from './src/steam/routes';
-import routerItad from './src/itad/routes';
+import { connect } from '../SDE-Project-DB/config/db';
+import config from '../SDE-Project-DB/config/config';
+import router from './routes';
 
 //Passport config
 require('./config/passport')(passport)
@@ -26,6 +23,7 @@ require('./config/passport')(passport)
 connect()
 
 const app = express();
+
 
 app.use(errorHandler());     // Log stack trace of errors (to be used only on development phases!)
 app.use(logger('dev'));                               // Log HTTP requests
@@ -53,16 +51,7 @@ app.use(passport.session())
 //Static folder
 app.use(express.static(path.join(__dirname, 'public')))
 
-//routes
-app.use('/',require('./routes/index'))
-app.use('/auth',require('./routes/auth'))
+app.use('/api/igdb', router);
 
-// Uses router for all routes (we split the server logics and the routes definition)
-app.use('/api/', router);
-app.use('/api/twitch', routerTwitch);
-app.use('/api/steam', routerSteam);
-app.use('/api/itad', routerItad);
-
-// Start listening for requests! :)
 app.listen(config.PORT, config.HOST);
 console.log(`API running on http://${config.HOST}:${config.PORT}`);

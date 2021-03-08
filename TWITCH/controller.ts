@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { isError } from '../types';
+import { isError } from './types';
 import {
   getTwitchGameById,
   getTopGamesTwitch,
@@ -13,9 +13,9 @@ import {
   getIdFromRequest,
   getStringFromRequest,
   getNumberFromRequest,
-} from '../helper';
+} from './helper';
 
-import ExternalDB from '../../models/Externals';
+import ExternalDB from '../SDE-Project-DB/models/Externals';
 import axios from 'axios';
 
 //Ok, already returns exactly id, name and box_art_url

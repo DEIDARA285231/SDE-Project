@@ -26,7 +26,6 @@ import {
   getExternalsIGDBbyName,
   getGamePlatformsLogoIGDB
 } from './core';
-import { itadGetPlain } from './itad/core';
 import {
   getGameNameFromRequest,
   getIdFromRequest,
@@ -35,7 +34,7 @@ import {
   getNumberFromRequest
 } from './helper';
 
-import ExternalDB from '../models/Externals';
+import ExternalDB from '../SDE-Project-DB/models/Externals';
 import axios from 'axios';
 import { HowLongToBeatService } from 'howlongtobeat';
 

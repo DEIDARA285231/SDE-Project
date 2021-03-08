@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 
-import { isError } from '../types';
+import { isError } from './types';
 import {
   getPriceSteam,
   getActivePlayersSteam} from './core';
 import {
   getIdFromRequest,
-} from '../helper';
+} from './helper';
 
-import ExternalDB from '../../models/Externals';
+import ExternalDB from '../SDE-Project-DB/models/Externals';
 import axios from 'axios';
 
 //Steam
