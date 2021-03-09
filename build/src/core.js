@@ -375,7 +375,7 @@ exports.getGamePlatformsLogoIGDB = function (idLogo) { return __awaiter(void 0, 
         }
     });
 }); };
-exports.getSpeedrunGameByName = function (gameID) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getSpeedrunGameByName = function (gameName) { return __awaiter(void 0, void 0, void 0, function () {
     var response, e_12;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -388,12 +388,19 @@ exports.getSpeedrunGameByName = function (gameID) { return __awaiter(void 0, voi
                             "Client-Id": secrets_1.default.CLIENT_ID
                         },
                         params: {
-                            name: gameID,
+                            name: gameName,
                         },
                     })];
             case 1:
-                response = _a.sent();
-                return [2 /*return*/, response.data];
+                response = (_a.sent()).data.data;
+                return [2 /*return*/, response
+                        .map(function (rawdata) { return ({
+                        id: rawdata.id,
+                        names: rawdata.names,
+                        abbreviation: rawdata.abbreviation,
+                        weblink: rawdata.weblink,
+                        links: rawdata.links
+                    }); })];
             case 2:
                 e_12 = _a.sent();
                 console.log(e_12);

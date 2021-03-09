@@ -1,4 +1,4 @@
-import { ArtworkCoverIGDB, Error, IGDBGame, IGDBPlatform, IGDBVideo, IGDBPlatformLogo } from './types';
+import { ArtworkCoverIGDB, Error, IGDBGame, IGDBPlatform, IGDBVideo, IGDBPlatformLogo, speedrun } from './types';
 import qs from 'qs';
 import axios from 'axios';
 import secrets from '../secrets';
@@ -248,20 +248,27 @@ export const getGamePlatformsLogoIGDB: (idLogo: number) => Promise<IGDBPlatformL
   }
 }
 
-export const getSpeedrunGameByName: (gameID: string) => Promise<any | Error> = async (gameID) => {
+export const getSpeedrunGameByName: (gameName: string) => Promise<speedrun[] | Error> = async (gameName) => {
 
   try{
-    const response = await axios.get<any>("https://www.speedrun.com/api/v1/games",{
+    const response: speedrun[] =(await axios.get<any>("https://www.speedrun.com/api/v1/games",{
       responseType: "json",
       headers: {
         "Authorization": secrets.AUTHORIZATION,
         "Client-Id": secrets.CLIENT_ID
       },
       params: {
-        name: gameID,
+        name: gameName,
       },
-    });
-    return response.data;
+    })).data.data;
+    return response
+    .map(rawdata => ({
+      id: rawdata.id,
+      names: rawdata.names,
+      abbreviation: rawdata.abbreviation,
+      weblink: rawdata.weblink,
+      links: rawdata.links
+    }));
   } catch (e) {
     console.log(e);
     return {

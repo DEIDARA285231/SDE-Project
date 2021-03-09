@@ -198,3 +198,18 @@ export interface storeLowestPrice{
   lowestPrice: Number;
   hoursPerEuroRatio?: Number;
 }
+/**
+ * @typedef storeLowestPrice
+ * @property {string} storeName
+ * @property {integer} lowestPrice
+ * @property {integer} hoursPerEuroRatio
+ */
+
+ export interface speedrun{
+   id: Number;
+   names: string[];
+   abbreviation: string;
+   weblink: string;
+   links: string[];
+
+ }

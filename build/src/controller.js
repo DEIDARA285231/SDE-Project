@@ -467,24 +467,78 @@ exports.platformsIGDB = function (req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.gameSpeedrun = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var gameID, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var gameName, gameID, _a, _b, gameInDB, _c, _d, responseExt, _e, _f, e_1;
+    return __generator(this, function (_g) {
+        switch (_g.label) {
             case 0:
-                gameID = helper_1.getStringFromRequest(req, "name");
-                if (!(gameID !== false)) return [3 /*break*/, 2];
-                //const videos = await getVideosTwitch(gameID);
-                _b = (_a = res).send;
-                return [4 /*yield*/, core_1.getSpeedrunGameByName(gameID)];
-            case 1:
-                //const videos = await getVideosTwitch(gameID);
-                _b.apply(_a, [_c.sent()]);
-                return [3 /*break*/, 3];
-            case 2:
+                gameName = helper_1.getStringFromRequest(req, "name");
+                gameID = helper_1.getIdFromRequest(req);
+                if (!(gameName !== false && gameID !== false)) return [3 /*break*/, 1];
                 res.status(400);
-                res.send({ error: "Invalid parameter" });
-                _c.label = 3;
-            case 3: return [2 /*return*/];
+                res.send({ error: "Provide only game id or game name" });
+                return [3 /*break*/, 17];
+            case 1:
+                if (!(gameName !== false)) return [3 /*break*/, 3];
+                _b = (_a = res).send;
+                return [4 /*yield*/, core_1.getSpeedrunGameByName(gameName)];
+            case 2:
+                _b.apply(_a, [_g.sent()]);
+                return [3 /*break*/, 17];
+            case 3:
+                if (!(gameID !== false)) return [3 /*break*/, 16];
+                _g.label = 4;
+            case 4:
+                _g.trys.push([4, 14, , 15]);
+                return [4 /*yield*/, Externals_1.default.findOne({ gameId: gameID })];
+            case 5:
+                gameInDB = _g.sent();
+                if (!gameInDB) return [3 /*break*/, 9];
+                //c'è il gioco nel DB
+                if (!types_1.isError(gameInDB)) {
+                    res.contentType('json');
+                }
+                if (!(gameInDB.gameName !== undefined)) return [3 /*break*/, 7];
+                _d = (_c = res).send;
+                return [4 /*yield*/, core_1.getSpeedrunGameByName(gameInDB.gameName)];
+            case 6:
+                _d.apply(_c, [_g.sent()]);
+                return [3 /*break*/, 8];
+            case 7:
+                res.status(404);
+                res.send({ error: "Game not found. No game matched the ID provided" });
+                _g.label = 8;
+            case 8: return [3 /*break*/, 13];
+            case 9: return [4 /*yield*/, axios_1.default({
+                    url: "http://localhost:3000/api/games?id=" + gameID,
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                })];
+            case 10:
+                responseExt = _g.sent();
+                if (!(responseExt.data.name !== undefined)) return [3 /*break*/, 12];
+                _f = (_e = res).send;
+                return [4 /*yield*/, core_1.getSpeedrunGameByName(responseExt.data.name)];
+            case 11:
+                _f.apply(_e, [_g.sent()]);
+                return [3 /*break*/, 13];
+            case 12:
+                res.status(404);
+                res.send({ error: "Game not found. No game matched the ID provided" });
+                _g.label = 13;
+            case 13: return [3 /*break*/, 15];
+            case 14:
+                e_1 = _g.sent();
+                res.status(503);
+                res.send({ error: 'Something bad happened. Error from speedrun.com itself' });
+                return [3 /*break*/, 15];
+            case 15: return [3 /*break*/, 17];
+            case 16:
+                res.status(400);
+                res.send({ error: "Invalid parameter. Provide Name or ID" });
+                _g.label = 17;
+            case 17: return [2 /*return*/];
         }
     });
 }); };

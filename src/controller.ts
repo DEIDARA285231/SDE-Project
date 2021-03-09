@@ -339,15 +339,52 @@ export const platformsIGDB = async (req: Request, res: Response) => {
 }
 
 export const gameSpeedrun = async (req: Request, res: Response) => {
-  const gameID = getStringFromRequest(req,"name");
+  const gameName = getStringFromRequest(req,"name");
+  const gameID = getIdFromRequest(req);
   //const language = getStringFromRequest(req,"language"); /*no support for language selection yet*/
 
-  if(gameID!==false) {
-    //const videos = await getVideosTwitch(gameID);
-    res.send(await getSpeedrunGameByName(gameID));
+  if(gameName !== false && gameID !== false) {
+    res.status(400);
+    res.send({error: "Provide only game id or game name"});
+  } else if(gameName !== false){
+    res.send(await getSpeedrunGameByName(gameName));
+  } else if(gameID !== false) {
+    try{
+      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+
+      if (gameInDB) {
+        //c'è il gioco nel DB
+        if (!isError(gameInDB)) {
+          res.contentType('json');
+        }
+        if (gameInDB.gameName !== undefined){
+          res.send(await getSpeedrunGameByName(gameInDB.gameName));
+        }else{
+          res.status(404);
+          res.send({error: "Game not found. No game matched the ID provided"})
+        }
+      }else {
+        const responseExt = await axios({
+          url: `http://localhost:3000/api/games?id=${gameID}`,
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+        if (responseExt.data.name !== undefined){
+          res.send(await getSpeedrunGameByName(responseExt.data.name));
+        }else{
+          res.status(404);
+          res.send({error: "Game not found. No game matched the ID provided"})
+        }
+      }
+    }catch(e){
+      res.status(503);
+      res.send({ error: 'Something bad happened. Error from speedrun.com itself' });
+    }
   } else {
     res.status(400);
-    res.send({error: "Invalid parameter"});
+    res.send({error: "Invalid parameter. Provide Name or ID"});
   }
 };
 
