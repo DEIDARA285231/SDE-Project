@@ -1,7 +1,7 @@
-import { Error, TwitchStream, TwitchTopGame, TwitchVideo } from '../types';
+import { Error, TwitchStream, TwitchTopGame, TwitchVideo } from './types';
 import qs from 'qs';
 import axios from 'axios';
-import secrets from '../../secrets';
+import secrets from './secrets';
 
 axios.defaults.paramsSerializer = (params) => {
   return qs.stringify(params, { indices: false });

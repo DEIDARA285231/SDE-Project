@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 
-import { isError } from './types';
 import {
   getPriceSteam,
   getActivePlayersSteam} from './core';

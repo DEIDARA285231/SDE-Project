@@ -2,7 +2,6 @@ import express from 'express';
 import errorHandler from 'errorhandler';
 import logger from 'morgan';
 import compression from 'compression';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import exphbs from 'express-handlebars';
 import path from 'path';
@@ -13,7 +12,7 @@ import mongoose from 'mongoose';
 const MongoStore = require('connect-mongo')(session)
 
 import { connect } from '../SDE-Project-DB/config/db';
-import config from '../SDE-Project-DB/config/config';
+import config from './config';
 
 //Passport config
 require('./config/passport')(passport)
@@ -26,8 +25,8 @@ const app = express();
 app.use(errorHandler());     // Log stack trace of errors (to be used only on development phases!)
 app.use(logger('dev'));                               // Log HTTP requests
 app.use(compression());                               // Compress all responses
-app.use(bodyParser.json());                           // Decode body responses
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());                           // Decode body responses
+app.use(express.urlencoded());
 app.use(cors());                                      // Enable Cross-Origin Resource Sharing
 
 //Handlebars
@@ -49,7 +48,8 @@ app.use(passport.session())
 //Static folder
 app.use(express.static(path.join(__dirname, 'public')))
 
-
-
 app.use('/',require('./routes/index'))
 app.use('/auth',require('./routes/auth'))
+
+app.listen(config.PORT, config.HOST);
+console.log(`Frontend running on http://${config.HOST}:${config.PORT}`);
