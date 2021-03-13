@@ -1,7 +1,7 @@
 "use strict";
 var swaggerAutogen = require('swagger-autogen')();
 var outputFile = './routes/swagger_output.json';
-var endpointsFiles = ['./src/itad/routes.ts', './src/steam/routes.ts', './src/twitch/routes.ts', './src/routes.ts'];
+var endpointsFiles = ['./ITAD/routes.ts', './STEAM/routes.ts', './TWITCH/routes.ts', './IGDB/routes.ts'];
 var doc = {
     info: {
         version: "1.0.0",
