@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  api_igdb:
+    build:
+      context: ./IGDB
+    ports:
+      - 8082:80
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.20
+    volumes:
+      - /www/node_modules
+      - ./IGDB:/www
+
+  api_itad:
+    build:
+      context: ./ITAD
+    ports:
+      - 8083:80
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.30
+    volumes:
+      - /www/node_modules
+      - ./ITAD:/www
+
+  api_steam:
+    build:
+      context: ./STEAM
+    ports:
+      - 8084:80
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.40
+    volumes:
+      - /www/node_modules
+      - ./STEAM:/www
+
+  api_twitch:
+    build:
+      context: ./TWITCH
+    ports:
+      - 8085:80
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.50
+    volumes:
+      - /www/node_modules
+      - ./TWITCH:/www
+
+  frontend_s:
+    build:
+      context: ./SDE-Project-Frontend
+    ports:
+      - 8086:4200
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.60
+    volumes:
+      - /www/node_modules
+      - ./SDE-Project-Frontend:/www
+
+  data_s:
+    image: mongo:latest
+    ports:
+      - 8087:80
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.70
+    volumes:
+      - /www/node_modules
+      - ./SDE-Project-DB:/www
+      
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
