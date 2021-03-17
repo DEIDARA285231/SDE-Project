@@ -62,7 +62,8 @@ services:
       - ./SDE-Project-Frontend:/www
 
   data_s:
-    image: mongo:latest
+    build:
+      context: ./DB_Adapter
     ports:
       - 8087:80
     networks:
@@ -70,7 +71,7 @@ services:
         ipv4_address: 172.16.238.70
     volumes:
       - /www/node_modules
-      - ./SDE-Project-DB:/www
+      - ./DB_Adapter:/www
       
 networks:
   app_net:
