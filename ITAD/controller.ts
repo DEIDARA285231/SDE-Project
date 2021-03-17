@@ -8,11 +8,10 @@ import {
 import {
   getIdFromRequest,
   getNumberFromRequest,
-  getStringFromRequest,
 } from './helper';
 
-import ExternalDB from '../SDE-Project-DB/models/Externals';
 import axios from 'axios';
+import config from './config'
 
 export const plainITAD = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
@@ -21,8 +20,8 @@ export const plainITAD = async (req: Request, res: Response) => {
     const steamID=getNumberFromRequest(req, "steamId")
     if (steamID ===false){
       try{
-        let gameInDB = await ExternalDB.findOne({ gameId: gameID });
-        if (gameInDB) {
+        let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
+        if (!isError(gameInDB)) {
           //c'è il gioco nel DB
           if (gameInDB.steamId !== undefined){
             const plain = await itadGetPlain(gameInDB.steamId);
@@ -38,7 +37,7 @@ export const plainITAD = async (req: Request, res: Response) => {
           }
         }else {
           const responseExt = await axios({
-            url: "http://localhost:3000/api/game/externalGame",
+            url: `${config.API_IGDB}/game/externalGame`,
             method: 'GET',
             params: {
               id: gameID
@@ -82,11 +81,11 @@ export const getStoreLow = async (req: Request, res: Response) => {
 
   if(gameID !== false){
     try{
-      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
-      if (gameInDB) {
+      let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
+      if (!isError(gameInDB)) {
         if (gameInDB.itad_plain !== undefined){
           const hoursHLTB = await axios({
-            url: "http://localhost:3000/api/howlongtobeat",
+            url: `${config.API_IGDB}/howlongtobeat`,
             method: 'GET',
             params: {
               name: gameInDB.gameName
@@ -144,7 +143,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
         }
       }else {
         const responseExt = await axios({
-          url: "http://localhost:3000/api/game/externalGame",
+          url: `${config.API_IGDB}/game/externalGame`,
           method: 'GET',
           params: {
             id: gameID
@@ -152,7 +151,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
         });
         if (responseExt.data.itad_plain !== undefined){
           const hoursHLTB = await axios({
-            url: "http://localhost:3000/api/howlongtobeat",
+            url: `${config.API_IGDB}/howlongtobeat`,
             method: 'GET',
             params: {
               name: responseExt.data.gameName
@@ -180,7 +179,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
                 });
               })
             }else{
-              storeLow["data"][gameInDB.itad_plain].forEach((elem : any) =>{
+              storeLow["data"][responseExt.data.itad_plain].forEach((elem : any) =>{
                 stores.push({
                   storeName: String(elem.shop),
                   lowestPrice: +((+(elem.price)).toFixed(2))
