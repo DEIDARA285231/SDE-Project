@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { isError } from './types';
 
 import {
   getPriceSteam,
@@ -7,8 +8,8 @@ import {
   getIdFromRequest,
 } from './helper';
 
-import ExternalDB from '../SDE-Project-DB/models/Externals';
 import axios from 'axios';
+import config from './config'
 
 //Steam
 
@@ -16,14 +17,14 @@ export const priceSteam = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if (gameID!==false) {
     try{
-      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
-      if (gameInDB) {
+      let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
+      if (!isError(gameInDB)) {
 
         if (gameInDB.steamId !== undefined){
           const steamPrice = await getPriceSteam(gameInDB.steamId);
 
           const hoursHLTB = await axios({
-            url: "http://localhost:3000/api/howlongtobeat",
+            url: `${config.API_IGDB}/howlongtobeat`,
             method: 'GET',
             params: {
               name: gameInDB.gameName
@@ -67,7 +68,7 @@ export const priceSteam = async (req: Request, res: Response) => {
 
       }else {
         const responseExt = await axios({
-          url: "http://localhost:3000/api/game/externalGame",
+          url: `${config.API_IGDB}/game/externalGame`,
           method: 'GET',
           params: {
             id: gameID
@@ -78,7 +79,7 @@ export const priceSteam = async (req: Request, res: Response) => {
           const steamPrice = await getPriceSteam(responseExt.data.steamId);
 
           const hoursHLTB = await axios({
-            url: "http://localhost:3000/api/howlongtobeat",
+            url: `${config.API_IGDB}/howlongtobeat`,
             method: 'GET',
             params: {
               name: responseExt.data.gameName
@@ -95,22 +96,22 @@ export const priceSteam = async (req: Request, res: Response) => {
               simp += hoursHLTB.data[0][currentLabel]
             }
 
-            let price = steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+            let price = steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
             let hoursPriceRatio = (simp/timeLabels.length)/price
             let h = +(hoursPriceRatio.toFixed(2))
 
             response = {
               id: gameID,
-              game_name: gameInDB.gameName,
+              game_name: responseExt.data.gameName,
               price: price,
               hoursPrice: h
             }
           }else{
-            let price = steamPrice[gameInDB.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
+            let price = steamPrice[responseExt.data.steamId.toString()].data["package_groups"][0].subs[0]["price_in_cents_with_discount"]/100
 
             response = {
               id: gameID,
-              game_name: gameInDB.gameName,
+              game_name: responseExt.data.gameName,
               price: price
             }
           }
@@ -134,9 +135,9 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if (gameID!==false) {
     try{
-      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+      let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
 
-      if (gameInDB) {
+      if (!isError(gameInDB)) {
 
         if (gameInDB.steamId !== undefined){
           const steamPlayers = await getActivePlayersSteam(gameInDB.steamId);
@@ -152,7 +153,7 @@ export const activePlayersSteam = async (req: Request, res: Response) => {
         }
       }else {
         const responseExt = await axios({
-          url: "http://localhost:3000/api/game/externalGame",
+          url: `${config.API_IGDB}/game/externalGame`,
           method: 'GET',
           params: {
             id: gameID
