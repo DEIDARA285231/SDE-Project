@@ -34,18 +34,19 @@ import {
   getNumberFromRequest
 } from './helper';
 
-import ExternalDB from '../SDE-Project-DB/models/Externals';
 import axios from 'axios';
+import config from './config'
 import { HowLongToBeatService } from 'howlongtobeat';
 
 //error handling OK
 export const gameIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
-    let gameInDB = await ExternalDB.findOne({ gameId: gameID });
-    if (!(gameInDB)){
+
+    let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
+    if (isError(gameInDB)){
       await axios({
-        url: "http://localhost:3000/api/game/externalGame",
+        url: `${config.API_IGDB}/game/externalGame`,
         method: 'GET',
         headers: {
           "Accept": "application/json",
@@ -185,7 +186,7 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           newExternal.gameName = externalIds[indexSteam]["name"]
         if (newExternal.steamId !==undefined){
           const responseExt = await axios({
-            url: "http://localhost:3000/api/itad/plain",
+            url: `${config.API_ITAD}/plain`,
             method: 'GET',
             params: {
               id: gameID,
@@ -205,9 +206,14 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
 
       if(newExternal.gameName !== "Not Inserted") {
-        let options = {upsert: true, new: true, setDefaultsOnInsert: true};
-        await ExternalDB.findOneAndUpdate({gameId:newExternal.gameId},newExternal,options);
-        res.send(newExternal);
+        let newInsertion = (await axios.post(`${config.DB_ADAPTER}/update`, newExternal, {params: { id: newExternal.gameId } })).data;
+        if(!isError(newInsertion)){
+          res.status(200);
+          res.send(newInsertion);
+        }else{
+          res.status(500);
+          res.send({error: "Insertion failed"})  
+        }
       } else {
         res.status(404);
         res.send({error: "The game does not appear on any external platform"})
@@ -242,7 +248,7 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           newExternal.gameId = externalIds[indexSteam]["game"]
         if (newExternal.steamId !==undefined){
           const responseExt = await axios({
-            url: "http://localhost:3000/api/itad/plain",
+            url: `${config.API_ITAD}/plain`,
             method: 'GET',
             params: {
               id: gameID,
@@ -261,9 +267,14 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
 
       if(newExternal.gameId !== -1) {
-        let options = {upsert: true, new: true, setDefaultsOnInsert: true};
-        await ExternalDB.findOneAndUpdate({gameId:newExternal.gameId},newExternal,options);
-        res.send(newExternal);
+        let newInsertion = (await axios.post(`${config.DB_ADAPTER}/update`, newExternal, {params: { id: newExternal.gameId } })).data;
+        if(!isError(newInsertion)){
+          res.status(200);
+          res.send(newInsertion);
+        }else{
+          res.status(500);
+          res.send({error: "Insertion failed"})  
+        }
       } else {
         res.status(404);
         res.send({error: "The game does not appear on any external platform"})
