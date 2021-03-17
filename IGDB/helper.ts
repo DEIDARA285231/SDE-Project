@@ -64,64 +64,10 @@ export const getIdFromRequest: (req: Request) => number | false = (req) => {
   return getNumberFromRequest(req, 'id');
 };
 
-/**
- * Extract day, month and year from the request query-string
- * @param req The request (as given in the controller)
- * @return an object containing day, month and year parameters
- * if the parameter for the day/month/year is not available,
- * the current day/month/year will be used
- */
-export const getDateFromRequest: (
-  req: Request
-) => {
-  day: number;
-  month: number;
-  year: number;
-} = (req) => {
-  let day = getNumberFromRequest(req, 'd');
-  let month = getNumberFromRequest(req, 'm');
-  let year = getNumberFromRequest(req, 'y');
-
-  const currentDate = getCurrentDate();
-  if (day === false) {
-    day = currentDate.day;
-  }
-  if (month === false) {
-    month = currentDate.month;
-  }
-  if (year === false) {
-    year = currentDate.year;
-  }
-
-  return {
-    day: day,
-    month: month,
-    year: year,
-  };
-};
-
 /**Function to get the Name from the first page, otherwise use Minecraft */
 export const getGameNameFromRequest : (req: Request) => string | false = (req) => {
   return getStringFromRequest(req, "name");
 }
-
-/**
- * Returns the current day
- * @return an object containing day, month and years parameters
- * representing the current date (today)
- */
-export const getCurrentDate: () => {
-  day: number;
-  month: number;
-  year: number;
-} = () => {
-  const date = new Date();
-  return {
-    day: date.getDate(),
-    month: date.getMonth() + 1,
-    year: date.getFullYear(),
-  };
-};
 
 export const getGenres: () => any = () =>{
   return {
