@@ -15,8 +15,8 @@ import {
   getNumberFromRequest,
 } from './helper';
 
-import ExternalDB from '../SDE-Project-DB/models/Externals';
 import axios from 'axios';
+import config from './config'
 
 //Ok, already returns exactly id, name and box_art_url
 //now accepts also twitch_id
@@ -30,13 +30,10 @@ export const gameTwitch = async (req: Request, res: Response) => {
     res.send({error: "Provide only game id, game name, or twitch id"})
   } else if(gameID !== false) {
       try{
-        let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+        let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
 
-        if (gameInDB) {
+        if (!isError(gameInDB)) {
           //c'è il gioco nel DB
-          if (!isError(gameInDB)) {
-            res.contentType('json');
-          }
           if (gameInDB.twitchId !== undefined){
             const game = await getTwitchGameById(String(gameInDB.twitchId));
             res.send(game);
@@ -46,7 +43,7 @@ export const gameTwitch = async (req: Request, res: Response) => {
           }
         }else {
           const responseExt = await axios({
-            url: "http://localhost:3000/api/game/externalGame",
+            url: `${config.API_IGDB}/game/externalGame`,
             method: 'GET',
             params: {
               id: gameID
@@ -65,51 +62,50 @@ export const gameTwitch = async (req: Request, res: Response) => {
         res.send({ error: 'Something bad happened. Error from Twitch itself!' });
       }
   } else if(gameName !== false) {
-        try{
-          let gameInDB = await ExternalDB.findOne({ gameName: gameName });
-          if (gameInDB) {
-
-            if (gameInDB.twitchId !== undefined){
-              const game = await getTwitchGameById(String(gameInDB.twitchId));
+      try{
+        let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { name: gameName } })).data;
+        if (!isError(gameInDB)) {
+          if (gameInDB.twitchId !== undefined){
+            const game = await getTwitchGameById(String(gameInDB.twitchId));
+            res.send(game);
+          }else{
+            res.status(404);
+            res.send({error: "Game not broadcasted on Twitch"})
+          }
+        }else {
+          try{
+            const responseExt = await axios({
+              url: `${config.API_IGDB}/game/externalGame`,
+              method: 'GET',
+              params: {
+                name: gameName
+              }
+            });
+            if (responseExt.data.twitchId !== undefined){
+              const game = await getTwitchGameById(String(responseExt.data.twitchId));
               res.send(game);
             }else{
               res.status(404);
               res.send({error: "Game not broadcasted on Twitch"})
             }
-          }else {
-            try{
-              const responseExt = await axios({
-                url: "http://localhost:3000/api/game/externalGame",
-                method: 'GET',
-                params: {
-                  name: gameName
-                }
-              });
-              if (responseExt.data.twitchId !== undefined){
-                const game = await getTwitchGameById(String(responseExt.data.twitchId));
-                res.send(game);
+          }catch(e){
+            //gameName non negli externals
+            const game = await getTwitchGameByName(gameName)
+            if (!isError(game)) {
+              res.contentType('json');
+              if (game.data.length > 0){
+                res.send(game.data)
               }else{
                 res.status(404);
                 res.send({error: "Game not broadcasted on Twitch"})
               }
-            }catch(e){
-              //gameName non negli externals
-              const game = await getTwitchGameByName(gameName)
-              if (!isError(game)) {
-                res.contentType('json');
-                if (game.data.length > 0){
-                  res.send(game.data)
-                }else{
-                  res.status(404);
-                  res.send({error: "Game not broadcasted on Twitch"})
-                }
-              }
             }
           }
-        }catch(e){
-          res.status(400);
-          res.send({ error: 'Something wrong in calling the DB' });
         }
+      }catch(e){
+        res.status(400);
+        res.send({ error: 'Something wrong in calling the DB' });
+      }
   } else if (twitchID !== false) {
     try {
       const game = await getTwitchGameById(twitchID.toString());
@@ -156,9 +152,8 @@ export const streamsTwitch = async (req: Request, res: Response) => {
     res.send({error: "Provide only game id or twitch id"})
   }else if(gameID) {
     try{
-      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
-
-      if (gameInDB) {
+      let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
+      if (!isError(gameInDB)) {
         //c'è il gioco nel DB
         if (!isError(gameInDB)) {
           res.contentType('json');
@@ -172,7 +167,7 @@ export const streamsTwitch = async (req: Request, res: Response) => {
         }
       }else {
         const responseExt = await axios({
-          url: "http://localhost:3000/api/game/externalGame",
+          url: `${config.API_IGDB}/game/externalGame`,
           method: 'GET',
           params: {
             id: gameID
@@ -223,9 +218,9 @@ export const videosTwitch = async (req: Request, res: Response) => {
     res.send({error: "Provide game id OR twitch id"})
   } else if(gameID) {
     try{
-      let gameInDB = await ExternalDB.findOne({ gameId: gameID });
+      let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
 
-      if (gameInDB) {
+      if (!isError(gameInDB)) {
         //c'è il gioco nel DB
         if (!isError(gameInDB)) {
           res.contentType('json');
@@ -238,7 +233,7 @@ export const videosTwitch = async (req: Request, res: Response) => {
         }
       }else {
         const responseExt = await axios({
-          url: "http://localhost:3000/api/game/externalGame",
+          url: `${config.API_IGDB}/game/externalGame`,
           method: 'GET',
           params: {
             id: gameID
