@@ -366,5 +366,8 @@ export const howLongToBeat = async (req: Request, res: Response) => {
   const gameName = getGameNameFromRequest(req);
   if(gameName !== false){
     hltbService.search(gameName).then(result => res.send(result));
+  }else {
+    res.status(400);
+    res.send({error: "Invalid parameter"});
   }
 };
