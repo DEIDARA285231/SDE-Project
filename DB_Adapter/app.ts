@@ -18,7 +18,7 @@ app.use(logger('dev'));                               // Log HTTP requests
 app.use(compression());                               // Compress all responses
 app.use(express.json());                           // Decode body responses
 app.use(express.urlencoded());
-app.use(cors());                                      // Enable Cross-Origin Resource Sharing
+app.use(cors());
 
 app.use('/api/db', routerDB);
 

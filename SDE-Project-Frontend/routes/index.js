@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const { ensureAuth, ensureGuest } = require('../middleware/auth')
-const { getTopGamesTwitch } = require('../src/twitch/core')
 import axios from 'axios';
-import { getIdFromRequest, getGameNameFromRequest} from '../src/helper';
-import { isError } from '../src/types';
+import config from '../config/config';
+import { getIdFromRequest, getGameNameFromRequest } from '../config/helper';
+import { isError } from '../config/types';
 
 const app = express();
 const expressSwagger = require('express-swagger-generator')(app);
@@ -49,10 +49,11 @@ router.get('/', ensureGuest, (req,res) => {
 
 // @desc Dashboard
 // @route GET /dashboard
-router.get('/dashboard', ensureAuth, async (req,res) => {
+router.get('/dashboard', /*ensureAuth,*/ async (req,res) => {
   try {
+
     const topGames = await axios({
-      url: "http://localhost:3000/api/twitch/topGames",
+      url: `${config.API_TWITCH}/topGames`,
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -60,7 +61,7 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
     });
 
     const topRated = await axios({
-      url: "http://localhost:3000/api/games/topRated",
+      url: `${config.API_IGDB}/games/topRated`,
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -68,7 +69,7 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
     });
 
     const topStreams = await axios({
-      url: "http://localhost:3000/api/twitch/streams",
+      url: `${config.API_TWITCH}/streams`,
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -91,7 +92,8 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
     }
 
     res.render('dashboard', {
-      name: req.user.firstName,
+      //name: req.user.firstName,
+      name: "req.user.firstName",
       twitchTop: {
         entry0: topGames.data[0],
         entry1: topGames.data[1],
@@ -140,7 +142,7 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
 
 // @desc Game page
 // @route GET /game
-router.get('/game', ensureAuth, async (req,res) => {
+router.get('/game', /*ensureAuth,*/ async (req,res) => {
   try {
     const id = getIdFromRequest(req);
     const name = getGameNameFromRequest(req);
@@ -148,7 +150,7 @@ router.get('/game', ensureAuth, async (req,res) => {
     if(id !== false) {
       //get the game informations given the ID
       const game = await axios({
-        url: `http://localhost:3000/api/games?id=${id}`,
+        url: `${config.API_IGDB}/games?id=${id}`,
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -156,7 +158,7 @@ router.get('/game', ensureAuth, async (req,res) => {
       });
       //get the cover for the game
       const cover = await axios({
-        url: `http://localhost:3000/api/game/covers?id=${id}`,
+        url: `${config.API_IGDB}/game/covers?id=${id}`,
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -165,7 +167,7 @@ router.get('/game', ensureAuth, async (req,res) => {
       //get the prices
       try {
         const prices = await axios({
-          url: `http://localhost:3000/api/itad/storeLow?id=${id}`,
+          url: `${config.API_ITAD}/storeLow?id=${id}`,
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -238,7 +240,7 @@ router.get('/game', ensureAuth, async (req,res) => {
     } else if(name !== false) {
       //get the game informations given the name
       const game = await axios({
-        url: `http://localhost:3000/api/games?name=${name}`,
+        url: `${config.API_IGDB}/games?name=${name}`,
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -246,7 +248,7 @@ router.get('/game', ensureAuth, async (req,res) => {
       });
       //get the results on Twitch given the name
       const twitchSearch = await axios({
-        url: `http://localhost:3000/api/twitch/search?query=${name}`,
+        url: `${config.API_TWITCH}/search?query=${name}`,
         method: 'GET',
         headers: {
           'Accept': 'application/json',

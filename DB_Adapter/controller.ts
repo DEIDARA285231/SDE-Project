@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
 import {
   getIdFromRequest,
-  getGameNameFromRequest
+  getGameNameFromRequest,
+  getStringFromRequest
 } from './helper';
 
 
 import ExternalDB from './models/Externals';
+import User from './models/User';
 
 export const findByIDorName = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
@@ -44,6 +46,19 @@ export const findByIDorName = async (req: Request, res: Response) => {
   }
 }
 
+export const findUser = async (req: Request, res: Response) => {
+
+  const userID = getIdFromRequest(req);
+
+  try {
+    let user = User.findById(userID)
+    res.send(user);
+  } catch(e) {
+    res.status(503);
+    res.send({ error: 'Something bad happened. Error from the call to the Database' });
+  }
+}
+
 export const findAndUpdate = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   //req.body
@@ -54,6 +69,51 @@ export const findAndUpdate = async (req: Request, res: Response) => {
       let document = await ExternalDB.findOneAndUpdate({gameId:gameID},requestObject,options);
       if (document) {
         res.send(document);
+      }else {
+        res.status(404);
+        res.send({error: "Not found"})
+      }
+    }catch(e){
+      res.status(503);
+      res.send({ error: 'Something bad happened. Error from the call to the Database' });
+    }
+  }else{
+    res.status(400);
+    res.send({error: "Invalid ID"})
+  }
+}
+
+export const findAndUpdateUser = async (req: Request, res: Response) => {
+  const userID = getStringFromRequest(req,"userId");
+  const accessToken = getStringFromRequest(req,"accessToken");
+
+  if(userID !== false && accessToken !== false){
+    try{
+      const user = await User.findOneAndUpdate({ googleId: userID },{accessToken: accessToken})
+      if (user) {
+        res.send(user);
+      }else {
+        res.status(404);
+        res.send({error: "Not found"})
+      }
+    }catch(e){
+      res.status(503);
+      res.send({ error: 'Something bad happened. Error from the call to the Database' });
+    }
+  }else{
+    res.status(400);
+    res.send({error: "Invalid ID"})
+  }
+}
+
+export const createUser = async (req: Request, res: Response) => {
+  const newUser = req.body;
+
+  if(newUser !== false){
+    try{
+      let user = await User.create(newUser)
+      if (user) {
+        res.send(user);
       }else {
         res.status(404);
         res.send({error: "Not found"})

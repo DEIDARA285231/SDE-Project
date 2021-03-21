@@ -43,8 +43,9 @@ export const gameIGDB = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   if(gameID !== false){
 
-    let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
-    if (isError(gameInDB)){
+    try {
+      (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
+    } catch(e) {
       await axios({
         url: `${config.API_IGDB}/game/externalGame`,
         method: 'GET',
@@ -56,6 +57,7 @@ export const gameIGDB = async (req: Request, res: Response) => {
         }
       });
     }
+
     const game = await getGameIGDBbyID(gameID);
     if (!isError(game)) {
       if(Object.keys(game).length > 0) {
@@ -212,7 +214,7 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           res.send(newInsertion);
         }else{
           res.status(500);
-          res.send({error: "Insertion failed"})  
+          res.send({error: "Insertion failed"})
         }
       } else {
         res.status(404);
@@ -273,7 +275,7 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
           res.send(newInsertion);
         }else{
           res.status(500);
-          res.send({error: "Insertion failed"})  
+          res.send({error: "Insertion failed"})
         }
       } else {
         res.status(404);

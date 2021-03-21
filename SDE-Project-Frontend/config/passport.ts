@@ -1,7 +1,7 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-const mongoose = require('mongoose')
-const User = require('../models/User')
+import axios from 'axios';
 import config from './config';
+import { isError } from './types';
 
 module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (user: any, done: any) => void) => void; deserializeUser: (arg0: (id: any, done: any) => void) => void }) => {
   passport.use(new GoogleStrategy({
@@ -10,7 +10,6 @@ module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (u
     callbackURL: '/auth/google/callback'
   },
     async (accessToken: any, refreshToken: any, profile: { id: any; displayName: any; name: { givenName: any; familyName: any }; photos: { value: any }[] }, done: (arg0: null, arg1: any) => void) => {
-      console.log(accessToken)
       const newUser = {
         googleId: profile.id,
         displayName: profile.displayName,
@@ -21,12 +20,13 @@ module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (u
       }
 
       try {
-        let user = await User.findOneAndUpdate({ googleId: profile.id },{accessToken: accessToken})
-
-        if (user) {
+        let user = (await axios.post(`${config.DB_ADAPTER}/updateuser`, newUser, {params: { userId: newUser.googleId, accessToken: newUser.accessToken } })).data;
+        if (!isError(user)) {
           done(null, user)
         } else {
-          user = await User.create(newUser)
+          user = (await axios.post(`${config.DB_ADAPTER}/createuser`, newUser )).data;
+            console.log(user)
+          //user = await User.create(newUser)
           done(null, user)
         }
       } catch (err) {
@@ -38,7 +38,7 @@ module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (u
     done(null, user.id)
   })
 
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err: any, user: any) => done(err, user))
+  passport.deserializeUser(async (id, done) => {
+    (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: id } })).data , (err: any, user: any) => done(err, user)
   })
 }

@@ -11,14 +11,12 @@ import session from 'express-session';
 import mongoose from 'mongoose';
 const MongoStore = require('connect-mongo')(session)
 
-import { connect } from '../SDE-Project-DB/config/db';
-import config from './config';
+//import { connect } from '../SDE-Project-DB/config/db';
+import config from './config/config';
 
-//Passport config
 require('./config/passport')(passport)
 
-//connect to DB
-connect()
+//connect()
 
 const app = express();
 
