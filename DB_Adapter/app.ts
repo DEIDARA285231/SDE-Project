@@ -23,4 +23,4 @@ app.use(cors());
 app.use('/api/db', routerDB);
 
 app.listen(config.PORT, config.HOST);
-console.log(`DB Adapter running on http://${config.HOST}:${config.PORT}`);
+console.log(`DB Adapter running on http://172.16.238.70:8087`);

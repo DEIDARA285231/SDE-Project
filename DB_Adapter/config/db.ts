@@ -1,3 +1,5 @@
+//DB configuration file
+
 const mongoose = require('mongoose')
 import config from './config';
 

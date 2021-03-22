@@ -1,3 +1,5 @@
+//Parameters needed for configuration purposes in the DB container
+
 export default {
   PORT: 80,
   HOST: '0.0.0.0',

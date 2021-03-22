@@ -1,3 +1,5 @@
+//DB Schema for the game table
+
 const mongoose = require('mongoose')
 
 const ExternalsSchema = new mongoose.Schema({

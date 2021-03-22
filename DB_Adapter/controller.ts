@@ -5,10 +5,10 @@ import {
   getStringFromRequest
 } from './helper';
 
-
 import ExternalDB from './models/Externals';
 import User from './models/User';
 
+//Find a game on the DB by either the id with which it is stored, or the name
 export const findByIDorName = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   const gameName = getGameNameFromRequest(req);
@@ -46,19 +46,31 @@ export const findByIDorName = async (req: Request, res: Response) => {
   }
 }
 
+//Find a user on the DB by the googleId with which it is stored
 export const findUser = async (req: Request, res: Response) => {
 
   const userID = getStringFromRequest(req,"googleId");
 
-  try {
-    let user = await User.findOne({ googleId: userID })
-    res.send(user);
-  } catch(e) {
-    res.status(503);
-    res.send({ error: 'Something bad happened. Error from the call to the Database' });
+  if(userID !== false){
+    try {
+      let user = await User.findOne({ googleId: userID })
+      if (user) {
+        res.send(user);
+      }else {
+        res.status(404);
+        res.send({error: "Not found"})
+      }
+    } catch(e) {
+      res.status(503);
+      res.send({ error: 'Something bad happened. Error from the call to the Database' });
+    }
+  }else {
+    res.status(400);
+    res.send({error: "Invalid ID"})
   }
 }
 
+//Find and update a game on the DB by the id with which it is stored
 export const findAndUpdate = async (req: Request, res: Response) => {
   const gameID = getIdFromRequest(req);
   //req.body
@@ -83,6 +95,8 @@ export const findAndUpdate = async (req: Request, res: Response) => {
   }
 }
 
+//Find and update a user on the DB by the id with which it is stored
+//access token passed as parameter since it is the param we update on the DB
 export const findAndUpdateUser = async (req: Request, res: Response) => {
   const userID = getStringFromRequest(req,"userId");
   const accessToken = getStringFromRequest(req,"accessToken");
@@ -106,6 +120,7 @@ export const findAndUpdateUser = async (req: Request, res: Response) => {
   }
 }
 
+//Create a new user on the DB. Passed the data in the body
 export const createUser = async (req: Request, res: Response) => {
   const newUser = req.body;
 

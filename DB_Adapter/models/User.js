@@ -1,3 +1,5 @@
+//DB Schema for the user table
+
 const mongoose = require('mongoose')
 
 const UserSchema = new mongoose.Schema({
