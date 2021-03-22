@@ -49,7 +49,7 @@ router.get('/', ensureGuest, (req,res) => {
 
 // @desc Dashboard
 // @route GET /dashboard
-router.get('/dashboard', /*ensureAuth,*/ async (req,res) => {
+router.get('/dashboard', ensureAuth, async (req,res) => {
   try {
 
     const topGames = await axios({
