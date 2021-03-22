@@ -21,11 +21,10 @@ module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (u
 
       try {
         let user = (await axios.post(`${config.DB_ADAPTER}/updateuser`, newUser, {params: { userId: newUser.googleId, accessToken: newUser.accessToken } })).data;
-        if (!isError(user)) {
+        if(!isError(user)) {
           done(null, user)
         } else {
           user = (await axios.post(`${config.DB_ADAPTER}/createuser`, newUser )).data;
-            console.log(user)
           //user = await User.create(newUser)
           done(null, user)
         }
@@ -35,10 +34,18 @@ module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (u
     }))
 
   passport.serializeUser((user, done) => {
-    done(null, user.id)
+    done(null, user)
   })
 
-  passport.deserializeUser(async (id, done) => {
-    (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: id } })).data , (err: any, user: any) => done(err, user)
+  passport.deserializeUser(async (user, done) => {
+    try {
+      const USER = await axios.get(`${config.DB_ADAPTER}/finduser`, {params: { googleId: user.googleId } });
+      done(null, USER);
+    } catch(err) {
+      console.log(err)
+    }
+
+
+    //(await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: id } })).data , (err: any, user: any) => done(err, user)
   })
 }

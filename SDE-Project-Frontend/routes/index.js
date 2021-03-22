@@ -92,8 +92,7 @@ router.get('/dashboard', /*ensureAuth,*/ async (req,res) => {
     }
 
     res.render('dashboard', {
-      //name: req.user.firstName,
-      name: "req.user.firstName",
+      name: req.user.data.firstName,
       twitchTop: {
         entry0: topGames.data[0],
         entry1: topGames.data[1],

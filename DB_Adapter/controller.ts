@@ -48,10 +48,10 @@ export const findByIDorName = async (req: Request, res: Response) => {
 
 export const findUser = async (req: Request, res: Response) => {
 
-  const userID = getIdFromRequest(req);
+  const userID = getStringFromRequest(req,"googleId");
 
   try {
-    let user = User.findById(userID)
+    let user = await User.findOne({ googleId: userID })
     res.send(user);
   } catch(e) {
     res.status(503);

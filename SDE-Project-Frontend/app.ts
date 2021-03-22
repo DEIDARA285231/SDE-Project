@@ -9,7 +9,8 @@ import passport from 'passport';
 import session from 'express-session';
 
 import mongoose from 'mongoose';
-const MongoStore = require('connect-mongo')(session)
+//const MongoStore = require('connect-mongo')(session)
+const MongoDBStore = require('connect-mongodb-session')(session)
 
 //import { connect } from '../SDE-Project-DB/config/db';
 import config from './config/config';
@@ -17,6 +18,11 @@ import config from './config/config';
 require('./config/passport')(passport)
 
 //connect()
+
+const store = new MongoDBStore({
+  uri: 'mongodb+srv://SDEUser1:sdeuser1@clustersde.8hbjn.mongodb.net/SDE_DB?retryWrites=true&w=majority',
+  collection: 'sessions'
+})
 
 const app = express();
 
@@ -32,12 +38,25 @@ app.engine('.hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
 app.set('view engine', '.hbs');
 
 //Sessions
-app.use(session({
+/*app.use(session({
   secret: 'keyboard cat',
   resave: false,  //don't save session if nothing is modified
   saveUninitialized: false,  //don't create session until something stored
   store: new MongoStore({ mongooseConnection: mongoose.connection })
-}))
+}))*/
+
+app.use(session({
+  secret: 'secret token',
+  resave: false,
+  saveUninitialized: true,
+  unset: 'destroy',
+  store: store,
+  name: 'session cookie name',
+  genid: (req) => {
+    //returns a random string
+    return Math.random().toString(36).substring(7);
+  }
+}));
 
 //Passport middleware
 app.use(passport.initialize())
