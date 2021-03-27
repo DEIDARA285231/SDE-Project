@@ -46,18 +46,22 @@ export const gameIGDB = async (req: Request, res: Response) => {
     try {
       (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
     } catch(e) {
-      await axios({
-        url: `${config.API_IGDB}/game/externalGame`,
-        method: 'GET',
-        headers: {
-          "Accept": "application/json",
-        },
-        params: {
-          id: gameID
-        }
-      });
+      try{
+        await axios({
+          url: `${config.API_IGDB}/game/externalGame`,
+          method: 'GET',
+          headers: {
+            "Accept": "application/json",
+          },
+          params: {
+            id: gameID
+          }
+        });
+      }catch(e){
+        //No action needed
+      }
     }
-
+    
     const game = await getGameIGDBbyID(gameID);
     if (!isError(game)) {
       if(Object.keys(game).length > 0) {
@@ -208,14 +212,21 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
 
       if(newExternal.gameName !== "Not Inserted") {
-        let newInsertion = (await axios.post(`${config.DB_ADAPTER}/update`, newExternal, {params: { id: newExternal.gameId } })).data;
-        if(!isError(newInsertion)){
-          res.status(200);
-          res.send(newInsertion);
-        }else{
+        try {
+          let newInsertion = (await axios.post(`${config.DB_ADAPTER}/update`, newExternal, {params: { id: newExternal.gameId } })).data;
+          if(!isError(newInsertion)){
+            res.status(200);
+            res.send(newInsertion);
+          }else{
+            //CHECK IF NEEDED
+            res.status(500);
+            res.send({error: "Insertion failed"})
+          }
+        }catch(e) {
           res.status(500);
           res.send({error: "Insertion failed"})
         }
+        
       } else {
         res.status(404);
         res.send({error: "The game does not appear on any external platform"})
@@ -269,11 +280,17 @@ export const externalGameIGDB = async (req: Request, res: Response) => {
       }
 
       if(newExternal.gameId !== -1) {
-        let newInsertion = (await axios.post(`${config.DB_ADAPTER}/update`, newExternal, {params: { id: newExternal.gameId } })).data;
-        if(!isError(newInsertion)){
-          res.status(200);
-          res.send(newInsertion);
-        }else{
+        try {
+          let newInsertion = (await axios.post(`${config.DB_ADAPTER}/update`, newExternal, {params: { id: newExternal.gameId } })).data;
+          if(!isError(newInsertion)){
+            res.status(200);
+            res.send(newInsertion);
+          }else{
+            //CHECK IF NEEDED
+            res.status(500);
+            res.send({error: "Insertion failed"})
+          }
+        }catch(e){
           res.status(500);
           res.send({error: "Insertion failed"})
         }
