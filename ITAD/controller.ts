@@ -203,6 +203,7 @@ export const getStoreLow = async (req: Request, res: Response) => {
       }
     }catch(e){
       res.status(503);
+      console.log(e)
       res.send({ error: 'Something bad happened' });
     }
   }else{
