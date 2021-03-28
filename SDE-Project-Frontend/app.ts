@@ -69,4 +69,4 @@ app.use('/',require('./routes/index'))
 app.use('/auth',require('./routes/auth'))
 
 app.listen(config.PORT, config.HOST);
-console.log(`Frontend running on http://${config.HOST}:${config.PORT}`);
+console.log(`Frontend running on http://http://172.16.238.60:8086`);

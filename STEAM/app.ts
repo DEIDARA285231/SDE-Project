@@ -49,4 +49,4 @@ app.use(cors());                                      // Enable Cross-Origin Res
 app.use('/api/steam', routerSteam);
 
 app.listen(config.PORT, config.HOST);
-console.log(`STEAM running on http://${config.HOST}:${config.PORT}`);
+console.log(`STEAM running on http://http://172.16.238.40:8084`);

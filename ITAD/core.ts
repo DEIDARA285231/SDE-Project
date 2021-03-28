@@ -16,10 +16,7 @@ export const itadGetPlain: (IDSteam: number) => Promise<any | Error> = async (ID
       }})
     return response.data;
   } catch(e){
-    console.error(e);
-    return {
-      error: e,
-    };
+    return <Error> e;
   };
 };
 
@@ -34,9 +31,6 @@ export const itadStoreLow: (plain: string) => Promise<any | Error> = async (plai
       }})
     return response.data;
   } catch(e) {
-    console.error(e);
-    return {
-      error: e,
-    };
+    return <Error> e;
   };
 };

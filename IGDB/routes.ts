@@ -73,6 +73,7 @@ router.get("/game/covers", coverIGDB);
  * @returns {object} 204 - No external resources were found for the specified game.
  * @returns {object} 400 - No parameters specified. Numerical id or name is needed.
  * @returns {object} 404 - The game does not appear on any external platform.
+ * @returns {object} 500 - Insertion Failed.
  */
 router.get("/game/externalGame", externalGameIGDB);   //TO DO
 

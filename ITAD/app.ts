@@ -48,4 +48,4 @@ app.use(cors());                                      // Enable Cross-Origin Res
 app.use('/api/itad', routerItad);
 
 app.listen(config.PORT, config.HOST);
-console.log(`ITAD running on http://${config.HOST}:${config.PORT}`);
+console.log(`ITAD running on http://http://172.16.238.30:8083`);

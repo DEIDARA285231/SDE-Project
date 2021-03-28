@@ -29,7 +29,7 @@ export const getGameIGDB: (name: string, limit: number, offset: number) => Promi
       name: rawData.name
     }))
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -49,7 +49,7 @@ export const getGameIGDBbyID: (id: number) => Promise<IGDBGame | Error> = async 
     risposta.first_release_date = new Date(risposta.first_release_date *1000).toUTCString()
     return <IGDBGame> risposta;
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -73,7 +73,7 @@ export const getArtworkIGDB: (id: number) => Promise<ArtworkCoverIGDB[] | Error>
       url: rawData.url.substring(2).replace("t_thumb", "t_original")
     }));
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -96,7 +96,7 @@ export const getCoverIGDB: (id: number) => Promise<ArtworkCoverIGDB[] | Error> =
       url: rawData.url.substring(2).replace("t_thumb", "t_original")
     }));
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -114,8 +114,7 @@ export const getGenreFromIdIGDB: (id: number) => Promise<any> = async (id) => {
     });
     return response.data[0];
   } catch (e) {
-    console.log(e)
-    return e;
+    return <Error> e;
   }
 }
 
@@ -134,7 +133,7 @@ export const getExternalsIGDB: (id: number) => Promise<any> = async (id) => {
     });
     return response.data;
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -152,7 +151,7 @@ export const getExternalsIGDBbyName: (gameName: string) => Promise<any> = async 
     });
     return response.data;
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -175,7 +174,7 @@ export const getTopRatedIGDB: () => Promise<IGDBGame[]|Error> = async () => {
       rating: rawData.rating
     }));
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -196,7 +195,7 @@ export const getGameVideosIGDB: (id: number) => Promise<IGDBVideo[] | Error> = a
       videoId: rawData.video_id
     }));
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -219,7 +218,7 @@ export const getPlatformsIGDB: (id: number) => Promise<IGDBPlatform | Error> = a
     }
     return returnObject
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -243,7 +242,7 @@ export const getGamePlatformsLogoIGDB: (idLogo: number) => Promise<IGDBPlatformL
     }
     return returnObject
   } catch (e) {
-    return e;
+    return <Error> e;
   }
 }
 
@@ -262,9 +261,6 @@ export const getSpeedrunGameByName: (gameID: string) => Promise<any | Error> = a
     });
     return response.data;
   } catch (e) {
-    console.log(e);
-    return {
-      error: e,
-    };
+    return <Error> e;
   }
 }

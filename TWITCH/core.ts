@@ -24,10 +24,7 @@ export const getTwitchGameById: (id: string) => Promise<File | Error> = async (i
     });
     return response.data;
   } catch (e) {
-    console.log("e");
-    return {
-      error: e,
-    };
+    return <Error> e;
   }
 }
 
@@ -46,9 +43,7 @@ export const getTwitchGameByName: (name: string) => Promise<any | Error> = async
     });
     return response.data;
   } catch (e) {
-    return {
-      error: e,
-    };
+    return <Error> e;
   }
 }
 
@@ -69,10 +64,7 @@ export const getTopGamesTwitch: () => Promise<TwitchTopGame[] | Error> = async (
       box_art_url: rawdata.box_art_url
     }));
   } catch (e) {
-    console.log("e");
-    return {
-      error: e,
-    };
+    return <Error> e;
   }
 }
 
@@ -91,10 +83,7 @@ export const getSearchTwitch: (query: string) => Promise<File | Error> = async (
     });
     return response.data;
   } catch (e) {
-    console.log("e");
-    return {
-      error: e,
-    };
+    return <Error> e;
   }
 }
 
@@ -141,10 +130,7 @@ export const getStreamsTwitch: (param: Boolean, gameID: string) => Promise<Twitc
       }));
     }
   } catch (e) {
-    console.log(e);
-    return {
-      error: e,
-    };
+    return <Error> e;
   }
 }
 
@@ -176,9 +162,6 @@ export const getVideosTwitch: (gameID: string, period: string, sort: string, typ
       type: rawData.type
     }));
   } catch (e) {
-    console.log(e);
-    return {
-      error: e,
-    };
+    return <Error> e;
   }
 }

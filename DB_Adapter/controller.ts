@@ -76,7 +76,7 @@ export const findAndUpdate = async (req: Request, res: Response) => {
   //req.body
   if(gameID !== false){
     try{
-      let requestObject = req.body.json
+      let requestObject = req.body;
       let options = {upsert: true, new: true, setDefaultsOnInsert: true};
       let document = await ExternalDB.findOneAndUpdate({gameId:gameID},requestObject,options);
       if (document) {
@@ -87,7 +87,7 @@ export const findAndUpdate = async (req: Request, res: Response) => {
       }
     }catch(e){
       res.status(503);
-      res.send({ error: 'Something bad happened. Error from the call to the Database' });
+      res.send({error: 'Something bad happened. Error from the call to the Database' });
     }
   }else{
     res.status(400);

@@ -21,21 +21,26 @@ export const plainITAD = async (req: Request, res: Response) => {
     if (steamID ===false){
       try{
         let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
-        if (!isError(gameInDB)) {
-          //c'è il gioco nel DB
-          if (gameInDB.steamId !== undefined){
-            const plain = await itadGetPlain(gameInDB.steamId);
+        //c'è il gioco nel DB
+        if (gameInDB.steamId !== undefined){
+          const plain = await itadGetPlain(gameInDB.steamId);
+          if(!isError(plain)) {
             const response = {
               id: gameID,
               steamId: gameInDB.steamId,
               plain: plain["data"][`app/${gameInDB.steamId}`]
             }
             res.send(response);
-          }else{
+          } else {
             res.status(404);
-            res.send({error: "Game not on IsThereAnyDeal.com"})
+            res.send({error: "Plain not found"});
           }
-        }else {
+        }else{
+          res.status(404);
+          res.send({error: "Game not on IsThereAnyDeal.com"})
+        }
+      }catch(e){
+        try {
           const responseExt = await axios({
             url: `${config.API_IGDB}/game/externalGame`,
             method: 'GET',
@@ -45,30 +50,39 @@ export const plainITAD = async (req: Request, res: Response) => {
           });
           if (responseExt.data.steamId !== undefined){
             const plain = await itadGetPlain(responseExt.data.steamId);
-
-            const response = {
-              id: gameID,
-              steamId: responseExt.data.steamId,
-              plain: plain["data"][`app/${responseExt.data.steamId}`]
+            if(!isError(plain)){
+              const response = {
+                id: gameID,
+                steamId: responseExt.data.steamId,
+                plain: plain["data"][`app/${responseExt.data.steamId}`]
+              }
+              res.send(response);
+            }else{
+              res.status(404);
+              res.send({error: "Plain not found"});
             }
-            res.send(response);
           }else{
             res.status(404);
             res.send({error: "Game not on IsThereAnyDeal.com"})
           }
+        } catch(e) {
+          res.status(503);
+          res.send({error: "Something bad happened"})
         }
-      }catch(e){
-        res.status(503);
-        res.send({ error: 'Something bad happened. Error from the call to the Database' });
       }
     }else{
       const plain = await itadGetPlain(steamID);
-      const response = {
-        id: gameID,
-        steamId: steamID,
-        plain: plain["data"][`app/${steamID}`]
+      if(!isError(plain)){
+        const response = {
+          id: gameID,
+          steamId: steamID,
+          plain: plain["data"][`app/${steamID}`]
+        }
+        res.send(response);
+      }else{
+        res.status(404);
+        res.send({error: "Plain not found"});
       }
-      res.send(response);
     }
   }else{
     res.status(400);
@@ -82,66 +96,71 @@ export const getStoreLow = async (req: Request, res: Response) => {
   if(gameID !== false){
     try{
       let gameInDB = (await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: gameID } })).data;
-      if (!isError(gameInDB)) {
-        if (gameInDB.itad_plain !== undefined){
-          const hoursHLTB = await axios({
+      if (gameInDB.itad_plain !== undefined){
+        let hoursHLTB = undefined;
+        try{
+          hoursHLTB = await axios({
             url: `${config.API_IGDB}/howlongtobeat`,
             method: 'GET',
             params: {
               name: gameInDB.gameName
             }
           });
-
-          const storeLow = await itadStoreLow(gameInDB.itad_plain);
-          if (storeLow["data"][gameInDB.itad_plain].length >0){
-            let stores: storeLowestPrice[] = [];
-            if (hoursHLTB.data[0] !== undefined && hoursHLTB.data[0].timeLabels !== undefined){
-              let timeLabels = hoursHLTB.data[0].timeLabels
-              let somma = 0.0
-              for(let i=0; i<(timeLabels.length); i++) {
-                let currentLabel = timeLabels[i][0]
-                somma += hoursHLTB.data[0][currentLabel]
-              }
-              let avg=somma/timeLabels.length;
-
-              storeLow["data"][gameInDB.itad_plain].forEach((elem : any) =>{
-                let lowestPrice=+((+(elem.price)).toFixed(2))
-                let hoursPriceRatio=+((avg/lowestPrice).toFixed(2))
-                stores.push({
-                  storeName: String(elem.shop),
-                  lowestPrice: lowestPrice,
-                  hoursPerEuroRatio: hoursPriceRatio
-                });
-              })
-
-            }else{
-              storeLow["data"][gameInDB.itad_plain].forEach((elem : any) =>{
-                stores.push({
-                  storeName: String(elem.shop),
-                  lowestPrice: +((+(elem.price)).toFixed(2))
-                });
-              })
+        }catch(e){
+          hoursHLTB = undefined;
+        }
+        
+        const storeLow = await itadStoreLow(gameInDB.itad_plain);
+        if (!isError(storeLow) && storeLow["data"][gameInDB.itad_plain].length >0){
+          let stores: storeLowestPrice[] = [];
+          if (hoursHLTB!== undefined && hoursHLTB.data[0] !== undefined && hoursHLTB.data[0].timeLabels !== undefined){
+            let timeLabels = hoursHLTB.data[0].timeLabels
+            let somma = 0.0
+            for(let i=0; i<(timeLabels.length); i++) {
+              let currentLabel = timeLabels[i][0]
+              somma += hoursHLTB.data[0][currentLabel]
             }
+            let avg=somma/timeLabels.length;
 
-            if(stores !== undefined) {
-              stores.sort((a,b)=>(a.lowestPrice>b.lowestPrice) ? 1 : ((b.lowestPrice>a.lowestPrice) ? -1 : 0))
-            }
+            storeLow["data"][gameInDB.itad_plain].forEach((elem : any) =>{
+              let lowestPrice=+((+(elem.price)).toFixed(2))
+              let hoursPriceRatio=+((avg/lowestPrice).toFixed(2))
+              stores.push({
+                storeName: String(elem.shop),
+                lowestPrice: lowestPrice,
+                hoursPerEuroRatio: hoursPriceRatio
+              });
+            })
 
-            const response = {
-              id: gameID,
-              plain: gameInDB.itad_plain,
-              stores: stores
-            }
-          res.send(response);
           }else{
-            res.status(404);
-            res.send({error: "Lowest prices Not Found"})
+            storeLow["data"][gameInDB.itad_plain].forEach((elem : any) =>{
+              stores.push({
+                storeName: String(elem.shop),
+                lowestPrice: +((+(elem.price)).toFixed(2))
+              });
+            })
           }
+
+          if(stores !== undefined) {
+            stores.sort((a,b)=>(a.lowestPrice>b.lowestPrice) ? 1 : ((b.lowestPrice>a.lowestPrice) ? -1 : 0))
+          }
+
+          const response = {
+            id: gameID,
+            plain: gameInDB.itad_plain,
+            stores: stores
+          }
+          res.send(response);
         }else{
           res.status(404);
-          res.send({error: "Game not on IsThereAnyDeal.com"})
+          res.send({error: "Lowest prices Not Found"})
         }
-      }else {
+      }else{
+        res.status(404);
+        res.send({error: "Game not on IsThereAnyDeal.com"})
+      }  
+    }catch(e){
+      try{
         const responseExt = await axios({
           url: `${config.API_IGDB}/game/externalGame`,
           method: 'GET',
@@ -150,18 +169,23 @@ export const getStoreLow = async (req: Request, res: Response) => {
           }
         });
         if (responseExt.data.itad_plain !== undefined){
-          const hoursHLTB = await axios({
-            url: `${config.API_IGDB}/howlongtobeat`,
-            method: 'GET',
-            params: {
-              name: responseExt.data.gameName
-            }
-          });
-
+          let hoursHLTB = undefined;
+          try{
+            hoursHLTB = await axios({
+              url: `${config.API_IGDB}/howlongtobeat`,
+              method: 'GET',
+              params: {
+                name: responseExt.data.gameName
+              }
+            });
+          }catch(e){
+            hoursHLTB = undefined;
+          }
+          
           const storeLow = await itadStoreLow(responseExt.data.itad_plain);
-          if (storeLow["data"][responseExt.data.itad_plain].length >0){
+          if (!isError(storeLow) && storeLow["data"][responseExt.data.itad_plain].length >0){
             let stores: storeLowestPrice[] = [];
-            if (hoursHLTB.data[0] !== undefined && hoursHLTB.data[0].timeLabels !== undefined){
+            if (hoursHLTB !== undefined && hoursHLTB.data[0] !== undefined && hoursHLTB.data[0].timeLabels !== undefined){
               let timeLabels = hoursHLTB.data[0].timeLabels
               let somma = 0.0
               for(let i=0; i<(timeLabels.length); i++) {
@@ -197,14 +221,13 @@ export const getStoreLow = async (req: Request, res: Response) => {
             res.send({error: "Lowest prices not Found"})
           }
         }else{
-            res.status(404);
-            res.send({error: "Game not on IsThereAnyDeal.com"})
+          res.status(404);
+          res.send({error: "Game not on IsThereAnyDeal.com"})
         }
+      }catch(e){
+        res.status(404);
+        res.send({error: "Game not on IsThereAnyDeal.com"})
       }
-    }catch(e){
-      res.status(503);
-      console.log(e)
-      res.send({ error: 'Something bad happened' });
     }
   }else{
     res.status(400);
