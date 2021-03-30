@@ -1,4 +1,4 @@
-<h3 style="text-align: center;">Risultati per <span style="color: red;">{{query}}</span></h3>
+<h3 style="text-align: center;">Risultati per <span style="color: purple;"><i>{{query}}</i></span></h3>
 <hr>
 <div style="margin-bottom: 50px; padding-left: 100px; padding-right: 100px;">
   <table style="text-align: center;">
@@ -8,7 +8,7 @@
     </tr>
       {{#each search}}
         <tr>
-          <td><a href="http://localhost:8086/game?id={{{this.id}}}">{{{this.name}}}</a></td>
+          <td><a href="http://localhost:8086/game?id={{{this.id}}}" style="color: purple;">{{{this.name}}}</a></td>
           <td>{{{this.first_release_date}}}</td>
         </tr>
       {{/each}}

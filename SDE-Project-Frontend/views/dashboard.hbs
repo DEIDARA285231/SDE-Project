@@ -2,135 +2,29 @@
 <hr>
 <h5>Here are the current top categories for <a href="https://twitch.tv" style="color: #6441A5"><i class="fab fa-twitch"></i> Twitch</a></h5>
 <div id='scrolly' style='margin-bottom: 50px;'>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry0.name}}}">
-    <img src="{{{twitchTop.entry0.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry1.name}}}">
-    <img src="{{{twitchTop.entry1.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry2.name}}}">
-    <img src="{{{twitchTop.entry2.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry3.name}}}">
-    <img src="{{{twitchTop.entry3.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry4.name}}}">
-    <img src="{{{twitchTop.entry4.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry5.name}}}">
-    <img src="{{{twitchTop.entry5.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry6.name}}}">
-    <img src="{{{twitchTop.entry6.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry7.name}}}">
-    <img src="{{{twitchTop.entry7.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry8.name}}}">
-    <img src="{{{twitchTop.entry8.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry9.name}}}">
-    <img src="{{{twitchTop.entry9.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry10.name}}}">
-    <img src="{{{twitchTop.entry10.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry11.name}}}">
-    <img src="{{{twitchTop.entry11.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry12.name}}}">
-    <img src="{{{twitchTop.entry12.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry13.name}}}">
-    <img src="{{{twitchTop.entry13.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry14.name}}}">
-    <img src="{{{twitchTop.entry14.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry15.name}}}">
-    <img src="{{{twitchTop.entry15.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry16.name}}}">
-    <img src="{{{twitchTop.entry16.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry17.name}}}">
-    <img src="{{{twitchTop.entry17.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry18.name}}}">
-    <img src="{{{twitchTop.entry18.box_art_url}}}" alt="img"/>
-  </a>
-  <a href="https://twitch.tv/directory/game/{{{twitchTop.entry19.name}}}">
-    <img src="{{{twitchTop.entry19.box_art_url}}}" alt="img"/>
-  </a>
+  {{#each twitchTop}}
+    <a href="https://twitch.tv/directory/game/{{{this.name}}}">
+      <img src="{{{this.box_art_url}}}" alt="img"/>
+    </a>
+  {{/each}}
 </div>
+
 <h5>Here are the current top ranked games according to <a href="https://www.igdb.com" style="color: #2b333c"><i class="fa fa-gamepad"></i> IGDB</a></h5>
 <div style="margin-bottom: 50px;">
   <table style="text-align: center;">
     <tr>
-      <th></th>
       <th>Game</th>
       <th>Rating</th>
       <th>Release</th>
     </tr>
     <tr>
-      <td><i class="fa fa-trophy" aria-hidden="true" style="color: #FFD700"></i> 1</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry0.id}}}">{{{IGDBtop.entry0.name}}}</a></td>
-      <td>{{{IGDBtop.entry0.rating}}}</td>
-      <td>{{{IGDBtop.entry0.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><i class="fa fa-medal" aria-hidden="true" style="color: #C0C0C0"></i> 2</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry1.id}}}">{{{IGDBtop.entry1.name}}}</a></td>
-      <td>{{{IGDBtop.entry1.rating}}}</td>
-      <td>{{{IGDBtop.entry1.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td><i class="fa fa-medal" aria-hidden="true" style="color: #A52A2A"></i> 3</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry2.id}}}">{{{IGDBtop.entry2.name}}}</a></td>
-      <td>{{{IGDBtop.entry2.rating}}}</td>
-      <td>{{{IGDBtop.entry2.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry3.id}}}">{{{IGDBtop.entry3.name}}}</a></td>
-      <td>{{{IGDBtop.entry3.rating}}}</td>
-      <td>{{{IGDBtop.entry3.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry4.id}}}">{{{IGDBtop.entry4.name}}}</a></td>
-      <td>{{{IGDBtop.entry4.rating}}}</td>
-      <td>{{{IGDBtop.entry4.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry5.id}}}">{{{IGDBtop.entry5.name}}}</a></td>
-      <td>{{{IGDBtop.entry5.rating}}}</td>
-      <td>{{{IGDBtop.entry5.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry6.id}}}">{{{IGDBtop.entry6.name}}}</a></td>
-      <td>{{{IGDBtop.entry6.rating}}}</td>
-      <td>{{{IGDBtop.entry6.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td>8</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry7.id}}}">{{{IGDBtop.entry7.name}}}</a></td>
-      <td>{{{IGDBtop.entry7.rating}}}</td>
-      <td>{{{IGDBtop.entry7.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td>9</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry8.id}}}">{{{IGDBtop.entry8.name}}}</a></td>
-      <td>{{{IGDBtop.entry8.rating}}}</td>
-      <td>{{{IGDBtop.entry8.first_release_date}}}</td>
-    </tr>
-    <tr>
-      <td>10</td>
-      <td><a href="http://localhost:8086/game?id={{{IGDBtop.entry9.id}}}">{{{IGDBtop.entry9.name}}}</a></td>
-      <td>{{{IGDBtop.entry9.rating}}}</td>
-      <td>{{{IGDBtop.entry9.first_release_date}}}</td>
+      {{#each IGDBtop}}
+        <tr>
+          <td><a href="http://localhost:8086/game?id={{{this.id}}}" style="color: purple;">{{{this.name}}}</a></td>
+          <td>{{{this.rating}}}</td>
+          <td>{{{this.first_release_date}}}</td>
+        </tr>
+      {{/each}}
     </tr>
   </table>
 </div>

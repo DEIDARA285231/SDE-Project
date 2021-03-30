@@ -5,17 +5,21 @@
     <div class="column" style="text-align: center; height: fit-content;">
       <img src="{{{cover}}}" alt="img" style="width: 200px; height: 250px; margin-bottom: 5px;"/>
       <div style="font-size: 20px">
-        <b>Rating</b>
+        <b style="color: purple;">Rating</b>
         {{data.aggregated_rating}}
       </div>
       <div style="font-size: 20px">
-        <b>User score</b>
+        <b style="color: purple;">User score</b>
         {{data.rating}}
       </div>
     </div>
     <div class="column2" style="height: fit-content;">
       <br>
-      <b>Released on</b> {{data.first_release_date}}
+      <b style="color: purple;">Released on</b> {{data.first_release_date}}<br>
+      <b style="color: purple;">Genres</b>
+      {{#each genres}}
+        {{this}} 
+      {{/each}}
       <hr>
       {{data.summary}}
       {{#if data.storyline}}
