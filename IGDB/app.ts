@@ -17,7 +17,7 @@ let options = {
             version: '1.0.0',
         },
         host: 'localhost:8082',
-        basePath: '/api',
+        basePath: '/api/igdb',
         produces: [
             "application/json",
             "application/xml"

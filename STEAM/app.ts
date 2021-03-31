@@ -19,7 +19,7 @@ let options = {
             version: '1.0.0',
         },
         host: 'localhost:8084',
-        basePath: '/api',
+        basePath: '/api/steam',
         produces: [
             "application/json",
             "application/xml"

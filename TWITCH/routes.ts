@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 /**
- * @route GET /twitch/ - Returns twitch's page for a certain game
+ * @route GET / - Returns twitch's page for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @param {BigInteger} id.query - twitch ID of the game we need to search
@@ -24,7 +24,7 @@ const router = express.Router();
 router.get('/', gameTwitch);
 
 /**
- * @route GET /twitch/topGames - Returns twitch's most viewed games
+ * @route GET /topGames - Returns twitch's most viewed games
  * @group Twitch - Endpoints regarding the Twitch platform
  * @returns {object} 200 - Returns a json containing the top 10 most viewed games on the Twitch Platform.
  *
@@ -32,7 +32,7 @@ router.get('/', gameTwitch);
 router.get('/topGames', topGamesTwitch);
 
 /**
- * @route GET /twitch/search - Returns twitch's page for a certain category
+ * @route GET /search - Returns twitch's page for a certain category
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {String} query.query - Name of the category to search on Twitch's platform
  * @returns {object} 200 - Returns a json containing the url for a certain category on the Twitch Platform.
@@ -42,7 +42,7 @@ router.get('/topGames', topGamesTwitch);
 router.get('/search/', searchTwitch);
 
 /**
- * @route GET /twitch/streams - Returns twitch's steams page for a certain game
+ * @route GET /streams - Returns twitch's steams page for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @param {BigInteger} id.query - Twitch ID of the game we need to search
@@ -55,7 +55,7 @@ router.get('/search/', searchTwitch);
 router.get('/streams/', streamsTwitch);
 
 /**
- * @route GET /twitch/videos - Returns twitch's videos for a certain game
+ * @route GET /videos - Returns twitch's videos for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @param {BigInteger} id.query - Twitch ID of the game we need to search

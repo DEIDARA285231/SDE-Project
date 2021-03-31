@@ -19,7 +19,7 @@ let options = {
             version: '1.0.0',
         },
         host: 'localhost:8085',
-        basePath: '/api',
+        basePath: '/api/twitch',
         produces: [
             "application/json",
             "application/xml"

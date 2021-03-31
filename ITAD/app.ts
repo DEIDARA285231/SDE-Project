@@ -18,7 +18,7 @@ let options = {
             version: '1.0.0',
         },
         host: 'localhost:8083',
-        basePath: '/api',
+        basePath: '/api/itad',
         produces: [
             "application/json",
             "application/xml"
