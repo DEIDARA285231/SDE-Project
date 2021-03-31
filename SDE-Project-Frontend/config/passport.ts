@@ -21,15 +21,15 @@ module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (u
 
       try {
         let user = (await axios.post(`${config.DB_ADAPTER}/updateuser`, newUser, {params: { userId: newUser.googleId, accessToken: newUser.accessToken } })).data;
-        if(!isError(user)) {
-          done(null, user)
-        } else {
-          user = (await axios.post(`${config.DB_ADAPTER}/createuser`, newUser )).data;
-          //user = await User.create(newUser)
-          done(null, user)
-        }
+        done(null, user)
       } catch (err) {
-        console.error(err)
+        try{
+          let newuser = (await axios.post(`${config.DB_ADAPTER}/createuser`, newUser )).data;
+          done(null, newuser)
+        }catch(e) {
+          console.log(e);
+          //??? WHAT TO DO ???
+        }
       }
     }))
 
@@ -44,8 +44,5 @@ module.exports = (passport: { use: (arg0: any) => void; serializeUser: (arg0: (u
     } catch(err) {
       console.log(err)
     }
-
-
-    //(await axios.get(`${config.DB_ADAPTER}/find`, {params: { id: id } })).data , (err: any, user: any) => done(err, user)
   })
 }
