@@ -80,7 +80,7 @@ router.get('/dashboard', ensureAuth, async (req,res) => {
 
 // @desc Game page
 // @route GET /game
-router.get('/game', /*ensureAuth,*/ async (req,res) => {
+router.get('/game', ensureAuth, async (req,res) => {
   try {
     const id = getIdFromRequest(req);
     const name = getGameNameFromRequest(req);

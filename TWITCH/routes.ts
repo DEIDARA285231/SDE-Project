@@ -13,7 +13,7 @@ const router = express.Router();
  * @route GET / - Returns twitch's page for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
- * @param {BigInteger} id.query - twitch ID of the game we need to search
+ * @param {BigInteger} twitch_id.query - twitch ID of the game we need to search
  * @param {String} name.query - Correct name of the game we need to search
  * @returns {object} 200 - Returns a json containing the data url for a certain game on the Twitch Platform.
  * @returns {object} 400 - Provide only game id, game name, or twitch id.
@@ -45,7 +45,7 @@ router.get('/search/', searchTwitch);
  * @route GET /streams - Returns twitch's steams page for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
- * @param {BigInteger} id.query - Twitch ID of the game we need to search
+ * @param {BigInteger} twitch_id.query - Twitch ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the url for the streams of a certain game on the Twitch.
  * @returns {object} 400 - Provide only game id or twitch id.
  * @returns {object} 404 - Game not broadcasted on Twitch.
@@ -58,7 +58,7 @@ router.get('/streams/', streamsTwitch);
  * @route GET /videos - Returns twitch's videos for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
- * @param {BigInteger} id.query - Twitch ID of the game we need to search
+ * @param {BigInteger} twitch_id.query - Twitch ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the url for the videos for a certain game on the Twitch.
  * @returns {object} 400 - Provide game id OR twitch id.
  * @returns {object} 404 - Game not broadcasted on Twitch.

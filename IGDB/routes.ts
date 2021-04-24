@@ -69,13 +69,14 @@ router.get("/game/covers", coverIGDB);
  * @route GET /game/externalGame - Returns other platform's ID for a certain game (GOG, Steam, Twitch, ITAD)
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search
+ * @param {String} name.query - Exact name of the game we need to search
  * @returns {object} 200 - Returns a json containing all the IDs regarding a certain game on the IGDB Platform.
  * @returns {object} 204 - No external resources were found for the specified game.
  * @returns {object} 400 - No parameters specified. Numerical id or name is needed.
  * @returns {object} 404 - The game does not appear on any external platform.
  * @returns {object} 500 - Insertion Failed.
  */
-router.get("/game/externalGame", externalGameIGDB);   //TO DO
+router.get("/game/externalGame", externalGameIGDB);
 
 /**
  * @route GET /games/topRated - Returns top rated games according to IGDB
@@ -86,10 +87,10 @@ router.get("/game/externalGame", externalGameIGDB);   //TO DO
 router.get("/games/topRated", topRatedIGDB);
 
 /**
- * @route GET /game/gameVideos - Returns IGDB's videos URLs for a certain game
+ * @route GET /game/videos - Returns IGDB's videos URLs for a certain game
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search
- * @returns {object} 200 - Returns a json containing the infos (URLs) regarding a certain game on the IGDB Platform.
+ * @returns {object} 200 - Returns a json containing the YouTube codes (to put after "youtu.be/") regarding a certain game on the IGDB Platform.
  * @returns {object} 400 - Invalid ID.
  * @returns {object} 404 - No video was found.
  * @returns {object} 503 - Something bad happened. Error from IGDB itself.
