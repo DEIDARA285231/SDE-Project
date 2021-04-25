@@ -19,5 +19,5 @@ docker-compose up
 
 The server will automatically restart when the files are changed.
 You can either access the endpoint via URLs or via a simple interface (that uses auth services) by using the "localhost:8086" url.
-The API documentation can be accessed by accessing "localhost:" + port + /api-docs.
+The API documentation can be accessed by accessing "localhost:" + port + /api-docs, while for the single microservices just "localhost:" + port + method is sufficient.
 Port is a variable that can be : 8082 for IGDB, 8084 for Steam, 8085 for Twitch, 8083 for ITAD.
