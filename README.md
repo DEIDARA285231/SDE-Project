@@ -1,20 +1,21 @@
-# SDE-Project
+# SDE-Project Final Project by Andrea Balasso, Edoardo Schioccola, Alessandro Brighenti
 ### Service Design and Engineering 2020/21 (UniTN)
-
+### The Project
+The project came from the need of a service that could aggregate other useful features in order to get the lowest prices, infos, top streams and reviews for a specific game without the need to search each thing separately. We also offer a feature that compares the lowest prices on different platforms and a price/hrs ration in order to evaluate how much is "worth" playing.
 ### Setup
 
-Clone the repository, and install all the dependencies by executing the command:
+Clone the repository, and install all the dependencies by executing the command for every "subfolder" (for ex. IGDB, ITAD, ecc...):
 
 ```bash
 npm install
 ```
 
-Rename the file `secrets.example.ts` in `secrets.ts` and open it with your favourite editor: you have to fill in the required api keys as already defined in the file.
-
-Run the service executing the command:
+Run the service executing the command after opening Docker Desktop:
 
 ```bash
-npm run start
+docker-compose build
+docker-compose up
 ```
 
 The server will automatically restart when the files are changed.
+You can either access the endpoint via URLs or via a simple interface (that uses auth services) by using the "localhost:8086" url.
