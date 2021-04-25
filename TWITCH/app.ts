@@ -14,7 +14,7 @@ const expressSwagger = require('express-swagger-generator')(app);
 let options = {
     swaggerDefinition: {
         info: {
-            description: 'This is a sample server',
+            description: 'API documentation regarding TWITCH. \n "/ " returns twitchs page for a certain game \n "topGames" returns twitchs most viewed games \n "search" - Returns twitchs page for a certain category \n "streams" returns twitchs steams page for a certain game \n "videos" returns twitchs videos for a certain game',
             title: 'Swagger',
             version: '1.0.0',
         },

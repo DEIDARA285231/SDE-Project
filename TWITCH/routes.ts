@@ -11,6 +11,7 @@ const router = express.Router();
 
 /**
  * @route GET / - Returns twitch's page for a certain game
+ * @description - Returns twitch's page for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @param {BigInteger} twitch_id.query - twitch ID of the game we need to search
@@ -25,6 +26,7 @@ router.get('/', gameTwitch);
 
 /**
  * @route GET /topGames - Returns twitch's most viewed games
+ * @description - Returns twitch's most viewed games
  * @group Twitch - Endpoints regarding the Twitch platform
  * @returns {object} 200 - Returns a json containing the top 10 most viewed games on the Twitch Platform.
  *
@@ -33,6 +35,7 @@ router.get('/topGames', topGamesTwitch);
 
 /**
  * @route GET /search - Returns twitch's page for a certain category
+ * @description - Returns twitch's page for a certain category
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {String} query.query - Name of the category to search on Twitch's platform
  * @returns {object} 200 - Returns a json containing the url for a certain category on the Twitch Platform.
@@ -43,6 +46,7 @@ router.get('/search/', searchTwitch);
 
 /**
  * @route GET /streams - Returns twitch's steams page for a certain game
+ * @description - Returns twitch's steams page for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @param {BigInteger} twitch_id.query - Twitch ID of the game we need to search
@@ -56,6 +60,7 @@ router.get('/streams/', streamsTwitch);
 
 /**
  * @route GET /videos - Returns twitch's videos for a certain game
+ * @description - Returns twitch's videos for a certain game
  * @group Twitch - Endpoints regarding the Twitch platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @param {BigInteger} twitch_id.query - Twitch ID of the game we need to search

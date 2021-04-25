@@ -22,6 +22,7 @@ const router = express.Router();
 
 /**
  * @route GET /games - Returns IGDB's infos for a certain game (id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres)
+ * @description - Returns IGDB's infos for a certain game (id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres)
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search on iGDB's platform
  * @param {String} name.query - Name of the game we need to search, can also be a partial string
@@ -35,6 +36,7 @@ router.get("/games", gameIGDB);
 
 /**
  * @route GET /game/genres - Returns IGDB's genre infos corresponding to a certain ID
+ * @description - Returns IGDB's genre infos corresponding to a certain ID
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the genre we need to search
  * @returns {object} 200 - Returns a json containing the corresponding infos for a genre given certain ID.
@@ -45,6 +47,7 @@ router.get("/game/genres", genresIGDB);
 
 /**
  * @route GET /game/artworks - Returns IGDB's artwork URL for a certain game
+ * @description - Returns IGDB's artwork URL for a certain game
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the infos regarding the artwork for a certain game on the IGDB Platform.
@@ -56,6 +59,7 @@ router.get("/game/artworks", artworkIGDB);
 
 /**
  * @route GET /game/covers - Returns IGDB's cover URL for a certain game
+ * @description - Returns IGDB's cover URL for a certain game
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the infos regarding the cover art for a certain game on the IGDB Platform.
@@ -67,6 +71,7 @@ router.get("/game/covers", coverIGDB);
 
 /**
  * @route GET /game/externalGame - Returns other platform's ID for a certain game (GOG, Steam, Twitch, ITAD)
+ * @description - Returns other platform's ID for a certain game (GOG, Steam, Twitch, ITAD)
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @param {String} name.query - Exact name of the game we need to search
@@ -80,6 +85,7 @@ router.get("/game/externalGame", externalGameIGDB);
 
 /**
  * @route GET /games/topRated - Returns top rated games according to IGDB
+ * @description - Returns top rated games according to IGDB
  * @group IGDB - Endpoints regarding the IGDB platform
  * @returns {object} 200 - Returns a json containing the top rated games.
  * @returns {object} 503 - Something bad happened. Error from IGDB itself.
@@ -88,6 +94,7 @@ router.get("/games/topRated", topRatedIGDB);
 
 /**
  * @route GET /game/videos - Returns IGDB's videos URLs for a certain game
+ * @description - Returns IGDB's videos URLs for a certain game
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the YouTube codes (to put after "youtu.be/") regarding a certain game on the IGDB Platform.
@@ -99,6 +106,7 @@ router.get("/game/videos", gameVideosIGDB);
 
 /**
  * @route GET /game/platforms - Returns IGDB's infos on a certain hardware given its ID
+ * @description - Returns IGDB's infos on a certain hardware given its ID
  * @group IGDB - Endpoints regarding the IGDB platform
  * @param {BigInteger} id.query - ID of the hardware we need to search
  * @returns {object} 200 - Returns a json containing the list of hardwares able to run a certain game.
@@ -113,6 +121,7 @@ router.get('/speedrun', gameSpeedrun);          //search game(s) by param id or 
 
 /**
  * @route GET /howlongtobeat - Returns HowLongToBeat's infos regarding a certain game
+ * @description - Returns HowLongToBeat's infos regarding a certain game
  * @group HowLongToBeat - Endpoints regarding the HLTB platform
  * @param {BigInteger} name.query - Name of the game we need to search
  * @returns {object} 200 - Returns a json containing the hours a player need to complete a certain game.

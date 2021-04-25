@@ -12,7 +12,7 @@ const expressSwagger = require('express-swagger-generator')(app);
 let options = {
     swaggerDefinition: {
         info: {
-            description: 'This is a sample server',
+            description: 'API documentation regarding IGDB. \n "games" returns IGDBs infos for a certain game (id, aggregated_rating, first_release_date, name, rating, storyline, summary, genres) \n "genres" returns IGDBs genre infos corresponding to a certain ID \n "artworks" returns IGDBs artwork URL for a certain game \n "covers" returns IGDBs cover URL for a certain game \n "externalGame" returns other platforms ID for a certain game (GOG, Steam, Twitch, ITAD) \n "topRated" returns top rated games according to IGDB \n "videos" returns IGDBs videos URLs for a certain game \n "platforms" returns IGDBs infos on a certain hardware given its ID \n "howlongtobeat" returns HowLongToBeats infos regarding a certain game',
             title: 'Swagger',
             version: '1.0.0',
         },

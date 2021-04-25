@@ -13,7 +13,7 @@ const expressSwagger = require('express-swagger-generator')(app);
 let options = {
     swaggerDefinition: {
         info: {
-            description: 'This is a sample server',
+            description: 'API documentation regarding ITAD. \n "plain" returns the plain (ID) for "Is There Any Deal" \n "storeLow" returns the lowest price for certain game',
             title: 'Swagger',
             version: '1.0.0',
         },

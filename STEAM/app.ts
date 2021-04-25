@@ -14,7 +14,7 @@ const expressSwagger = require('express-swagger-generator')(app);
 let options = {
     swaggerDefinition: {
         info: {
-            description: 'This is a sample server',
+            description: 'API documentation regarding STEAM. \n "price" returns the price for a certain game on the Steam store. \n "activePlayers" returns the exact number of players for a certain game on the Steam store',
             title: 'Swagger',
             version: '1.0.0',
         },

@@ -8,6 +8,7 @@ const router = express.Router();
 
 /**
  * @route GET /plain - Returns the plain (ID) for "Is There Any Deal"
+ * @description - Returns the plain (ID) for "Is There Any Deal
  * @group ITAD - Endpoints regarding "Is there any deal API"
  * @param {BigInteger} id.query - ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the plain for a certain game.
@@ -19,6 +20,7 @@ router.get('/plain', plainITAD);       //ID DI IGDB -> OK
 
 /**
  * @route GET /storeLow - Returns the lowest price for certain game
+ * @description - Returns the lowest price for certain game
  * @group ITAD - Endpoints regarding "Is there any deal API"
  * @param {BigInteger} id.query - ID of the game we need to search
  * @returns {object} 200 - Returns a json containing the historic lowest price and the hours/price ratio for a certain game in stores Origin, Epic, Amazon US, Gog, Steam.
